@@ -1,0 +1,62 @@
+/* Example CSS for the calendar */
+.calendar {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.month {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.month ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    text-align: center;
+}
+
+.month li {
+    display: inline-block;
+    width: 24%;
+    padding: 10px 0;
+}
+
+.month .prev,
+.month .next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.month .prev {
+    left: 0;
+}
+
+.month .next {
+    right: 0;
+}
+
+.month-title {
+    text-align: center;
+}
+
+.weekdays, .days {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.weekdays li, .days li {
+    display: inline-block;
+    width: 13.6%;
+    text-align: center;
+}
+
+.days li {
+    padding: 10px 0;
+}
