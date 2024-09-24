@@ -46,7 +46,7 @@
 
                             <div class="form-group">
                                 <label for="descripcion" class="font-weight-bold-custom">Descripción</label>
-                                <textarea name="descripcion" placeholder="Detalles de la categoría" class="form-control @error('descripcion') is-invalid @enderror" rows="3" maxlength="50"  required>{{ old('descripcion', $categoria->descripcion) }}</textarea>
+                                <textarea name="descripcion" placeholder="Detalles de la categoría" class="form-control @error('descripcion') is-invalid @enderror" rows="3" maxlength="255"  required>{{ old('descripcion', $categoria->descripcion) }}</textarea>
                                 @error('descripcion')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

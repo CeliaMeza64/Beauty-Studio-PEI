@@ -20,7 +20,10 @@
                     <div class="row">
                         <div class="col-md-6 order-md-2 position-relative">
                             <div class="form-group">
-                                <label class="font-weight-bold-custom mb-1">Cambiar Imagen</label>
+                                <label class="font-weight-bold-custom mb-1 mr-5">Cambiar Imagen</label>
+                                <a href="{{ route('serviciosImagen.create', ['servicio' => $servicio->id]) }}" class="btn btn-primary mr-2 mb-3  ml-5  add-image-btn" title="Agregar más imágenes"> 
+                                        <i class="fas fa-plus"></i> Imágenes
+                                    </a>
                                 <div class="image-placeholder" id="imagePlaceholder" style="cursor: pointer; background-image: url({{ asset('storage/' . $servicio->imagen) }});">
                                     @if (!$servicio->imagen)
                                         <p class="text-sm text-gray-400 pt-1 tracking-wider">Seleccione la imagen</p>
@@ -151,13 +154,14 @@
             text-align: center;
             position: relative;
             overflow: hidden;
+       
         }
 
         .image-placeholder p {
             margin: 0;
             position: absolute;
         }
-
+     
         input[type="file"].d-none {
             display: none;
         }
