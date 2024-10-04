@@ -85,6 +85,10 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 //Rota del calendario.
 
 Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
+//Route::get('/calendar', [ReservaController::class, 'getReservas']);
+Route::get('/reservas/calendario', [ReservaController::class, 'getReservas']);
+Route::get('/reservas/por-dia/{fecha}', [ReservaController::class, 'reservasPorDia']);
+
 
 // Ruta tendencias.
 

@@ -25,7 +25,6 @@ class ReservaController extends Controller
         return view('reservas.create', compact('categorias'));
     }
     
-
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -216,6 +215,40 @@ class ReservaController extends Controller
     
         return response()->json($servicios);
     }
-    
 
+    public function getReservas()
+    {
+        $reservas = Reserva::all();
+    
+        $events = [];
+        foreach ($reservas as $reserva) {
+            $events[] = [
+                'title' => $reserva->nombre_cliente,
+                'start' => $reserva->fecha_reservacion . ' ' . $reserva->hora_reservacion,
+            ];
+        }
+    
+        return response()->json($events);
+    }
+
+    public function reservasPorDia($fecha)
+    {
+        // Obtener las reservas de la fecha especificada
+        $reservas = Reserva::whereDate('fecha_reservacion', $fecha)->get();
+
+        // Devuelve las reservas en formato JSON
+        $events = [];
+        foreach ($reservas as $reserva) {
+            $events[] = [
+                'title' => $reserva->nombre_cliente,
+                'start' => $reserva->fecha_reservacion . 'T' . $reserva->hora_reservacion, // Incluye la hora en el formato adecuado
+                'description' => $reserva->telefono_cliente, // Descripción adicional
+                'service' => $reserva->servicio_id, // ID del servicio
+                'category' => $reserva->categoria_id, // ID de la categoría
+                'time' => $reserva->hora_reservacion, // Hora de la reserva
+            ];
+        }
+
+        return response()->json($events);
+    }
 }
