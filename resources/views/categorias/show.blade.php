@@ -67,8 +67,8 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     overflow: hidden;
-    cursor: pointer;
-    height: 400px; /* Ajusta la altura según tus necesidades */
+    height: 400px; /* Todas las tarjetas tendrán la misma altura */
+    width: 100%; /* Asegura que las tarjetas ocupen el mismo espacio */
   }
 
   .card:hover {
@@ -78,8 +78,9 @@
 
   .card-img-top {
     width: 100%;
-    height: 200px;
-    object-fit: cover;
+    height: 200px; /* Ajusta la altura de la imagen */
+    object-fit: cover; /* La imagen se ajusta sin distorsionarse */
+    object-position: center; /* Centra la imagen si tiene un desajuste de aspecto */
   }
 
   .card-body {
@@ -87,6 +88,7 @@
     flex-direction: column;
     justify-content: space-between;
     padding: 1rem;
+    flex-grow: 1; /* Permite que el cuerpo de la tarjeta ocupe el espacio disponible */
   }
 
   .card-title {
