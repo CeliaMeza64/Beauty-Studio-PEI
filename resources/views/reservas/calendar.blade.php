@@ -10,8 +10,6 @@
     </nav>
 @endsection
 
-
-
 @section('content')
     <div class="row">
         <!-- Columna para el calendario -->
@@ -83,9 +81,12 @@
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
-                height: 'auto', // Hace el calendario responsivo
+                height: 'auto',
+                slotMinTime: '08:00:00',
+                slotMaxTime: '20:00:00',
+
+                // Cuando se hace clic en una fecha
                 dateClick: function(info) {
-                    // Cuando se hace clic en una fecha
                     var selectedDate = info.dateStr;
 
                     // Realiza una petición AJAX para obtener las reservas del día seleccionado
@@ -110,6 +111,12 @@
                             console.error('Error al cargar las reservas:', error);
                             eventDetailsEl.innerHTML = '<p>Error al cargar las reservas.</p>';
                         });
+                },
+
+                // Evento que se activa al cambiar de vista
+                viewDidMount: function(info) {
+                    // Mantener el mensaje inicial al cambiar de vista
+                    eventDetailsEl.innerHTML = '<p>Haz clic en un día para ver las reservas.</p>';
                 }
             });
 

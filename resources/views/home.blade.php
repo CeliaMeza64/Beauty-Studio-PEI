@@ -81,7 +81,9 @@
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
-                height: 'auto', // Hace el calendario responsivo
+                height: 'auto',
+                slotMinTime: '08:00:00',
+                slotMaxTime: '20:00:00',
 
                 // Cuando se hace clic en una fecha
                 dateClick: function(info) {
