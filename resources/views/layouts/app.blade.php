@@ -18,9 +18,13 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/buttons.dataTables.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/select.dataTables.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/jquery.fancybox.min.css') }}">
 
     <script src="{{ asset('assets/js/jquery-3.5.1.js') }}"></script>
     <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('assets/js/jquery.fancybox.min.js') }}"></script>
+    <script src="{{ asset('assets/js/jquery.fancybox.js') }}"></script>
+
 
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     @yield('css')
@@ -149,6 +153,15 @@
 
         .breadcrumb-item.active {
             color: #6c757d;
+            font-size: 1.25rem; 
+        }
+        .breadcrumb-item + .breadcrumb-item::before {
+            content: ">"; 
+            margin-right: 0.75rem; 
+            color: #6c757d;
+            font-size: 1.5rem; /* Aumenta el tamaño del separador */
+            line-height: 1; /* Ajusta la altura de línea para centrarlo */
+            vertical-align: middle; /* Alinea verticalmente con el texto */
         }
 
         .whatsapp-float {
@@ -171,9 +184,7 @@
             height: 30px; 
         }
 
-        .tooltip-text {
-            display: none;
-        }
+       
 
         .whatsapp-float:hover .tooltip-text {
             display: block;
