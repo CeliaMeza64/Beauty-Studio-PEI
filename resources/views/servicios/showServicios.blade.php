@@ -6,7 +6,16 @@
 
 @section('content')
 <div class="container">
-    <h1>Servicios de {{ ucfirst($categoriaN) }}</h1>
+
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active" aria-current="page">
+                    <i class="fas fa-tag"></i> {{ ucfirst($categoriaN) }}
+                </a>
+            </li>
+        
+        </ol>
+    </nav>
 
     <div class="row">
         @forelse($servicios as $servicio)
@@ -31,5 +40,7 @@
     </div>
 </div>
 @endsection
+
+
 
 
