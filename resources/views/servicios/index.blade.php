@@ -16,7 +16,19 @@
                     <a href="{{ route('servicios.create') }}" class="btn btn-primary">
                         <i class="fas fa-plus"></i> Crear
                     </a>
+                    <form action="{{ route('servicios.index') }}" method="GET" class="d-flex align-items-center">
+                        <div class="input-group ">
+                            <input type="text" name="search" class="form-control" style="width: 300px;" placeholder="Buscar servicios por nombre" value="{{ request('search') }}">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="submit">
+                                    <i class="fas fa-search"></i> 
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
+                  
+
                 @if(session('success'))
                     <div class="alert alert-success">
                         {{ session('success') }}
@@ -54,9 +66,7 @@
                                         <i class="fas fa-edit"></i>
                                     </a>
 
-                                    <a href="{{ route('serviciosImagen.create', ['servicio' => $servicio->id]) }}" class="btn btn-primary mr-2" title="Agregar imágenes"> 
-                                        <i class="fas fa-plus"></i> Imágenes
-                                    </a>
+                                   
                                     <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#eliminarModal_{{ $servicio->id }}" title="Eliminar">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
@@ -88,10 +98,16 @@
                                 </td>
                             </tr>
                         @endforeach
+
+                        @if($servicios->isEmpty())
+                            <tr>
+                                <td colspan="7" class="text-center">No hay resultados para su búsqueda</td>
+                            </tr>
+                        @endif
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-    {{ $servicios->links() }}
+    {{ $servicios->appends(request()->query())->links() }}
 @endsection

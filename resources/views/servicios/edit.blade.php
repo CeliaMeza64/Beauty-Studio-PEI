@@ -16,11 +16,16 @@
                 <form id="servicioForm" action="{{ route('servicios.update', $servicio->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
+                    <input type="hidden" id="editMode" value="{{ $servicio->imagen ? 'true' : 'false' }}">
 
                     <div class="row">
+                        <!-- Imagen -->
                         <div class="col-md-6 order-md-2 position-relative">
                             <div class="form-group">
                                 <label class="font-weight-bold-custom mb-1">Cambiar Imagen</label>
+                                <a href="{{ route('serviciosImagen.index', ['servicio' => $servicio->id]) }}" class="btn btn-primary mr-2 mb-3 add-image-btn" title="Agregar más imágenes"> 
+                                    <i class="fas fa-plus"></i> Imágenes
+                                </a>
                                 <div class="image-placeholder" id="imagePlaceholder" style="cursor: pointer; background-image: url({{ asset('storage/' . $servicio->imagen) }});">
                                     @if (!$servicio->imagen)
                                         <p class="text-sm text-gray-400 pt-1 tracking-wider">Seleccione la imagen</p>
@@ -31,36 +36,43 @@
                             </div>
                         </div>
 
+                        <!-- Información del servicio -->
                         <div class="col-md-6 order-md-1">
                             <div class="form-group">
                                 <label for="nombre" class="font-weight-bold-custom">Nombre</label>
-                                <input type="text" name="nombre" value="{{ $servicio->nombre }}" placeholder="Nombre del servicio" class="form-control" required maxlength="50">
-                                <div class="invalid-feedback">Por favor, ingrese el nombre del servicio.</div>
+                                <input type="text" name="nombre" value="{{ old('nombre', $servicio->nombre) }}" placeholder="Nombre del servicio" class="form-control @error('nombre') is-invalid @enderror" required maxlength="50">
+                                @error('nombre')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                             <br>
 
                             <div class="form-group">
                                 <label for="descripcion" class="font-weight-bold-custom">Descripción</label>
-                                <textarea name="descripcion" placeholder="Añada los detalles sobre el servicio" class="form-control" rows="3" required>{{ $servicio->descripcion }}</textarea>
-                                <div class="invalid-feedback">Por favor, ingrese la descripción.</div>
+                                <textarea name="descripcion" placeholder="Añada los detalles sobre el servicio" class="form-control @error('descripcion') is-invalid @enderror" rows="3" required>{{ old('descripcion', $servicio->descripcion) }}</textarea>
+                                @error('descripcion')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                             <br>
 
                             <div class="form-group">
                                 <label for="categoria_id" class="font-weight-bold-custom">Categoría</label>
-                                <select name="categoria_id" class="form-control" required>
+                                <select name="categoria_id" class="form-control @error('categoria_id') is-invalid @enderror" required>
                                     @foreach($categorias as $categoria)
-                                        <option value="{{ $categoria->id }}" {{ $categoria->id == $servicio->categoria_id ? 'selected' : '' }}>{{ $categoria->nombre }}</option>
+                                        <option value="{{ $categoria->id }}" {{ $categoria->id == old('categoria_id', $servicio->categoria_id) ? 'selected' : '' }}>{{ $categoria->nombre }}</option>
                                     @endforeach
                                 </select>
-                                <div class="invalid-feedback">Por favor, seleccione una categoría.</div>
+                                @error('categoria_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                             <br>
 
                             <div class="form-group">
                                 <label for="disponibilidad" class="font-weight-bold-custom">Disponibilidad</label>
                                 <input type="hidden" name="disponibilidad" value="0">
-                                <input type="checkbox" name="disponibilidad" value="1" {{ $servicio->disponibilidad ? 'checked' : '' }}>
+                                <input type="checkbox" name="disponibilidad" value="1" {{ old('disponibilidad', $servicio->disponibilidad) ? 'checked' : '' }}>
                             </div>
                             <br>
 
@@ -68,7 +80,7 @@
                                 <div class="col-md-6">
                                     <div class="d-flex">
                                         <button type="submit" class="btn btn-outline-success mr-2" style="flex: 1;">
-                                            <span class="fas fa-user-plus"></span> Actualizar
+                                            <span class="fas fa-save"></span> Actualizar
                                         </button>
                                         <a href="{{ route('servicios.index') }}" class="btn btn-outline-danger" style="flex: 1;">
                                             <i class="fa fa-times" aria-hidden="true"></i> Cancelar
@@ -89,7 +101,7 @@
                 document.getElementById('imagenInput').addEventListener('change', function(event) {
                     const file = event.target.files[0];
                     const reader = new FileReader();
-                    
+
                     reader.onload = function(e) {
                         const placeholder = document.getElementById('imagePlaceholder');
                         placeholder.style.backgroundImage = 'url(' + e.target.result + ')';
@@ -97,29 +109,27 @@
                         placeholder.style.backgroundPosition = 'center';
                         placeholder.innerHTML = '';
                     };
-                    
+
                     reader.readAsDataURL(file);
                 });
 
                 document.getElementById('servicioForm').addEventListener('submit', function(event) {
                     let isValid = true;
-                    const requiredFields = document.querySelectorAll('#servicioForm [required]');
-                    
-                    requiredFields.forEach(function(field) {
-                        if (!field.value.trim()) {
-                            field.classList.add('is-invalid');
-                            isValid = false;
-                        } else {
-                            field.classList.remove('is-invalid');
-                        }
-                    });
 
-                    const imagenInput = document.getElementById('imagenInput');
-                    if (imagenInput.files.length && !imagenInput.files[0].type.startsWith('image/')) {
-                        document.querySelector('.invalid-feedback').style.display = 'block';
+                    const nombre = document.getElementById('nombre');
+                    if (!nombre.value.trim()) {
+                        nombre.classList.add('is-invalid');
                         isValid = false;
                     } else {
-                        document.querySelector('.invalid-feedback').style.display = 'none';
+                        nombre.classList.remove('is-invalid');
+                    }
+
+                    const descripcion = document.getElementById('descripcion');
+                    if (!descripcion.value.trim()) {
+                        descripcion.classList.add('is-invalid');
+                        isValid = false;
+                    } else {
+                        descripcion.classList.remove('is-invalid');
                     }
 
                     if (!isValid) {
@@ -130,11 +140,20 @@
             </script>
         </div>
     </div>
-@stop
+@endsection
 
 @section('css')
     <style>
-    .image-placeholder {
+        .breadcrumb-item a, 
+        .breadcrumb-item.active {
+            font-size: 1.2em; 
+        }
+
+        .font-weight-bold-custom {
+            font-weight: bold;
+        }
+
+        .image-placeholder {
             width: 350px;
             height: 350px;
             display: flex;
@@ -158,21 +177,17 @@
             position: absolute;
         }
 
-        input[type="file"].d-none {
-            display: none;
-        }
-
-        .is-invalid {
+        .input-group .is-invalid {
             border-color: #dc3545;
+            box-shadow: 0 0 0 .2rem rgba(220, 53, 69, .25); 
         }
 
         .invalid-feedback {
-            display: none;
-            color: #dc3545;
-        }
-
-        .is-invalid ~ .invalid-feedback {
             display: block;
         }
+
+        input[type="file"].d-none {
+            display: none !important;
+        }
     </style>
-@stop
+@endsection

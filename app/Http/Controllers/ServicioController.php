@@ -9,11 +9,16 @@ use Illuminate\Support\Facades\Storage;
 class ServicioController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
-        $servicios = Servicio::paginate(6);
-        return view('servicios.index')->with('servicios',$servicios);
-    }
+        $search = $request->input('search');
+        $servicios = Servicio::when($search, function ($query, $search) {
+            return $query->where('nombre', 'like', '%'.$search.'%');
+    })->paginate(5);
+      $servicios->appends(['search' => $search]);
+        return view('servicios.index')->with('servicios',$servicios)->with('search', $search);
+    } 
+
 
     public function create()
     {
@@ -25,24 +30,31 @@ class ServicioController extends Controller
     {
         $request->validate([
     
-            'nombre' => 'required|string|max:50',
+            'nombre' => 'required|string|max:50|unique:servicios,nombre',
             'descripcion' => 'nullable|string',
             'categoria_id' => 'required|exists:categorias,id',
             'disponibilidad' => 'required|boolean',
-            'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'imagen' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ], [
             'nombre.required' => 'El nombre es obligatorio.',
             'nombre.max' => 'El nombre no puede tener más de 50 caracteres.',
+            'nombre.unique' => 'El nombre ya está en uso. Debe ser único.',
             'descripcion.string' => 'La descripción debe ser una cadena de texto.',
             'categoria_id.required' => 'La categoría es obligatoria.',
             'categoria_id.exists' => 'La categoría seleccionada no existe.',
             'disponibilidad.required' => 'La disponibilidad es obligatoria.',
+            'imagen.required' => 'La imagen es obligatoria',
             'imagen.image' => 'El archivo subido debe ser una imagen.',
             'imagen.mimes' => 'La imagen debe ser de tipo jpeg, png, jpg, gif o svg.',
     
         ]);
 
-        $path = $request->file('imagen') ? $request->file('imagen')->store('images', 'public') : null;
+        if ($request->hasFile('imagen')) {
+            $path = $request->file('imagen')->store('images', 'public');
+        } else {
+           
+            return redirect()->back()->withErrors(['imagen' => 'La imagen es obligatoria.']);
+        }
 
         Servicio::create([
       
@@ -61,9 +73,10 @@ class ServicioController extends Controller
     {
         $servicio = Servicio::findOrFail($id);
         $categoriaN = $servicio->categoria->nombre;
-        return view('servicios.show', compact('servicio','categoriaN'));
+        $images = $servicio->images; 
+        return view('servicios.show', compact('servicio','categoriaN', 'images'));
     }
-    
+
     public function showServicios($categoriaN){
         $categoria = Categoria::where('nombre',$categoriaN)->where('estado', true)->first();
         if($categoria){
@@ -89,7 +102,7 @@ class ServicioController extends Controller
         $servicio = Servicio::findOrFail($id);
 
         $request->validate([
-            'nombre' => 'required|string|max:50',
+            'nombre' => 'required|string|max:50 |unique:servicios,nombre,' . $id,
             'descripcion' => 'nullable|string',
             'categoria_id' => 'required|exists:categorias,id',
             'disponibilidad' => 'required|boolean',

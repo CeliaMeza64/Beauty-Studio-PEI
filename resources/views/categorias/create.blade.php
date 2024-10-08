@@ -68,7 +68,6 @@
                                 @enderror
                             </div>
 
-                            <!-- Botones alineados -->
                             <div class="row justify-content-start">
                                 <div class="col-md-6">
                                     <div class="d-flex">
@@ -118,7 +117,6 @@
                         nombre.classList.remove('is-invalid');
                     }
 
-                    // Validar descripción
                     const descripcion = document.getElementById('descripcion');
                     if (!descripcion.value.trim()) {
                         descripcion.classList.add('is-invalid');
@@ -127,7 +125,6 @@
                         descripcion.classList.remove('is-invalid');
                     }
 
-                    // Validar imagen
                     const imagenInput = document.getElementById('imagenInput');
                     const placeholder = document.getElementById('imagePlaceholder');
                     if (!imagenInput.files.length) {
@@ -138,7 +135,7 @@
                     }
 
                     if (!isValid) {
-                        event.preventDefault(); // Detener el envío del formulario
+                        event.preventDefault(); 
                         alert('Por favor, complete todos los campos obligatorios.');
                     }
                 });
