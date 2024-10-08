@@ -22,7 +22,7 @@
         </div>
 
         <!-- Columna para mostrar los detalles de las reservas del día seleccionado -->
-        <div class="col-md-4">
+        <div class="col-md-4" id="reservas-column">
             <div class="card">
                 <div class="card-header">
                     <h4>Reservas del Día</h4>
@@ -60,6 +60,12 @@
         .fc-today {
             background-color: #eafaf1 !important;
         }
+        /* Nueva clase para ocultar la columna visualmente pero mantener la estructura */
+        .hidden-column {
+            visibility: hidden;
+            height: 0;
+            padding: 0;
+        }
     </style>
 @endsection
 
@@ -71,6 +77,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
             var eventDetailsEl = document.getElementById('event-details');
+            var reservasColumn = document.getElementById('reservas-column'); // Seleccionamos la columna de reservas
 
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 locale: 'es',
@@ -83,7 +90,7 @@
                 },
                 height: 'auto',
                 slotMinTime: '08:00:00',
-                slotMaxTime: '20:00:00',
+                slotMaxTime: '21:00:00',
 
                 // Cuando se hace clic en una fecha
                 dateClick: function(info) {
@@ -113,10 +120,15 @@
                         });
                 },
 
-                // Evento que se activa al cambiar de vista
-                viewDidMount: function(info) {
-                    // Mantener el mensaje inicial al cambiar de vista
-                    eventDetailsEl.innerHTML = '<p>Haz clic en un día para ver las reservas.</p>';
+                // Evento que se activa cada vez que la vista o fechas cambian
+                datesSet: function(view) {
+                    if (view.view.type === 'dayGridMonth') {
+                        // Mostrar la columna de reservas en vista mensual
+                        reservasColumn.classList.remove('hidden-column');
+                    } else {
+                        // Ocultar la columna de reservas en vistas de semana y día
+                        reservasColumn.classList.add('hidden-column');
+                    }
                 }
             });
 
