@@ -3,7 +3,7 @@
 @section('breadcrumbs')
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('home') }}">Servicios</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('servicios.index') }}">Servicios</a></li>
             <li class="breadcrumb-item"><a href="{{ route('servicios.edit', $servicio->id) }}">Editando {{ $servicio->nombre }}</a></li>
             <li aria-current="page" class="breadcrumb-item active">Editando Imagen</li>
         </ol>

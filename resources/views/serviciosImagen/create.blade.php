@@ -3,7 +3,7 @@
 @section('breadcrumbs')
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('home') }}">Servicios</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('servicios.index') }}">Servicios</a></li>
             <li aria-current="page" class="breadcrumb-item active">Añadir Imagen</li>
         </ol>
     </nav>
@@ -50,7 +50,7 @@
                                     <span class="fas fa-upload"></span> Subir Imagen
                                 </button>
                             
-                                <a href="#" onclick="cancelarCreacion()" class="btn btn-outline-danger" style="flex: 1;">
+                                <a href=  "{{ route('servicios.edit', $servicioId) }}" onclick="cancelarCreacion()" class="btn btn-outline-danger" style="flex: 1;">
                                     <i class="fa fa-times" aria-hidden="true"></i> Cancelar
                                 </a>
                             </div>
