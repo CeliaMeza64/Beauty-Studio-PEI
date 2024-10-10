@@ -221,24 +221,53 @@ class ReservaController extends Controller
     // Obtener todas las reservas
     $reservas = Reserva::all();
     
-    // Agrupar las reservas por fecha para limitar a 2 por día
+    // Verificamos si hay reservas
+    if ($reservas->isEmpty()) {
+        return response()->json([]);
+    }
+
+    // Hora actual
+    $horaActual = Carbon::now();
+
+    // Agrupar las reservas por fecha
     $reservasPorFecha = $reservas->groupBy(function($item) {
-        return $item->fecha_reservacion;
+        // Validar que la fecha exista
+        return $item->fecha_reservacion ?? null;
     });
 
     $events = [];
-    foreach ($reservasPorFecha as $fecha => $reservasDelDia) {
-        // Limitar a 2 reservas por día
-        $reservasLimitadas = $reservasDelDia->take(2);
 
-        foreach ($reservasLimitadas as $reserva) {
+    foreach ($reservasPorFecha as $fecha => $reservasDelDia) {
+        // Filtrar reservas que no tengan fecha u hora válida
+        $reservasValidas = $reservasDelDia->filter(function($reserva) {
+            return isset($reserva->fecha_reservacion, $reserva->hora_reservacion);
+        });
+
+        // Verificar que existan reservas válidas antes de proceder
+        if ($reservasValidas->isEmpty()) {
+            continue; // Si no hay reservas válidas, pasamos al siguiente día
+        }
+
+        // Si solo hay una reserva, la mostramos
+        if ($reservasValidas->count() === 1) {
+            $reserva = $reservasValidas->first();
             $events[] = [
-                'title' => $reserva->nombre_cliente, // Verificar que este campo exista en la tabla
-                'start' => $reserva->fecha_reservacion . ' ' . $reserva->hora_reservacion, // Verificar formato de fecha y hora
+                'title' => $reserva->nombre_cliente,
+                'start' => $reserva->fecha_reservacion . ' ' . $reserva->hora_reservacion,
+            ];
+        } else {
+            // Si hay más de una, seleccionamos la reserva más cercana a la hora actual
+            $reservaMasCercana = $reservasValidas->sortBy(function($reserva) use ($horaActual) {
+                return abs(Carbon::parse($reserva->hora_reservacion)->diffInMinutes($horaActual));
+            })->first();
+
+            $events[] = [
+                'title' => $reservaMasCercana->nombre_cliente,
+                'start' => $reservaMasCercana->fecha_reservacion . ' ' . $reservaMasCercana->hora_reservacion,
             ];
         }
     }
-    
+
     return response()->json($events);
 }
 

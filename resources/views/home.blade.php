@@ -104,6 +104,10 @@
                             eventDetailsEl.innerHTML = '';
 
                             if (data.length > 0) {
+                                // Ordenar las reservas por la hora (asumiendo que data[i].time es el formato HH:mm)
+                            data.sort(function(a, b) {
+                                return a.time.localeCompare(b.time); // Orden ascendente
+                            });
                                 // Mostrar las reservas en el lado derecho
                                 data.forEach(evento => {
                                     var div = document.createElement('div');
