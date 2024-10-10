@@ -217,26 +217,39 @@ class ReservaController extends Controller
     }
 
     public function getReservas()
-    {
-        $reservas = Reserva::all();
+{
+    // Obtener todas las reservas
+    $reservas = Reserva::all();
     
-        $events = [];
-        foreach ($reservas as $reserva) {
+    // Agrupar las reservas por fecha para limitar a 2 por día
+    $reservasPorFecha = $reservas->groupBy(function($item) {
+        return $item->fecha_reservacion;
+    });
+
+    $events = [];
+    foreach ($reservasPorFecha as $fecha => $reservasDelDia) {
+        // Limitar a 2 reservas por día
+        $reservasLimitadas = $reservasDelDia->take(2);
+
+        foreach ($reservasLimitadas as $reserva) {
             $events[] = [
-                'title' => $reserva->nombre_cliente,
-                'start' => $reserva->fecha_reservacion . ' ' . $reserva->hora_reservacion,
+                'title' => $reserva->nombre_cliente, // Verificar que este campo exista en la tabla
+                'start' => $reserva->fecha_reservacion . ' ' . $reserva->hora_reservacion, // Verificar formato de fecha y hora
             ];
         }
-    
-        return response()->json($events);
     }
+    
+    return response()->json($events);
+}
 
-    public function reservasPorDia($fecha)
+public function reservasPorDia($fecha)
 {
-    // Obtener las reservas de la fecha especificada, incluyendo el servicio
-    $reservas = Reserva::with('servicio')->whereDate('fecha_reservacion', $fecha)->get();
+    // Obtener todas las reservas para la fecha especificada, incluyendo el servicio
+    $reservas = Reserva::with('servicio')
+        ->whereDate('fecha_reservacion', $fecha)
+        ->get();
 
-    // Devuelve las reservas en formato JSON
+    // Transformar las reservas al formato necesario
     $events = [];
     foreach ($reservas as $reserva) {
         $events[] = [
@@ -249,6 +262,7 @@ class ReservaController extends Controller
 
     return response()->json($events);
 }
+
 
 
 }
