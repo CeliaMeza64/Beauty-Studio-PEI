@@ -218,6 +218,9 @@ class ReservaController extends Controller
 
     public function getReservas()
 {
+    // Establecer la zona horaria
+    date_default_timezone_set('America/Tegucigalpa');
+
     // Obtener todas las reservas
     $reservas = Reserva::all();
     
@@ -226,12 +229,11 @@ class ReservaController extends Controller
         return response()->json([]);
     }
 
-    // Hora actual
-    $horaActual = Carbon::now();
+    // Hora actual en la zona horaria de Honduras
+    $horaActual = Carbon::now('America/Tegucigalpa');
 
     // Agrupar las reservas por fecha
     $reservasPorFecha = $reservas->groupBy(function($item) {
-        // Validar que la fecha exista
         return $item->fecha_reservacion ?? null;
     });
 
@@ -258,7 +260,7 @@ class ReservaController extends Controller
         } else {
             // Si hay más de una, seleccionamos la reserva más cercana a la hora actual
             $reservaMasCercana = $reservasValidas->sortBy(function($reserva) use ($horaActual) {
-                return abs(Carbon::parse($reserva->hora_reservacion)->diffInMinutes($horaActual));
+                return abs(Carbon::parse($reserva->fecha_reservacion . ' ' . $reserva->hora_reservacion)->diffInMinutes($horaActual));
             })->first();
 
             $events[] = [
