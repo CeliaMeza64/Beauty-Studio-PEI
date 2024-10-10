@@ -132,37 +132,74 @@
             margin-bottom: 0;
             border-bottom: none;
         }
-
-        .breadcrumb {
-            padding: 0.2rem;
-            margin: 0;
-            border: none;
-            background-color: transparent;
-            border-radius: 0;
+        .breadcrumb-custom {
+        list-style: none;
+        display: flex;
+        padding: 5px;
+        background-color:  #f5e3c3;
+        border-radius: 30px;
         }
 
-        .breadcrumb-item {
-            margin-right: 0.5rem;
+        .breadcrumb-custom li {
+        position: relative;
+        padding: 10px 20px;
+        margin-right: 20px;
+        color: white;
+        font-family: 'Arial', sans-serif;
+        font-size: 20px;
         }
 
-        .breadcrumb-item a {
-            color: #007bff;
-            text-decoration: none;
-            font-size: 1.25rem; 
+        .breadcrumb-custom li::after {
+        content: '>>';
+        position: absolute;
+        top: 50%;
+        right: -20px;
+        transform: translateY(-50%);
+        color: white;
         }
 
-        .breadcrumb-item.active {
-            color: #6c757d;
-            font-size: 1.25rem; 
+        .breadcrumb-custom li:last-child::after {
+        content: '';
         }
-        .breadcrumb-item + .breadcrumb-item::before {
-            content: ">"; 
-            margin-right: 0.75rem; 
-            color: #6c757d;
-            font-size: 1.5rem; /* Aumenta el tamaño del separador */
-            line-height: 1; /* Ajusta la altura de línea para centrarlo */
-            vertical-align: middle; /* Alinea verticalmente con el texto */
+
+        .breadcrumb-custom li.active {
+        background-color: white;
+        color:  #FF6EA2;  
+        border-radius: 50px;
+        padding: 10px 20px;
         }
+
+        .breadcrumb-custom li a {
+        text-decoration: none;
+        color: black;
+        }
+
+        .breadcrumb-custom li.active a {
+        color: #3b026b;
+        }
+
+        .gallery-container {
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .image-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .image-item {
+            flex: 0 0 auto;
+            max-width: 300px;
+        }
+
+        .image-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
 
         .whatsapp-float {
             position: fixed;

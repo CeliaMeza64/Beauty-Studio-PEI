@@ -6,19 +6,12 @@
 
 @section('content')
 <div class="container">
-    <nav aria-label="breadcrumb" class="first d-md-flex">
-        <ol class="breadcrumb indigo lighten-6 first-1 shadow-lg mb-5">
-            <li class="breadcrumb-item">
-                <a class="black-text" href="{{ route('servicios.showServicios', ['categoriaN' => $categoriaN]) }}">
-                    <i class="fas fa-tag"></i> {{ ucfirst($categoriaN) }}
-                </a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">
-                    <i class="fas fa-tag"></i> {{ $servicio->nombre }}
-                </a>
-            </li>
-        </ol>
-    </nav>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb-custom">
+    <li class="breadcrumb-item"><a href="{{ route('servicios.showServicios', ['categoriaN' => $categoriaN]) }}"> {{ ucfirst($categoriaN) }} </a></li>
+    <li class="breadcrumb-item active" aria-current="page"> {{ $servicio->nombre }}</li>
+  </ol>
+</nav>
 
     <div class="card mb-4">
         <div class="row no-gutters">
@@ -38,70 +31,48 @@
         </div>
     </div>
 
-   
     @if($images->isEmpty())
         <div class="col-12">
             <p class="text-muted">No hay imágenes disponibles para este servicio.</p>
         </div>
     @else
         <div class="gallery-container">
-            <div class="image-row d-flex">
-                @foreach($images as $image)
-                    <div class="image-item">
-                        <a href="{{ asset('storage/' . $image->path) }}" data-fancybox="gallery" data-caption="{{ $servicio->nombre }}">
-                            <img src="{{ asset('storage/' . $image->path) }}" class="img-fluid clickable-image" alt="Imagen del servicio" style="max-height: 300px; object-fit: contain;">
-                        </a>
-                    </div>
-                @endforeach
-            </div>
+            @foreach($images as $image)
+                <div class="image-item">
+                    <a href="{{ asset('storage/' . $image->path) }}" data-fancybox="gallery" data-caption="{{ $servicio->nombre }}">
+                        <img src="{{ asset('storage/' . $image->path) }}" alt="Imagen del servicio" class="img-fluid clickable-image">
+                    </a>
+                </div>
+            @endforeach
         </div>
     @endif
 </div>
 @endsection
-
-@section('css')
 <style>
-    .container {
-        margin-top: 50px;
-    }
-
-    .breadcrumb {
-        padding: 25px;
-        font-size: 14px;
-        color: #aaa !important;
-        letter-spacing: 2px;
-        border-radius: 5px !important;
-    }
-
     .gallery-container {
-        overflow-x: auto;
-        white-space: nowrap;
-    }
-
-    .image-row {
         display: flex;
-        gap: 10px;
+        flex-wrap: wrap; /* Permite que las imágenes se ajusten a la fila */
+        justify-content: flex-start; /* Alinea las imágenes al inicio del contenedor */
+        margin-top: 20px; /* Espacio superior */
+        padding: 0; /* Elimina el padding del contenedor */
     }
 
     .image-item {
-        flex: 0 0 auto;
-        max-width: 300px;
+        margin: 15px; /* Espacio entre imágenes */
+        flex: 1 1 calc(25% - 30px); /* Permite que las imágenes se distribuyan en filas según el espacio */
+        box-sizing: border-box; /* Incluye el padding y el borde en el cálculo del ancho */
     }
 
     .image-item img {
-        width: 100%;
-        height: auto;
-        border-radius: 8px;
-        cursor: pointer;
+        width: 100%; /* Hace que las imágenes ocupen el 100% del contenedor */
+        height: auto; /* Mantiene la relación de aspecto */
+        max-height: 300px; /* Altura máxima de las imágenes */
+        object-fit: cover; /* Asegura que las imágenes se ajusten al contenedor */
     }
 </style>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" />
-@endsection
 
 @section('scripts')
-<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script>
-
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         Fancybox.bind("[data-fancybox='gallery']", {
@@ -109,15 +80,6 @@
             Toolbar: true,
             loop: true,
         });
-
-        const galleryContainer = document.querySelector('.gallery-container');
-        const imageRow = document.querySelector('.image-row');
-        const imageCarousel = document.getElementById('imageCarousel');
-
-        if (imageRow.scrollWidth > galleryContainer.clientWidth) {
-            imageCarousel.classList.remove('d-none');
-            galleryContainer.classList.add('d-none');
-        }
     });
 </script>
 @endsection
