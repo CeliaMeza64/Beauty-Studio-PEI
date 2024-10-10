@@ -36,7 +36,7 @@
 @endsection
 
 @section('css')
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet">
+<link href="{{ asset('assets/css/main.min.css') }}" rel="stylesheet">
     <style>
         /* Ajustes estéticos */
         #calendar {
@@ -70,8 +70,8 @@
 @endsection
 
 @section('js')
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/locales/es.js"></script>
+<script src="{{ asset('assets/js/main.min.js') }}"></script>
+<script src="{{ asset('assets/js/es.js') }}"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -104,6 +104,10 @@
                             eventDetailsEl.innerHTML = '';
 
                             if (data.length > 0) {
+                                // Ordenar las reservas por la hora (asumiendo que data[i].time es el formato HH:mm)
+                            data.sort(function(a, b) {
+                                return a.time.localeCompare(b.time); // Orden ascendente
+                            });
                                 // Mostrar las reservas en el lado derecho
                                 data.forEach(evento => {
                                     var div = document.createElement('div');
