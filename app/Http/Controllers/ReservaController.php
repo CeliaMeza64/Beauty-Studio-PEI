@@ -229,9 +229,6 @@ class ReservaController extends Controller
         return response()->json([]);
     }
 
-    // Hora actual en la zona horaria de Honduras
-    $horaActual = Carbon::now('America/Tegucigalpa');
-
     // Agrupar las reservas por fecha
     $reservasPorFecha = $reservas->groupBy(function($item) {
         return $item->fecha_reservacion ?? null;
@@ -240,9 +237,9 @@ class ReservaController extends Controller
     $events = [];
 
     foreach ($reservasPorFecha as $fecha => $reservasDelDia) {
-        // Filtrar reservas que no tengan fecha u hora válida
+        // Filtrar reservas que no tengan fecha válida
         $reservasValidas = $reservasDelDia->filter(function($reserva) {
-            return isset($reserva->fecha_reservacion, $reserva->hora_reservacion);
+            return isset($reserva->fecha_reservacion);
         });
 
         // Verificar que existan reservas válidas antes de proceder
@@ -250,24 +247,11 @@ class ReservaController extends Controller
             continue; // Si no hay reservas válidas, pasamos al siguiente día
         }
 
-        // Si solo hay una reserva, la mostramos
-        if ($reservasValidas->count() === 1) {
-            $reserva = $reservasValidas->first();
-            $events[] = [
-                'title' => $reserva->nombre_cliente,
-                'start' => $reserva->fecha_reservacion . ' ' . $reserva->hora_reservacion,
-            ];
-        } else {
-            // Si hay más de una, seleccionamos la reserva más cercana a la hora actual
-            $reservaMasCercana = $reservasValidas->sortBy(function($reserva) use ($horaActual) {
-                return abs(Carbon::parse($reserva->fecha_reservacion . ' ' . $reserva->hora_reservacion)->diffInMinutes($horaActual));
-            })->first();
-
-            $events[] = [
-                'title' => $reservaMasCercana->nombre_cliente,
-                'start' => $reservaMasCercana->fecha_reservacion . ' ' . $reservaMasCercana->hora_reservacion,
-            ];
-        }
+        // Añadir un evento al calendario que muestre la cantidad de reservas del día
+        $events[] = [
+            'title' => $reservasValidas->count() . ' Reservas', // Mostrar la cantidad de reservas
+            'start' => $fecha, // Usar solo la fecha
+        ];
     }
 
     return response()->json($events);
@@ -277,8 +261,9 @@ public function reservasPorDia($fecha)
 {
     // Obtener todas las reservas para la fecha especificada, incluyendo el servicio
     $reservas = Reserva::with('servicio')
-        ->whereDate('fecha_reservacion', $fecha)
-        ->get();
+    ->whereDate('fecha_reservacion', $fecha)
+    ->orderBy('hora_reservacion', 'asc') // Ordenar por la hora de la reserva de manera ascendente
+    ->get();
 
     // Transformar las reservas al formato necesario
     $events = [];

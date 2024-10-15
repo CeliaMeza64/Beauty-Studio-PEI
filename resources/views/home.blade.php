@@ -82,7 +82,7 @@
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 locale: 'es',
                 initialView: 'dayGridMonth',
-                events: '/reservas/calendario', // Carga los eventos (reservas)
+                events: '/reservas/calendario', // Carga los eventos (reservas) con la cantidad de reservas por día
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
@@ -96,7 +96,7 @@
                 dateClick: function(info) {
                     var selectedDate = info.dateStr;
 
-                    // Realiza una petición AJAX para obtener las reservas del día seleccionado
+                    // Realiza una petición AJAX para obtener la cantidad de reservas del día seleccionado
                     fetch(`/reservas/por-dia/${selectedDate}`)
                         .then(response => response.json())
                         .then(data => {
@@ -104,19 +104,30 @@
                             eventDetailsEl.innerHTML = '';
 
                             if (data.length > 0) {
-                                // Ordenar las reservas por la hora (asumiendo que data[i].time es el formato HH:mm)
-                            data.sort(function(a, b) {
-                                return a.time.localeCompare(b.time); // Orden ascendente
-                            });
-                                // Mostrar las reservas en el lado derecho
-                                data.forEach(evento => {
-                                    var div = document.createElement('div');
-                                    div.innerHTML = `<strong>${evento.title}</strong><br>${evento.description}<br><small>${evento.time}</small>`;
-                                    eventDetailsEl.appendChild(div);
+                                // Limpiar el contenido anterior
+                                eventDetailsEl.innerHTML = '';
+
+                                // Mostrar la cantidad de reservas
+                                var cantidadReservas = data.length;
+                                var divCantidad = document.createElement('div');
+                                divCantidad.innerHTML = `<strong>Cantidad de Reservas:</strong> ${cantidadReservas}`;
+                                eventDetailsEl.appendChild(divCantidad);
+
+                                // Mostrar los detalles de cada reserva
+                                data.forEach(function(reserva) {
+                                    var divReserva = document.createElement('div');
+                                    divReserva.innerHTML = `
+                                        <p><strong>Cliente:</strong> ${reserva.title}</p>
+                                        <p><strong>Hora:</strong> ${reserva.time}</p>
+                                        <p><strong>Telefono:</strong> ${reserva.description}</p>
+                                        <hr>`;
+                                    eventDetailsEl.appendChild(divReserva);
                                 });
                             } else {
                                 eventDetailsEl.innerHTML = '<p>No hay reservas para este día.</p>';
                             }
+
+                            
                         })
                         .catch(error => {
                             console.error('Error al cargar las reservas:', error);
