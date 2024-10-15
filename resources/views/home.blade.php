@@ -89,7 +89,7 @@
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
                 height: 'auto',
-                slotMinTime: '08:00:00',
+                slotMinTime: '09:00:00',
                 slotMaxTime: '21:00:00',
 
                 // Cuando se hace clic en una fecha
