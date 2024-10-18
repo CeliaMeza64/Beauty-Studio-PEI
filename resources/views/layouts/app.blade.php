@@ -19,6 +19,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/select.dataTables.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/jquery.fancybox.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}">
 
     <script src="{{ asset('assets/js/jquery-3.5.1.js') }}"></script>
     <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
@@ -132,51 +133,8 @@
             margin-bottom: 0;
             border-bottom: none;
         }
-        .breadcrumb-custom {
-        list-style: none;
-        display: flex;
-        padding: 5px;
-        background-color:  #f5e3c3;
-        border-radius: 30px;
-        }
-
-        .breadcrumb-custom li {
-        position: relative;
-        padding: 10px 20px;
-        margin-right: 20px;
-        color: white;
-        font-family: 'Arial', sans-serif;
-        font-size: 20px;
-        }
-
-        .breadcrumb-custom li::after {
-        content: '>>';
-        position: absolute;
-        top: 50%;
-        right: -20px;
-        transform: translateY(-50%);
-        color: white;
-        }
-
-        .breadcrumb-custom li:last-child::after {
-        content: '';
-        }
-
-        .breadcrumb-custom li.active {
-        background-color: white;
-        color:  #FF6EA2;  
-        border-radius: 50px;
-        padding: 10px 20px;
-        }
-
-        .breadcrumb-custom li a {
-        text-decoration: none;
-        color: black;
-        }
-
-        .breadcrumb-custom li.active a {
-        color: #3b026b;
-        }
+        
+ 
 
         .gallery-container {
             overflow-x: auto;
@@ -217,6 +175,7 @@
         transition: transform 0.3s ease; /* Transición suave */
     }
 
+<<<<<<< HEAD
     .whatsapp-float:hover {
         transform: scale(1.1); /* Efecto de hover */
     }
@@ -242,9 +201,84 @@
         border-radius: 5px;
         white-space: nowrap;
     }
+=======
+        .whatsapp-icon {
+            width: 30px; 
+            height: 30px; 
+        }
+        .whatsapp-float:hover .tooltip-text {
+            display: block;
+            position: absolute;
+            bottom: 100%;
+            right: 50%;
+            transform: translateX(50%);
+            background-color: #333;
+            color: #fff;
+            padding: 5px;
+            border-radius: 3px;
+            white-space: nowrap;
+        }
+        .breadcrumb-custom {
+            list-style: none;
+            display: inline-flex;
+            align-items: center; 
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .breadcrumb-custom li {
+            position: relative;
+            padding: 10px 20px;
+            background-color: #e0e0e0;
+            border-radius: 50px;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            color: #6e6e6e;
+            display: flex;
+            align-items: center; 
+        }
+
+
+        .breadcrumb-item + .breadcrumb-item::before {
+            content: none;
+        }
+
+        .breadcrumb-custom li.separator {
+            background-color: transparent;
+            border: none; 
+            padding: 0; /
+            margin: 0 5px;
+        }
+
+     
+        .breadcrumb-custom li.separator i {
+            margin: 0  5px; 
+            font-size: 1.2em;
+            color: #6e6e6e;
+        }
+
+        .breadcrumb-custom li a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .breadcrumb-custom li.active {
+            background-color: #FF6EA2;
+            color: #fff;
+        }
+
+        .breadcrumb-custom li.active a {
+            color: #fff;
+        }
+
+>>>>>>> 0396ba036c68ec358a909c437554e6b9480ba607
     </style>
 </head>
 <body>
+
+
     <div id="app">
     <nav class="navbar navbar-expand-lg navbar-light">
             <div class="container-fluid">
