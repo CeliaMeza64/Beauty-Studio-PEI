@@ -202,39 +202,46 @@
 
 
         .whatsapp-float {
-            position: fixed;
-            bottom: 20px; 
-            right: 20px; 
-            background-color: #25D366; 
-            border-radius: 50%; 
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-            z-index: 1000; 
-            width: 50px; 
-            height: 50px; 
-            display: flex; 
-            align-items: center;
-            justify-content: center;
-        }
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #25D366;
+        border-radius: 50%;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        width: 60px; /* Aumentar el tamaño */
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.3s ease; /* Transición suave */
+    }
 
-        .whatsapp-icon {
-            width: 30px; 
-            height: 30px; 
-        }
+    .whatsapp-float:hover {
+        transform: scale(1.1); /* Efecto de hover */
+    }
 
-       
+    .whatsapp-icon {
+        width: 35px; /* Aumentar tamaño del icono */
+        height: 35px;
+    }
 
-        .whatsapp-float:hover .tooltip-text {
-            display: block;
-            position: absolute;
-            bottom: 100%;
-            right: 50%;
-            transform: translateX(50%);
-            background-color: #333;
-            color: #fff;
-            padding: 5px;
-            border-radius: 3px;
-            white-space: nowrap;
-        }
+    .tooltip-text {
+        display: none;
+    }
+
+    .whatsapp-float:hover .tooltip-text {
+        display: block;
+        position: absolute;
+        bottom: 70px; /* Ajustar para que no se superponga con el botón */
+        right: 50%;
+        transform: translateX(50%);
+        background-color: #333;
+        color: #fff;
+        padding: 5px;
+        border-radius: 5px;
+        white-space: nowrap;
+    }
     </style>
 </head>
 <body>
