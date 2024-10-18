@@ -173,107 +173,33 @@
         align-items: center;
         justify-content: center;
         transition: transform 0.3s ease; /* Transición suave */
-    }
-
-<<<<<<< HEAD
-    .whatsapp-float:hover {
-        transform: scale(1.1); /* Efecto de hover */
-    }
-
-    .whatsapp-icon {
-        width: 35px; /* Aumentar tamaño del icono */
-        height: 35px;
-    }
-
-    .tooltip-text {
-        display: none;
-    }
-
-    .whatsapp-float:hover .tooltip-text {
-        display: block;
-        position: absolute;
-        bottom: 70px; /* Ajustar para que no se superponga con el botón */
-        right: 50%;
-        transform: translateX(50%);
-        background-color: #333;
-        color: #fff;
-        padding: 5px;
-        border-radius: 5px;
-        white-space: nowrap;
-    }
-=======
-        .whatsapp-icon {
-            width: 30px; 
-            height: 30px; 
         }
+
+        .whatsapp-float:hover {
+            transform: scale(1.1); /* Efecto de hover */
+        }
+
+        .whatsapp-icon {
+            width: 35px; /* Aumentar tamaño del icono */
+            height: 35px;
+        }
+
+        .tooltip-text {
+            display: none;
+        }
+
         .whatsapp-float:hover .tooltip-text {
             display: block;
             position: absolute;
-            bottom: 100%;
+            bottom: 70px; /* Ajustar para que no se superponga con el botón */
             right: 50%;
             transform: translateX(50%);
             background-color: #333;
             color: #fff;
             padding: 5px;
-            border-radius: 3px;
+            border-radius: 5px;
             white-space: nowrap;
         }
-        .breadcrumb-custom {
-            list-style: none;
-            display: inline-flex;
-            align-items: center; 
-            padding: 15px;
-            background-color: #f9f9f9;
-            border-radius: 10px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .breadcrumb-custom li {
-            position: relative;
-            padding: 10px 20px;
-            background-color: #e0e0e0;
-            border-radius: 50px;
-            font-family: Arial, sans-serif;
-            font-size: 16px;
-            color: #6e6e6e;
-            display: flex;
-            align-items: center; 
-        }
-
-
-        .breadcrumb-item + .breadcrumb-item::before {
-            content: none;
-        }
-
-        .breadcrumb-custom li.separator {
-            background-color: transparent;
-            border: none; 
-            padding: 0; /
-            margin: 0 5px;
-        }
-
-     
-        .breadcrumb-custom li.separator i {
-            margin: 0  5px; 
-            font-size: 1.2em;
-            color: #6e6e6e;
-        }
-
-        .breadcrumb-custom li a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .breadcrumb-custom li.active {
-            background-color: #FF6EA2;
-            color: #fff;
-        }
-
-        .breadcrumb-custom li.active a {
-            color: #fff;
-        }
-
->>>>>>> 0396ba036c68ec358a909c437554e6b9480ba607
     </style>
 </head>
 <body>
