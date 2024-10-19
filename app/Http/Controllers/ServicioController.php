@@ -35,6 +35,7 @@ class ServicioController extends Controller
             'categoria_id' => 'required|exists:categorias,id',
             'disponibilidad' => 'required|boolean',
             'imagen' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'duracion' => 'required|integer|min:30',
         ], [
             'nombre.required' => 'El nombre es obligatorio.',
             'nombre.max' => 'El nombre no puede tener más de 50 caracteres.',
@@ -46,6 +47,8 @@ class ServicioController extends Controller
             'imagen.required' => 'La imagen es obligatoria',
             'imagen.image' => 'El archivo subido debe ser una imagen.',
             'imagen.mimes' => 'La imagen debe ser de tipo jpeg, png, jpg, gif o svg.',
+            'duración.required' => 'La duración es obligatoria',
+            'duración.min' => 'Los servicios durán más de 30 minutos',
     
         ]);
 
@@ -63,6 +66,7 @@ class ServicioController extends Controller
             'categoria_id' => $request->categoria_id,
             'disponibilidad' => $request->disponibilidad,
             'imagen' => $path,
+            'duracion' => $request->duracion,
          
         ]);
 
@@ -106,10 +110,14 @@ class ServicioController extends Controller
             'descripcion' => 'nullable|string',
             'categoria_id' => 'required|exists:categorias,id',
             'disponibilidad' => 'required|boolean',
+            'duracion' => 'required|integer|min:1',
             'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ], [
             'nombre.required' => 'El nombre es obligatorio.',
             'nombre.max' => 'El nombre no puede tener más de 50 caracteres.',
+            'duracion.required' => 'La duración es obligatoria.',
+            'duracion.integer' => 'La duración debe ser un número entero.',
+            'duracion.min' => 'La duración debe ser mayor a 30 minuto.',
             'descripcion.string' => 'La descripción debe ser una cadena de texto.',
             'categoria_id.required' => 'La categoría es obligatoria.',
             'categoria_id.exists' => 'La categoría seleccionada no existe.',
@@ -124,6 +132,7 @@ class ServicioController extends Controller
         $servicio->descripcion = $request->descripcion;
         $servicio->categoria_id = $request->categoria_id;
         $servicio->disponibilidad = $request->disponibilidad;
+        $servicio->duracion = $request->duracion;
 
         if ($request->hasFile('imagen')) {
             if ($servicio->imagen) {
