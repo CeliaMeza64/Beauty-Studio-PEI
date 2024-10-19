@@ -11,7 +11,7 @@ class Servicio extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nombre', 'descripcion', 'categoria_id', 'imagen','disponibilidad'
+        'nombre', 'descripcion', 'categoria_id', 'imagen','disponibilidad' ,'duracion'
     ];
 
     public function categoria()

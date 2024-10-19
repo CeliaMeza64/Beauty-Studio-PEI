@@ -82,6 +82,15 @@
                                 @enderror
                             </div>
 
+                            <!-- Campo de Duración -->
+                            <div class="form-group">
+                                <label for="duracion" class="font-weight-bold">Duración</label>
+                                <input type="number" name="duracion" id="duracion" placeholder="Duración en minutos" class="form-control @error('duracion') is-invalid @enderror" required value="{{ old('duracion') }}"  min="30">
+                                @error('duracion')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
                             <div class="row justify-content-start">
                                 <div class="col-md-6">
                                     <div class="d-flex">
@@ -148,6 +157,22 @@
                         placeholder.classList.remove('is-invalid');
                     }
 
+                    const duracion = document.getElementById('duracion');
+                    if (!duracion.value.trim() || duracion.value <= 0) {
+                        duracion.classList.add('is-invalid');
+                        isValid = false;
+                    } else {
+                        duracion.classList.remove('is-invalid');
+                    }
+
+                    const unidad = document.getElementById('unidad');
+                    if (!unidad.value.trim()) {
+                        unidad.classList.add('is-invalid');
+                        isValid = false;
+                    } else {
+                        unidad.classList.remove('is-invalid');
+                    }
+
                     if (!isValid) {
                         event.preventDefault(); 
                         alert('Por favor, complete todos los campos obligatorios.');
@@ -179,31 +204,12 @@
             border-radius: 5px;
             background-color: #f8f9fa;
             background-size: cover;
-            background-repeat: no-repeat;
             background-position: center;
-            color: #aaa;
-            font-size: 1.2em;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
+            transition: background-color 0.3s;
         }
 
-        .image-placeholder p {
-            margin: 0;
-            position: absolute;
-        }
-
-        .input-group .is-invalid {
-            border-color: #dc3545;
-            box-shadow: 0 0 0 .2rem rgba(220, 53, 69, .25); 
-        }
-
-        .invalid-feedback {
-            display: block;
-        }
-
-        input[type="file"].d-none {
-            display: none !important;
+        .image-placeholder:hover {
+            background-color: #e9ecef;
         }
     </style>
 @stop

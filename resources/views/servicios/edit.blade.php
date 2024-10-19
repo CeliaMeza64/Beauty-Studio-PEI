@@ -75,6 +75,23 @@
                                 <input type="checkbox" name="disponibilidad" value="1" {{ old('disponibilidad', $servicio->disponibilidad) ? 'checked' : '' }}>
                             </div>
                             <br>
+                            <div class="form-group">
+                                <label for="duracion" class="font-weight-bold-custom">Duración (en minutos)</label>
+                                <input 
+                                    type="number" name="duracion" 
+                                    id="duracion" 
+                                    placeholder="Ingrese la duración en minutos" 
+                                    class="form-control @error('duracion') is-invalid @enderror" 
+                                    required 
+                                    min="30" 
+                                    value="{{ old('duracion', $servicio->duracion) }}"
+                                >
+                                @error('duracion')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <br>
+
 
                             <div class="row justify-content-start">
                                 <div class="col-md-6">

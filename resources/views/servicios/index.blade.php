@@ -27,13 +27,13 @@
                         </div>
                     </form>
                 </div>
-                  
 
                 @if(session('success'))
                     <div class="alert alert-success">
                         {{ session('success') }}
                     </div>
                 @endif
+
                 <table class="table table-bordered">
                     <thead>
                         <tr>
@@ -43,6 +43,7 @@
                             <th>Categoría</th>
                             <th>Disponibilidad</th>
                             <th>Imagen</th>
+                            <th>Duración</th> <!-- Nueva columna para Duración -->
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -61,16 +62,16 @@
                                         No hay imagen
                                     @endif
                                 </td>
+                                <td>
+                                    {{ $servicio->duracion }} 
+                                </td>
                                 <td class="d-flex align-items-center">
                                     <a href="{{ route('servicios.edit', $servicio->id) }}" class="btn btn-success mr-2" title="Editar">
                                         <i class="fas fa-edit"></i>
                                     </a>
-
-                                   
                                     <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#eliminarModal_{{ $servicio->id }}" title="Eliminar">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
-
                                     <!-- Modal de confirmación -->
                                     <div class="modal fade" id="eliminarModal_{{ $servicio->id }}" tabindex="-1" role="dialog" aria-labelledby="eliminarModalLabel_{{ $servicio->id }}" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
@@ -101,7 +102,7 @@
 
                         @if($servicios->isEmpty())
                             <tr>
-                                <td colspan="7" class="text-center">No hay resultados para su búsqueda</td>
+                                <td colspan="8" class="text-center">No hay resultados para su búsqueda</td>
                             </tr>
                         @endif
                     </tbody>
