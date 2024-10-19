@@ -36,6 +36,8 @@
         }
         .navbar {
             background-color: #FF6EA2; 
+            margin-bottom: 0px;
+            margin-top: 0px;
         }
         .navbar-brand,
         .navbar-nav .nav-link {
@@ -133,9 +135,7 @@
             margin-bottom: 0;
             border-bottom: none;
         }
-        
- 
-
+      
         .gallery-container {
             overflow-x: auto;
             white-space: nowrap;
@@ -157,8 +157,7 @@
             border-radius: 8px;
             cursor: pointer;
         }
-
-
+      
         .whatsapp-float {
         position: fixed;
         bottom: 20px;
@@ -191,7 +190,7 @@
         .whatsapp-float:hover .tooltip-text {
             display: block;
             position: absolute;
-            bottom: 70px; /* Ajustar para que no se superponga con el botón */
+            bottom: 70px; 
             right: 50%;
             transform: translateX(50%);
             background-color: #333;
@@ -199,6 +198,63 @@
             padding: 5px;
             border-radius: 5px;
             white-space: nowrap;
+        }
+        .breadcrumb-custom { 
+            list-style: none;
+            display: flex;
+            align-items: center; 
+            padding: 5px;
+            margin-top: 0px;
+            margin-bottom: 25px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .breadcrumb-custom li {
+            position: relative;
+            padding: 10px 20px;
+            background-color: #e0e0e0;
+            border-radius: 50px;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            color: #6e6e6e;
+            display: flex;
+            align-items: center; 
+        }
+
+
+        .breadcrumb-item + .breadcrumb-item::before {
+            content: none;
+        }
+
+      
+        .breadcrumb-custom li.separator {
+            background-color: transparent;
+            border: none; 
+            padding: 0; /
+            margin: 0 5px;
+        }
+
+        /* Estilo del icono separador */
+        .breadcrumb-custom li.separator i {
+            margin: 0  5px; /* Espaciado alrededor del icono */
+            font-size: 1.2em; /* Ajusta el tamaño del icono */
+            color: #6e6e6e;
+        }
+
+        .breadcrumb-custom li a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .breadcrumb-custom li.active {
+            background-color: #FF6EA2;
+            color: #fff;
+        }
+
+        .breadcrumb-custom li.active a {
+            color: #fff;
         }
     </style>
 </head>

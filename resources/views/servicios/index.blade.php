@@ -43,7 +43,7 @@
                             <th>Categoría</th>
                             <th>Disponibilidad</th>
                             <th>Imagen</th>
-                            <th>Duración</th> <!-- Nueva columna para Duración -->
+                            <th>Duración</th> 
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -62,7 +62,7 @@
                                         No hay imagen
                                     @endif
                                 </td>
-                                <td>
+                                <td class="text-center">
                                     {{ $servicio->duracion }} 
                                 </td>
                                 <td class="d-flex align-items-center">
