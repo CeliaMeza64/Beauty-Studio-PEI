@@ -224,33 +224,20 @@ class ReservaController extends Controller
     // Obtener todas las reservas
     $reservas = Reserva::all();
     
-    // Verificamos si hay reservas
     if ($reservas->isEmpty()) {
         return response()->json([]);
     }
 
-    // Agrupar las reservas por fecha
-    $reservasPorFecha = $reservas->groupBy(function($item) {
-        return $item->fecha_reservacion ?? null;
-    });
-
     $events = [];
 
-    foreach ($reservasPorFecha as $fecha => $reservasDelDia) {
-        // Filtrar reservas que no tengan fecha válida
-        $reservasValidas = $reservasDelDia->filter(function($reserva) {
-            return isset($reserva->fecha_reservacion);
-        });
-
-        // Verificar que existan reservas válidas antes de proceder
-        if ($reservasValidas->isEmpty()) {
-            continue; // Si no hay reservas válidas, pasamos al siguiente día
-        }
-
-        // Añadir un evento al calendario que muestre la cantidad de reservas del día
+    foreach ($reservas as $reserva) {
+        // Crear un evento para cada reserva con su hora y detalles
         $events[] = [
-            'title' => $reservasValidas->count() . ' Reservas', // Mostrar la cantidad de reservas
-            'start' => $fecha, // Usar solo la fecha
+            'id' => $reserva->id, // Usamos el ID para identificar la reserva en el evento 'eventClick'
+            'title' => $reserva->nombre_cliente, // Mostrar el nombre del cliente
+            'start' => $reserva->fecha_reservacion . 'T' . $reserva->hora_reservacion, // Incluir la fecha y hora
+            'description' => $reserva->telefono_cliente, // Teléfono del cliente
+            'servicio' => $reserva->servicio->nombre, // Nombre del servicio reservado
         ];
     }
 
@@ -259,25 +246,45 @@ class ReservaController extends Controller
 
 public function reservasPorDia($fecha)
 {
-    // Obtener todas las reservas para la fecha especificada, incluyendo el servicio
+    // Obtener las reservas de la fecha seleccionada
     $reservas = Reserva::with('servicio')
-    ->whereDate('fecha_reservacion', $fecha)
-    ->orderBy('hora_reservacion', 'asc') // Ordenar por la hora de la reserva de manera ascendente
-    ->get();
+        ->whereDate('fecha_reservacion', $fecha)
+        ->orderBy('hora_reservacion', 'asc') // Ordenar por hora
+        ->get();
 
-    // Transformar las reservas al formato necesario
     $events = [];
     foreach ($reservas as $reserva) {
         $events[] = [
+            'id' => $reserva->id,
             'title' => $reserva->nombre_cliente,
-            'start' => $reserva->fecha_reservacion . $reserva->hora_reservacion, // Incluye la hora en el formato adecuado
-            'description' => $reserva->telefono_cliente . '<br>Servicio: ' . $reserva->servicio->nombre, // Incluye el nombre del servicio
-            'time' => $reserva->hora_reservacion, // Hora de la reserva
+            'time' => $reserva->hora_reservacion,
+            'description' => $reserva->telefono_cliente,
+            'servicio' => $reserva->servicio->nombre
         ];
     }
 
     return response()->json($events);
 }
+
+public function detallesReserva($id)
+{
+    // Obtener los detalles de la reserva específica
+    $reserva = Reserva::with('servicio')->find($id);
+
+    if (!$reserva) {
+        return response()->json(null, 404); // Reserva no encontrada
+    }
+
+    $detalle = [
+        'title' => $reserva->nombre_cliente,
+        'time' => $reserva->hora_reservacion,
+        'description' => $reserva->telefono_cliente,
+        'servicio' => $reserva->servicio->nombre
+    ];
+
+    return response()->json($detalle);
+}
+
 
 
 

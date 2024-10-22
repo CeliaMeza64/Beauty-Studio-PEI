@@ -88,6 +88,7 @@ Route::middleware(['auth.admin'])->group(function () {
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
     Route::get('/reservas/calendario', [ReservaController::class, 'getReservas']);
     Route::get('/reservas/por-dia/{fecha}', [ReservaController::class, 'reservasPorDia']);
+    Route::get('/reservas/detalles/{id}', [ReservaController::class, 'detallesReserva']);
 });
 
 
