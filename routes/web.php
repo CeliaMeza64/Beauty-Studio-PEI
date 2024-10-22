@@ -11,6 +11,7 @@ use App\Http\Controllers\ServicioImageController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\UserController;
 
 
 
@@ -67,6 +68,9 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
             'destroy' => 'servicios.destroy',
             'index'   => 'servicios.index',
         ]);
+        Route::get('usuario/show', [UserController::class, 'show'])->name('usuario.show');
+        Route::get('usuario/edit', [UserController::class, 'edit'])->name('usuario.edit');
+        Route::put('usuario/update', [UserController::class, 'update'])->name('usuario.update');
         Route::get('categorias', [CategoriaController::class, 'index'])->name('categorias.index');
 
         Route::get('categorias/create', [CategoriaController::class, 'create'])->name('categorias.create');
@@ -75,6 +79,7 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
         Route::get('categorias/{categoria}/edit', [CategoriaController::class, 'edit'])->name('categorias.edit');
         Route::put('categorias/{categoria}', [CategoriaController::class, 'update'])->name('categorias.update');
         Route::delete('categorias/{categoria}', [CategoriaController::class, 'destroy'])->name('categorias.destroy');
+       
        
         
     });
