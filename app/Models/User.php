@@ -23,6 +23,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'username',
+        'imagen'
     
     ];
 
@@ -54,10 +56,10 @@ class User extends Authenticatable
     {
         if ($this->imagen) {
             
-            return asset('perfil/' . $this->imagen);
+            return asset('storage/' . $this->imagen);
         }
 
-        return '/imagenes/usuario.jpg'; 
+        return asset('imagenes/usuario.jpg');
     }
 
     public function adminlte_desc()
