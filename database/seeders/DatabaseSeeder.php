@@ -14,16 +14,21 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        User::updateOrInsert(
-            ['email' => 'admin@gmail.com'], 
-            [
-                'name' => 'Admin',
-                'password' => bcrypt('ceyiva'),
-                'role' => 'admin',
-                'username' => 'beauty24', 
-            ]
-        );
-        
+       
+        $user = new User;
+        $user->name= 'Admin';
+        $user->email ='admin@gmail.com'; 
+        $user->password= ('Ceyiva%24');
+        $user->role='admin';
+        $user->username='beauty25';
+        $user->save();
+        // \App\Models\User::factory(10)->create();
+
+        // \App\Models\User::factory()->create([
+        //     'name' => 'Test User',
+        //     'email' => 'test@example.com',
+        // ]);
+   
 
         // \App\Models\User::factory()->create([
         //     'name' => 'Test User',
