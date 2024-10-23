@@ -24,6 +24,16 @@
             <form id="usuarioForm" action="{{ route('usuario.update', $usuario->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
+                @if($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
 
                 <div class="row">
                     <!-- Cambiar Imagen -->
@@ -57,15 +67,6 @@
                             <input type="text" name="username" class="form-control @error('username') is-invalid @enderror"
                                    value="{{ old('username', $usuario->username) }}" required>
                             @error('username')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label for="email" class="font-weight-bold-custom">Correo</label>
-                            <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
-                                   value="{{ old('email', $usuario->email) }}" required>
-                            @error('email')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
