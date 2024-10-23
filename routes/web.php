@@ -12,6 +12,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Auth\LoginController;
 
 
 
@@ -30,10 +31,14 @@ use App\Http\Controllers\UserController;
 
 
 
-
 Route::get('/login', [SessionsController::class, 'create'])->name('login.index');
 Route::post('/login', [SessionsController::class, 'store'])->name('login.store');
 Route::get('/logout', [SessionsController::class, 'destroy'])->name('login.destroy');
+Route::get('login', [LoginController::class, 'showLoginForm'])->name('login.form');
+Route::post('/login', [LoginController::class, 'login'])->name('login');
+
+// Ruta para el cierre de sesión
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Auth::routes();
 
