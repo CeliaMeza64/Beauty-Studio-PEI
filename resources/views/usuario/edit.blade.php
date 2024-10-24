@@ -51,7 +51,6 @@
                         </div>
                     </div>
 
-                    <!-- Información del Usuario -->
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="name" class="font-weight-bold-custom">Nombre</label>
@@ -70,6 +69,15 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
+                        <div class="form-group">
+                            <label for="current_password" class="font-weight-bold-custom">Contraseña Actual</label>
+                            <input type="password" name="current_password" 
+                                class="form-control @error('current_password') is-invalid @enderror" required>
+                            @error('current_password')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
 
                         <div class="form-group">
                             <label for="password" class="font-weight-bold-custom">Nueva Contraseña</label>
@@ -89,8 +97,6 @@
 
                     </div>
                 </div>
-
-                <!-- Botones de Acción -->
                 <div class="row mt-4">
                     <div class="col-md-6">
                         <button type="submit" class="btn btn-outline-success mr-2">
