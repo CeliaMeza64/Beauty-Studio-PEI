@@ -21,11 +21,18 @@ class UserController extends Controller
 {
     $usuario = auth()->user();
 
-    // Validación
     $request->validate([
         'name' => 'required|string|max:100',
         'username' => 'required|string|alpha_dash|unique:users,username,' . $usuario->id,
         'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        'current_password' => [
+            'required',
+            function ($attribute, $value, $fail) use ($usuario) {
+                if (!Hash::check($value, $usuario->password)) {
+                    $fail('La contraseña actual es incorrecta.');
+                }
+            },
+        ],
         'password' => [
             'nullable',                  
             'string',
@@ -42,6 +49,7 @@ class UserController extends Controller
         'password.regex' => 'La contraseña debe tener al menos una letra minúscula, una mayúscula, un número y un carácter especial.',
         'password.not_regex' => 'La contraseña no debe contener espacios en blanco.',
         'password.confirmed' => 'La confirmación de la contraseña no coincide.',
+        'current_password.required' => 'Debe ingresar su contraseña actual para realizar cambios.',
     ]);
 
     
