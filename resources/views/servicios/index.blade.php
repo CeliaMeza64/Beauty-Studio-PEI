@@ -3,7 +3,7 @@
 @section('breadcrumbs')
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item active" aria-current="page">Servicios</li> 
+            <li class="breadcrumb-item active" aria-current="page">Servicios</li>
         </ol>
     </nav>
 @endsection
@@ -16,99 +16,78 @@
                     <a href="{{ route('servicios.create') }}" class="btn btn-primary">
                         <i class="fas fa-plus"></i> Crear
                     </a>
-                    <form action="{{ route('servicios.index') }}" method="GET" class="d-flex align-items-center">
-                        <div class="input-group ">
-                            <input type="text" name="search" class="form-control" style="width: 300px;" placeholder="Buscar servicios por nombre" value="{{ request('search') }}">
-                            <div class="input-group-append">
-                                <button class="btn btn-outline-secondary" type="submit">
-                                    <i class="fas fa-search"></i> 
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+
+                    <input type="text" id="search" class="form-control" style="width: 500px;"
+                           placeholder="Buscar servicios por nombre, categoría, duración o disponibilidad">
                 </div>
 
-                @if(session('success'))
-                    <div class="alert alert-success">
-                        {{ session('success') }}
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Categoría</th>
+                                <th>Disponibilidad</th>
+                                <th>Imagen</th>
+                                <th>Duración</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultados">
+                            <!-- Aquí se cargará el contenido mediante AJAX -->
+                            @include('servicios.parcial', ['servicios' => $servicios])
+                        </tbody>
+                    </table>
+                    <div class="d-flex justify-content-center mt-3" id="pagination-links">
+                        {{ $servicios->links() }}
                     </div>
-                @endif
-
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Nombre</th>
-                            <th>Descripción</th>
-                            <th>Categoría</th>
-                            <th>Disponibilidad</th>
-                            <th>Imagen</th>
-                            <th>Duración</th> 
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($servicios as $servicio)
-                            <tr>
-                                <td>{{ ($servicios->currentPage() - 1) * $servicios->perPage() + $loop->iteration }}</td>
-                                <td>{{ $servicio->nombre }}</td>
-                                <td><div class="truncate">{{ $servicio->descripcion }}</div></td>
-                                <td>{{ $servicio->categoria->nombre ?? 'No Asignada' }}</td>
-                                <td>{{ $servicio->disponibilidad ? 'Disponible' : 'No Disponible' }}</td>
-                                <td>
-                                    @if ($servicio->imagen)
-                                        <img src="{{ asset('storage/' . $servicio->imagen) }}" alt="Imagen" style="width: 50px; height: auto; max-height: 50px; object-fit: cover;">
-                                    @else
-                                        No hay imagen
-                                    @endif
-                                </td>
-                                <td class="text-center">
-                                    {{ $servicio->duracion }} 
-                                </td>
-                                <td class="d-flex align-items-center">
-                                    <a href="{{ route('servicios.edit', $servicio->id) }}" class="btn btn-success mr-2" title="Editar">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#eliminarModal_{{ $servicio->id }}" title="Eliminar">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                    <!-- Modal de confirmación -->
-                                    <div class="modal fade" id="eliminarModal_{{ $servicio->id }}" tabindex="-1" role="dialog" aria-labelledby="eliminarModalLabel_{{ $servicio->id }}" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="eliminarModalLabel_{{ $servicio->id }}">Eliminar servicio</h5>
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <p>¿Realmente quieres eliminar el servicio {{ $servicio->nombre }}?</p>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                                                    <form action="{{ route('servicios.destroy', $servicio->id) }}" method="POST" style="display:inline-block;">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-danger">Eliminar</button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-
-                        @if($servicios->isEmpty())
-                            <tr>
-                                <td colspan="8" class="text-center">No hay resultados para su búsqueda</td>
-                            </tr>
-                        @endif
-                    </tbody>
-                </table>
+                                </div>
             </div>
         </div>
     </div>
-    {{ $servicios->appends(request()->query())->links() }}
+@endsection
+
+@section('js')
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $(document).ready(function () {
+    $('#search').on('keyup', function () {
+        let query = $(this).val();
+        fetchData(query, 1);
+    });
+
+
+    function fetchData(query = '', page = 1) {
+        $.ajax({
+            url: "{{ route('servicios.buscar') }}",
+            method: 'GET',
+            data: { search: query, page: page },
+            success: function (data) {
+                $('#resultados').html(data.html);
+                $('#pagination-links').html(data.pagination); 
+            },
+            error: function (xhr) {
+                console.error('Error en la solicitud:', xhr.responseText);
+            }
+        });
+    }
+
+
+    $(document).on('click', '.pagination a', function (e) {
+        e.preventDefault();
+        let page = $(this).attr('href').split('page=')[1]; 
+        let query = $('#search').val(); 
+        fetchData(query, page); 
+    });
+});
+
+    </script>
 @endsection
