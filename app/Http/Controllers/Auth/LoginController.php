@@ -53,7 +53,7 @@ class LoginController extends Controller
 
         if ($usuario && Hash::check($request->password, $usuario->password)) {
             Auth::login($usuario);
-            return redirect()->route('usuario.show')->with('success', 'Bienvenido de nuevo.');
+            return redirect()->route('home')->with('success', 'Bienvenido de nuevo.');
         }
 
         return back()->withErrors(['password' => 'Las credenciales son incorrectas.']);
