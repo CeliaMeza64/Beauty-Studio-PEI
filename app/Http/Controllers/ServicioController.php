@@ -11,13 +11,34 @@ class ServicioController extends Controller
 
     public function index(Request $request)
     {
+
+        $servicios = Servicio::paginate(5);
+        return view('servicios.index', compact('servicios'));
+    }
+    public function buscar(Request $request)
+    {
         $search = $request->input('search');
+
         $servicios = Servicio::when($search, function ($query, $search) {
-            return $query->where('nombre', 'like', '%'.$search.'%');
-    })->paginate(5);
-      $servicios->appends(['search' => $search]);
-        return view('servicios.index')->with('servicios',$servicios)->with('search', $search);
-    } 
+            return $query->where('nombre', 'like', '%' . $search . '%')
+                    ->orWhereHas('categoria', function ($q) use ($search) {
+                        $q->where('nombre', 'like', '%' . $search . '%');
+                    })
+                    ->orWhere('duracion', 'like', '%' . $search . '%')
+                    ->orWhere(function ($q) use ($search) {
+                        if (strtolower($search) === 'disponible') {
+                            $q->where('disponibilidad', 1);
+                        } elseif (strtolower($search) === 'no disponible') {
+                            $q->where('disponibilidad', 0);
+                        }
+                    });
+        })->paginate(5);
+        $html = view('servicios.parcial', compact('servicios'))->render(); 
+        $pagination = $servicios->links()->render(); 
+    
+        return response()->json(['html' => $html, 'pagination' => $pagination]);
+    }
+
 
 
     public function create()

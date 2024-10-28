@@ -84,6 +84,8 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
         Route::get('categorias/{categoria}/edit', [CategoriaController::class, 'edit'])->name('categorias.edit');
         Route::put('categorias/{categoria}', [CategoriaController::class, 'update'])->name('categorias.update');
         Route::delete('categorias/{categoria}', [CategoriaController::class, 'destroy'])->name('categorias.destroy');
+        Route::get('/buscar', [ServicioController::class, 'buscar'])->name('servicios.buscar');
+
        
        
         
@@ -136,6 +138,7 @@ Route::middleware(['auth.admin'])->prefix('servicios/{servicio}/imagenes')->grou
 
 
 Route::get('imagenes/{servicio}/imagenes/show', [ServicioImageController::class, 'show'])->name('serviciosImagen.show');
+Auth::routes(['reset' => true]);
 
 
 

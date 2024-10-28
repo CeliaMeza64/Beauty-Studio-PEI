@@ -1,4 +1,9 @@
 @extends('layouts.app')
+@section('background_image')
+{{ '' }}
+@endsection
+
+@section('hide-footer')
 
 @section('content')
 <div class="container">
