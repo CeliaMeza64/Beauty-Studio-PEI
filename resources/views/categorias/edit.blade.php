@@ -20,7 +20,7 @@
                     <input type="hidden" id="editMode" value="{{ $categoria->imagen ? 'true' : 'false' }}">
 
                     <div class="row">
-                        <!-- Imagen -->
+                    
                         <div class="col-md-6 order-md-2 position-relative">
                             <div class="form-group">
                                 <label class="font-weight-bold-custom mb-1">Cambiar Imagen</label>
@@ -121,8 +121,6 @@
                     } else {
                         descripcion.classList.remove('is-invalid');
                     }
-
-                    // Validar imagen solo si estamos en modo edición y no se ha cambiado la imagen
                     const imagenInput = document.getElementById('imagenInput');
                     const placeholder = document.getElementById('imagePlaceholder');
                     const editMode = document.getElementById('editMode').value === 'true';
@@ -135,7 +133,7 @@
                     }
 
                     if (!isValid) {
-                        event.preventDefault(); // Detener el envío del formulario
+                        event.preventDefault(); 
                         alert('Por favor, complete todos los campos obligatorios.');
                     }
                 });
