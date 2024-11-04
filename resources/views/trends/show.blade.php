@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('background_image')
+{{ '' }}
+@endsection
+
 @section('content')
 <div class="container">
     <h1>Servicios en Tendencia</h1>
