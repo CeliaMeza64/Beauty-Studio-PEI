@@ -116,6 +116,8 @@ Route::middleware(['auth.admin'])->group(function () {
     
 });
 
+Route::get('/tendencias', [TrendController::class, 'showTrends'])->name('trends.show');
+
 Route::get('/showTendencias', [TrendController::class, 'show'])->name('trends.show');
 
 Route::middleware(['auth.admin'])->group(function () {

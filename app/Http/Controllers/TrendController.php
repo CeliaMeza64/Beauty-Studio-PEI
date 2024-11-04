@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Trend;
+use App\Models\Servicio;
+use Carbon\Carbon;
 
 class TrendController extends Controller
 {
@@ -47,8 +49,18 @@ class TrendController extends Controller
 
     public function show()
     {
-        $trends = Trend::all();
-        return view('trends.show', compact('trends'));
+        $monthStart = Carbon::now()->startOfMonth();
+    $monthEnd = Carbon::now()->endOfMonth();
+
+    $trends = Servicio::withCount(['reservas' => function ($query) use ($monthStart, $monthEnd) {
+                    $query->whereBetween('created_at', [$monthStart, $monthEnd]);
+                }])
+                ->with('imagenes')  // Cargar imágenes para el carrusel
+                ->orderByDesc('reservas_count')
+                ->take(3)  // Los tres servicios más reservados
+                ->get();
+
+    return view('trends.show', compact('trends'));
     }
 
     public function edit(string $id)

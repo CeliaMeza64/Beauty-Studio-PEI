@@ -10,4 +10,10 @@ class Image extends Model
     use HasFactory;
 
     protected $fillable = ['imagen'];
+
+    public function servicio()
+    {
+        return $this->belongsTo(Servicio::class);
+    }
+
 }

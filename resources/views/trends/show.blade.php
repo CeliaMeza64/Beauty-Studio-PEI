@@ -1,81 +1,45 @@
 @extends('layouts.app')
 
-@section('background_image')
-{{''}}
-@endsection
-
 @section('content')
 <div class="container">
-    <h1>Tendencias</h1>
-
-    @if(Auth::check() && Auth::user()->role == 'admin')
-        <a href="{{ route('trends.index') }}" class="btn btn-primary mb-3">Volver a la lista</a>
-    @endif
+    <h1>Servicios en Tendencia</h1>
 
     <div class="row">
-        @forelse($trends as $trend)
-            <div class="col-md-3 col-sm-6 mb-4">
-                <div class="card h-100" data-bs-toggle="modal" data-bs-target="#trendModal-{{ $trend->id }}">
-                    @if ($trend->image && $trend->image !== 'noimage.jpg')
-                        <img src="{{ asset('storage/trends_images/' . $trend->image) }}" alt="{{ $trend->title }}" class="card-img-top img-fluid rounded">
-                    @else
-                        <img src="ruta/a/imagen/placeholder.jpg" alt="Imagen no disponible" class="card-img-top img-fluid rounded">
-                    @endif
-                    <div class="card-body">
-                        <h2 class="card-title">{{ $trend->title }}</h2>
-                        <div class="description">
-                            <p class="card-text">{!! nl2br(e(Str::limit($trend->description, 100))) !!}</p>
-                        </div>
-                        <div class="text-muted mt-2">
-                            <small>Creado el: {{ \Carbon\Carbon::parse($trend->created_at)->locale('es')->translatedFormat('l, d \d\e F \d\e Y \a \l\a\s H:i') }}</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        @foreach($trends as $index => $trend)
+            <div class="col-md-12 mb-4">
+                <h2 class="text-center">Top {{ $index + 1 }}: {{ $trend->nombre }}</h2>
 
-            <!-- Modal -->
-            <div class="modal fade" id="trendModal-{{ $trend->id }}" tabindex="-1" aria-labelledby="trendModalLabel{{ $trend->id }}" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="trendModalLabel{{ $trend->id }}">{{ $trend->title }}</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            @if ($trend->image && $trend->image !== 'noimage.jpg')
-                                <img src="{{ asset('storage/trends_images/' . $trend->image) }}" alt="{{ $trend->title }}" class="img-fluid mb-3">
-                            @else
-                                <img src="ruta/a/imagen/placeholder.jpg" alt="Imagen no disponible" class="img-fluid mb-3">
-                            @endif
-                            <p>{!! nl2br(e($trend->description)) !!}</p>
-                            <div class="text-muted mt-2">
-                                <small>Creado el: {{ \Carbon\Carbon::parse($trend->created_at)->locale('es')->translatedFormat('l, d \d\e F \d\e Y \a \l\a\s H:i') }}</small>
+                <!-- Carrusel del servicio en tendencia -->
+                <div id="carouselServicio{{ $trend->id }}" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        @foreach($trend->imagenes as $i => $imagen)
+                            <div class="carousel-item {{ $i === 0 ? 'active' : '' }}">
+                                <img src="{{ asset('storage/imagenes/' . $imagen->ruta) }}" class="d-block w-100" alt="{{ $trend->nombre }}">
                             </div>
-                        </div>
+                        @endforeach
                     </div>
+
+                    <!-- Controles del carrusel -->
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselServicio{{ $trend->id }}" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselServicio{{ $trend->id }}" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
                 </div>
+
+                <p class="text-center mt-3"><strong>Reservas en el mes:</strong> {{ $trend->reservas_count }}</p>
             </div>
-        @empty
-            <p>Lo sentimos, no hay tendencias disponibles en este momento.</p>
-        @endforelse
+        @endforeach
     </div>
 </div>
 
 <style>
-    .description {
-        max-height: 5.5em; 
-        overflow: hidden;
-        position: relative;
-    }
-
-    .card {
-        cursor: pointer;
-    }
-
-    .modal-body img {
-        max-width: 100%;
-        height: auto;
-        margin-bottom: 1rem;
+    .carousel-item img {
+        max-height: 500px;
+        object-fit: cover;
     }
 </style>
 @endsection

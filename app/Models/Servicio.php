@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Categoria;
+use App\Models\Image; 
 
 class Servicio extends Model
 {
@@ -27,5 +28,10 @@ class Servicio extends Model
     public function reservas()
     {
         return $this->hasMany(Reserva::class);
+    }
+
+    public function imagenes()
+    {
+        return $this->hasMany(Image::class);
     }
 }
