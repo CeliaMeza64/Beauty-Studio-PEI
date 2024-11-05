@@ -239,7 +239,6 @@ class ReservaController extends Controller
         // Establecer la zona horaria
         date_default_timezone_set('America/Tegucigalpa');
 
-<<<<<<< HEAD
     // Obtener todas las reservas
     $reservas = Reserva::all();
     
@@ -303,11 +302,6 @@ public function detallesReserva($id)
 
     return response()->json($detalle);
 }
-
-
-
-
-=======
         // Obtener todas las reservas
         $reservas = Reserva::all();
 
@@ -380,5 +374,4 @@ public function detallesReserva($id)
 
         return response()->json($events);
     }
->>>>>>> yireny
-}
+
