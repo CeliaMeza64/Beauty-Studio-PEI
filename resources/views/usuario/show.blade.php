@@ -54,19 +54,23 @@
                 </div>
             </div>
 
-            <div class="row mt-5 justify-content-center">
-                <div class="col-md-8 text-center">
-                    <a href="{{ route('usuario.edit', $usuario->id) }}" 
-                       class="btn btn-success btn-lg mx-2" title="Editar">
-                        <i class="fas fa-edit"></i> Editar Perfil
-                    </a>
+            <div class="row mt-5 justify-content-start">
+    <div class="col-md-8 text-center">
+        <a href="{{ route('usuario.edit', $usuario->id) }}" 
+           class="btn btn-success btn-lg mx-2" title="Editar">
+            <i class="fas fa-edit"></i> Editar Perfil
+        </a>
+        <a href="{{ route('usuario.editPassword') }}" 
+           class="btn btn-warning btn-lg mx-2" title="Cambiar Contraseña">
+            <i class="fas fa-key"></i> Cambiar Contraseña
+        </a>
+        <a href="{{ route('home') }}" 
+           class="btn btn-danger btn-lg mx-2" title="Cancelar">
+            <i class="fa fa-times"></i> Cancelar
+        </a>
+    </div>
+</div>
 
-                    <a href="{{ route('home') }}" 
-                       class="btn btn-danger btn-lg mx-2" title="Cancelar">
-                        <i class="fa fa-times"></i> Cancelar
-                    </a>
-                </div>
-            </div>
         </div>
     </div>
 </div>
