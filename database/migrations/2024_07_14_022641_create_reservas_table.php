@@ -17,6 +17,7 @@ class CreateReservasTable extends Migration
             $table->time('hora_reservacion');
             $table->string('estado')->default('pendiente');
             $table->string('telefono_cliente')->nullable(); 
+            $table->string('duracion');
             $table->timestamps();
         
             $table->foreign('servicio_id')->references('id')->on('servicios')->onDelete('cascade');
@@ -30,5 +31,3 @@ class CreateReservasTable extends Migration
         Schema::dropIfExists('reservas');
     }
 }
-
-
