@@ -36,7 +36,6 @@
                             </tr>
                         </thead>
                         <tbody id="resultados">
-                            <!-- Aquí se cargará el contenido mediante AJAX -->
                             @include('servicios.parcial', ['servicios' => $servicios])
                         </tbody>
                     </table>
@@ -50,7 +49,6 @@
 @endsection
 
 @section('js')
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $.ajaxSetup({
             headers: {

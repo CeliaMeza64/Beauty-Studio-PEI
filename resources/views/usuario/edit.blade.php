@@ -69,31 +69,7 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="form-group">
-                            <label for="current_password" class="font-weight-bold-custom">Contraseña Actual</label>
-                            <input type="password" name="current_password" 
-                                class="form-control @error('current_password') is-invalid @enderror" required>
-                            @error('current_password')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
 
-
-                        <div class="form-group">
-                            <label for="password" class="font-weight-bold-custom">Nueva Contraseña</label>
-                            <input type="password" name="password" class="form-control @error('password') is-invalid @enderror">
-                            @error('password')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label for="password_confirmation" class="font-weight-bold-custom">Confirmar Nueva Contraseña</label>
-                            <input type="password" name="password_confirmation" class="form-control @error('password_confirmation') is-invalid @enderror">
-                            @error('password_confirmation')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
 
                     </div>
                 </div>

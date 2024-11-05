@@ -76,6 +76,9 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
         Route::get('usuario/show', [UserController::class, 'show'])->name('usuario.show');
         Route::get('usuario/edit', [UserController::class, 'edit'])->name('usuario.edit');
         Route::put('usuario/update', [UserController::class, 'update'])->name('usuario.update');
+        Route::get('usuario/edit-password', [UserController::class, 'editPassword'])->name('usuario.editPassword');
+        Route::put('usuario/update-password', [UserController::class, 'updatePassword'])->name('usuario.updatePassword');
+
         Route::get('categorias', [CategoriaController::class, 'index'])->name('categorias.index');
 
         Route::get('categorias/create', [CategoriaController::class, 'create'])->name('categorias.create');
