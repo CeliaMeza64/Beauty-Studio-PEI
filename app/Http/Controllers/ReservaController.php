@@ -234,6 +234,8 @@ class ReservaController extends Controller
         return response()->json($servicios);
     }
 
+        // NO TOQUE YIRENY 
+
     public function getReservas()
     {
         // Establecer la zona horaria
