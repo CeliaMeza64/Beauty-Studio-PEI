@@ -53,23 +53,22 @@
                     </div>
                 </div>
             </div>
+            <div class="d-flex justify-content-start align-items-center">
+                <a type="button" class="btn btn-outline-success mx-3" href="{{ route('usuario.edit', $usuario->id) }}" tabindex="4">
+                    <i class="fas fa-edit" aria-hidden="true"></i> Editar Perfil
+                </a>
+                
+                <a type="button" class="btn btn-outline-warning mx-3" href="{{ route('usuario.editPassword') }}" tabindex="4">
+                    <i class="fas fa-key" aria-hidden="true"></i> Cambiar Contraseña
+                </a>
+                
+                <a type="button" class="btn btn-outline-danger mx-3" href="{{ route('home') }}" tabindex="4">
+                    <i class="fa fa-times" aria-hidden="true"></i> Cancelar
+                </a>
+            </div>
 
-            <div class="row mt-5 justify-content-start">
-    <div class="col-md-8 text-center">
-        <a href="{{ route('usuario.edit', $usuario->id) }}" 
-           class="btn btn-success btn-lg mx-2" title="Editar">
-            <i class="fas fa-edit"></i> Editar Perfil
-        </a>
-        <a href="{{ route('usuario.editPassword') }}" 
-           class="btn btn-warning btn-lg mx-2" title="Cambiar Contraseña">
-            <i class="fas fa-key"></i> Cambiar Contraseña
-        </a>
-        <a href="{{ route('home') }}" 
-           class="btn btn-danger btn-lg mx-2" title="Cancelar">
-            <i class="fa fa-times"></i> Cancelar
-        </a>
-    </div>
-</div>
+
+            
 
         </div>
     </div>
