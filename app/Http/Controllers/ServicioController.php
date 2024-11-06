@@ -26,12 +26,21 @@ class ServicioController extends Controller
                     })
                     ->orWhere('duracion', 'like', '%' . $search . '%')
                     ->orWhere(function ($q) use ($search) {
+                      
+                        if (stripos('disponible', $search) !== false) {
+                            $q->where('disponibilidad', 1);
+                        }
+
+                        if (stripos('no disponible', $search) !== false ) {
+                            $q->orWhere('disponibilidad', 0);
+                        }
+
                         if (strtolower($search) === 'disponible') {
                             $q->where('disponibilidad', 1);
                         } elseif (strtolower($search) === 'no disponible') {
                             $q->where('disponibilidad', 0);
                         }
-                    });
+                    });    
         })->paginate(5);
         $html = view('servicios.parcial', compact('servicios'))->render(); 
         $pagination = $servicios->links()->render(); 
