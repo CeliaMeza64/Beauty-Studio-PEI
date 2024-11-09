@@ -57,7 +57,7 @@ class TrendController extends Controller
                 }])
                 ->with('imagenes')  // Cargar imágenes para el carrusel
                 ->orderByDesc('reservas_count')
-                ->take(3)  // Los tres servicios más reservados
+                ->take(5)  
                 ->get();
 
     return view('trends.show', compact('trends'));
