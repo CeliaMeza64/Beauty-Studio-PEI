@@ -19,24 +19,23 @@
                     <input type="hidden" id="editMode" value="{{ $servicio->imagen ? 'true' : 'false' }}">
 
                     <div class="row">
-                        <!-- Imagen -->
                         <div class="col-md-6 order-md-2 position-relative">
                             <div class="form-group">
                                 <label class="font-weight-bold-custom mb-1">Cambiar Imagen</label>
-                                <a href="{{ route('serviciosImagen.index', ['servicio' => $servicio->id]) }}" class="btn btn-primary mr-2 mb-3 add-image-btn" title="Agregar más imágenes"> 
-                                    <i class="fas fa-plus"></i> Imágenes
-                                </a>
                                 <div class="image-placeholder" id="imagePlaceholder" style="cursor: pointer; background-image: url({{ asset('storage/' . $servicio->imagen) }});">
                                     @if (!$servicio->imagen)
                                         <p class="text-sm text-gray-400 pt-1 tracking-wider">Seleccione la imagen</p>
                                     @endif
                                 </div>
                                 <input type="file" name="imagen" class="form-control-file d-none" id="imagenInput">
-                                <div class="invalid-feedback">Por favor, suba una imagen válida.</div>
+                                <div class="invalid-feedback">Por favor, haga clic en la imagen para cambiarla y seleccione una imagen válida.</div>
                             </div>
+                            <a href="{{ route('serviciosImagen.index', ['servicio' => $servicio->id]) }}" class="btn btn-primary mr-2 mb-3 add-image-btn" title="Agregar más imágenes"> 
+                                    <i class="fas fa-plus"></i> Agregar otras imágenes
+                                </a>
                         </div>
 
-                        <!-- Información del servicio -->
+                       
                         <div class="col-md-6 order-md-1">
                             <div class="form-group">
                                 <label for="nombre" class="font-weight-bold-custom">Nombre</label>
