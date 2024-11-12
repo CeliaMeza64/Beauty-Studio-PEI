@@ -63,27 +63,11 @@
                         placeholder.style.backgroundPosition = 'center';
                         placeholder.innerHTML = '';
                     };
-
-                    reader.readAsDataURL(file);
-                });
-
-                document.getElementById('imageForm').addEventListener('submit', function(event) {
-                    let isValid = true;
-                    const requiredFields = document.querySelectorAll('#imageForm [required]');
-
-                    requiredFields.forEach(function(field) {
-                        if (!field.value.trim()) {
-                            field.classList.add('is-invalid');
-                            isValid = false;
-                        } else {
-                            field.classList.remove('is-invalid');
-                        }
-                    });
-
-                    if (!isValid) {
-                        event.preventDefault();
-                        alert('Por favor, complete todos los campos obligatorios.');
+                    if (file) {
+                        reader.readAsDataURL(file);
                     }
+
+          
                 });
             </script>
         </div>
@@ -123,6 +107,7 @@
 
         .invalid-feedback {
             display: block;
+            font-size: 1em;
         }
 
         input[type="file"].d-none {

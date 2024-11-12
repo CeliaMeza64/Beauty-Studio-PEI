@@ -58,33 +58,28 @@ class ServicioImageController extends Controller
     {
         return view('serviciosImagen.edit', compact('servicio', 'image'));
     }
-
     public function update(Request $request, Servicio $servicio, ServicioImage $image)
     {
         $request->validate([
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'servicio_id' => 'required|exists:servicios,id',
         ], [
-            
             'image.required' => 'La imagen es obligatoria',
             'image.image' => 'El archivo subido debe ser una imagen.',
             'image.mimes' => 'La imagen debe ser de tipo jpeg, png, jpg, gif o svg.',
-
         ]);
 
         if ($request->hasFile('image')) {
-            \Log::info('Archivo de imagen recibido: ' . $request->file('image')->getClientOriginalName());
-            if ($image->path) {
+            if ($image->path && Storage::exists('public/' . $image->path)) {
                 Storage::delete('public/' . $image->path);
             }
-        
-            $path = $request->file('image')->store('images', 'public');
-            $image->path =  $path;
-           
-        }
-        $image->save();
 
-        return redirect()->route('serviciosImagen.index', $servicio->id)->with('success', 'Imagen actualizada con éxito.');
+            $path = $request->file('image')->store('servicios/imagenes', 'public');
+
+            $image->path = $path;
+            $image->save();
+        }
+
+        return redirect()->route('serviciosImagen.index', ['servicio' => $servicio->id])->with('success', 'La imagen se ha actualizado correctamente.');
     }
 
     public function destroy(Servicio $servicio, ServicioImage $image)
