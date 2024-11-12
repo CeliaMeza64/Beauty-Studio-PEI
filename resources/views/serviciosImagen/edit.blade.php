@@ -13,14 +13,12 @@
     <div class="card">
         <div class="card-body">
             <div class="container">
-               
-
                 <form id="imageForm" action="{{ route('serviciosImagen.update', [$servicio->id, $image->id]) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
-
+                    <input type="hidden" id="editMode" value="{{ $image->path ? 'true' : 'false' }}">
                     <div class="row">
-                        <div class="col-md-6 order-md-2 position-relative">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label class="font-weight-bold-custom mb-1">Cambiar Imagen</label>
                                 <div class="image-placeholder" id="imagePlaceholder" style="cursor: pointer; background-image: url({{ asset('storage/' . $image->path) }});">
@@ -29,23 +27,23 @@
                                     @endif
                                 </div>
                                 <input type="file" name="image" class="form-control-file d-none" id="imageInput">
-                                <div class="invalid-feedback">Por favor, suba una imagen válida.</div>
+                                <div class="invalid-feedback">Por favor, haga clic en la imagen para cambiarla y seleccione una imagen válida.</div>
                             </div>
                         </div>
 
-                        <div class="col-md-6 order-md-1">
-                            <!-- Puedes mantener la estructura anterior o agregar un margen -->
+                        <div class="col-md-6">
+                            
                         </div>
                     </div>
-
-                    <div class="d-flex justify-content-start align-items-end mt-3">
-                        <button type="submit" class="btn btn-outline-success mr-2" style="flex: 1;">
-                            <span class="fas fa-save"></span> Actualizar Imagen
+                    <div class="d-flex justify-content-start">
+                        <button type="submit" class="btn btn-outline-success mr-2">
+                            <span class="fas fa-save"></span> Actualizar
                         </button>
-                        <a href="{{ route('servicios.index') }}" class="btn btn-outline-danger" style="flex: 1;">
+                        <a href="{{ route('serviciosImagen.index', ['servicio' => $servicio->id]) }}" class="btn btn-outline-danger">
                             <i class="fa fa-times" aria-hidden="true"></i> Cancelar
                         </a>
                     </div>
+
                 </form>
             </div>
 
@@ -117,22 +115,20 @@
             margin: 0;
             position: absolute;
         }
-
-        input[type="file"].d-none {
-            display: none;
-        }
-
-        .is-invalid {
+        
+        .input-group .is-invalid {
             border-color: #dc3545;
+            box-shadow: 0 0 0 .2rem rgba(220, 53, 69, .25); 
         }
 
         .invalid-feedback {
-            display: none;
-            color: #dc3545;
-        }
-
-        .is-invalid ~ .invalid-feedback {
             display: block;
         }
+
+        input[type="file"].d-none {
+            display: none !important;
+        }
+
+        
     </style>
 @endsection

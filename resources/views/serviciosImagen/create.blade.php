@@ -1,4 +1,4 @@
-@extends('adminlte::page')
+imagen @extends('adminlte::page')
 
 @section('breadcrumbs')
     <nav aria-label="breadcrumb">
@@ -24,33 +24,33 @@
                     </div>
                 @endif
 
-              
                 <form action="{{ route('serviciosImagen.store', ['servicio' => $servicioId]) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="servicio_id" value="{{ $servicioId }}">
-                    
 
                     <div class="row">
-                        <div class="col-md-6 offset-md-3">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label class="font-weight-bold-custom mb-1">Seleccionar Imagen</label>
-                                <div class="image-placeholder" id="imagePlaceholder" style="cursor: pointer;">
+                                <div class="image-placeholder @error('image') is-invalid @enderror"  id="imagePlaceholder" style="cursor: pointer;">
                                     <p class="text-sm text-gray-400 pt-1 tracking-wider">Seleccione la imagen</p>
                                 </div>
-                                <input type="file" name="image" class="form-control-file visually-hidden" id="imagenInput" required>
-                                <div class="invalid-feedback">Por favor, suba una imagen.</div>
+                                <input type="file" name="image" class="form-control-file d-none" id="imagenInput" >
+                                @error('image')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
                     </div>
 
-                    <div class="row justify-content-center">
+                    <div class="row">
                         <div class="col-md-6">
-                            <div class="d-flex">
-                                <button type="submit" class="btn btn-outline-success mr-2" style="flex: 1;">
+                            <div class="d-flex justify-content-start">
+                                <button type="submit" class="btn btn-outline-success mr-2">
                                     <span class="fas fa-upload"></span> Subir Imagen
                                 </button>
-                            
-                                <a href=  "{{ route('servicios.edit', $servicioId) }}" onclick="cancelarCreacion()" class="btn btn-outline-danger" style="flex: 1;">
+                                
+                                <a href="{{ route('serviciosImagen.index', ['servicio' => $servicioId]) }}" onclick="cancelarCreacion()" class="btn btn-outline-danger">
                                     <i class="fa fa-times" aria-hidden="true"></i> Cancelar
                                 </a>
                             </div>
@@ -79,26 +79,6 @@
                     reader.readAsDataURL(file);
                 });
 
-                document.querySelector('form').addEventListener('submit', function(event) {
-                    let isValid = true;
-                    const requiredFields = document.querySelectorAll('form [required]');
-                    
-                    requiredFields.forEach(function(field) {
-                        if (!field.value.trim()) {
-                            field.classList.add('is-invalid');
-                            isValid = false;
-                        } else {
-                            field.classList.remove('is-invalid');
-                        }
-                    });
-                    
-                    if (!isValid) {
-                        event.preventDefault(); 
-                        alert('Por favor, complete todos los campos obligatorios.');
-                    }
-                });
-
-                // Script de cancelación con redirección
                 function cancelarCreacion() {
                     const servicioId = document.querySelector('select[name="servicio_id"]').value;
                     if (servicioId) {
