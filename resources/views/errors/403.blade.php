@@ -1,11 +1,14 @@
-@extends('layouts.errores')
+
+@extends('layouts.app')
+@section('background_image')
+{{ '' }}
+@endsection
 
 @section('title', 'Acceso Prohibido')
-
 @section('content')
-<div class="error-page">
-<h1>{{ $code }}</h1> 
-<p>{{ $message ??No tienes permiso para acceder a esta página.}}</p>
-    <a href="{{ url('/') }}">Volver a la página de inicio</a>
+<div class="home-page">
+    <h1>Oops!</h1>
+    <h2>Error {{ $code }}</h2>
+    <p>{{ $message }}</p> 
 </div>
 @endsection

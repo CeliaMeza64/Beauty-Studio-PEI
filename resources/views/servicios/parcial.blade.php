@@ -13,7 +13,7 @@
                 No hay imagen
             @endif
         </td>
-        <td>{{ $servicio->duracion }}</td>
+        <td class="text-center">{{ $servicio->duracion }}</td>
         <td>
             <a href="{{ route('servicios.edit', $servicio->id) }}" class="btn btn-success btn-sm" title="Editar">
                 <i class="fas fa-edit"></i>

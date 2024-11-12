@@ -184,6 +184,7 @@
 
         .invalid-feedback {
             display: block;
+            font-size: 1em;
         }
 
         input[type="file"].d-none {
