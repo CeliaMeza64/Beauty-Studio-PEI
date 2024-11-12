@@ -1,11 +1,16 @@
-@extends('layouts.errores')
+@extends('layouts.app')
+@section('background_image')
+{{ '' }}
+@endsection
 
 @section('title', 'No Autorizado')
 
 @section('content')
-<div class="error-page">
-    <h1>401</h1>
-    <p>No estás autorizado para acceder a esta página. Por favor, inicia sesión y vuelve a intentarlo.</p>
-    <a href="{{ route('login') }}">Iniciar Sesión</a>
+<div class="home-page">
+    <h1>Oops!</h1>
+    <h2>Error {{ $code }}</h2>
+    <p>{{ $message }}</p> 
 </div>
 @endsection
+
+

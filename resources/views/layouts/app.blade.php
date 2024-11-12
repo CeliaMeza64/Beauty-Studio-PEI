@@ -1,3 +1,4 @@
+
 <!doctype html>
 
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -36,6 +37,35 @@
         body {
             font-family: Arial, sans-serif;
         }
+        .home-page-body {
+        font-family: Arial, sans-serif;
+        background-color: #f9f9f9;
+        color: #333;
+        padding: 50px;
+      
+        
+        }
+
+        .home-page h1 {
+            font-size: 100px;
+            text-align: center;
+            margin: 0;
+            color: #FF6EA2;
+        }
+
+        .home-page h2 {
+            font-size: 30px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .home-page p {
+            font-size: 20px;
+            text-align: center;
+        }
+
+        
+
         .navbar {
             background-color: #FF6EA2; 
             margin-bottom: 0px;
@@ -307,6 +337,9 @@
             <img src="{{ asset('imagenes/fondo3.png') }}" alt="Imagen horizontal" class="img-fluid">
         </div>
         @show
+       
+            
+       
 
         <main class="py-4">
             @yield('content')
