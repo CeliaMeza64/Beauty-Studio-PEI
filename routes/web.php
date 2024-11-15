@@ -80,7 +80,7 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
         Route::put('usuario/update-password', [UserController::class, 'updatePassword'])->name('usuario.updatePassword');
 
         Route::get('categorias', [CategoriaController::class, 'index'])->name('categorias.index');
-
+        Route::get('/categorias/buscar', [CategoriaController::class, 'buscar'])->name('categorias.buscar');
         Route::get('categorias/create', [CategoriaController::class, 'create'])->name('categorias.create');
         Route::post('categorias', [CategoriaController::class, 'store'])->name('categorias.store');
         Route::get('categorias/{categoria}', [CategoriaController::class, 'show'])->name('categorias.show');
