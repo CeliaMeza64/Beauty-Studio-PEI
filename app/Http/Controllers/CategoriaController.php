@@ -7,11 +7,7 @@ use App\Models\Categoria;
 
 class CategoriaController extends Controller
 {
-    public function index()
-    {
-        $categorias = Categoria::paginate(6);
-        return view('categorias.index', compact('categorias'));
-    }
+    public function index(Request $request) { $categorias = Categoria::paginate(3); return view('categorias.index', compact('categorias')); } public function buscar(Request $request) { $search = $request->input('search'); $categorias = Categoria::when($search, function ($query, $search) { return $query->where('nombre', 'like', '%' . $search . '%') ->orWhere(function ($q) use ($search) { if (stripos('activo', $search) !== false) { $q->where('estado', 1); } if (stripos('inactivo', $search) !== false) { $q->orWhere('estado', 0); } if (strtolower($search) === 'activo') { $q->where('estado', 1); } elseif (strtolower($search) === 'inactivo') { $q->where('estado', 0); } }); })->paginate(3); $html = view('categorias.parcial', compact('categorias'))->render(); $pagination = $categorias->links()->render(); return response()->json(['html' => $html, 'pagination' => $pagination]); }
 
     public function create()
     {
@@ -40,11 +36,10 @@ class CategoriaController extends Controller
 
         $data = $request->all();
 
-        // Verificar si el archivo de imagen se ha subido
         if ($request->hasFile('imagen')) {
             $data['imagen'] = $request->file('imagen')->store('images/categorias', 'public');
         } else {
-            // Esto no debería ocurrir si la validación es correcta
+            
             return redirect()->back()->withErrors(['imagen' => 'La imagen es obligatoria.']);
         }
 
@@ -87,7 +82,7 @@ class CategoriaController extends Controller
         $data = $request->all();
 
         if ($request->hasFile('imagen')) {
-            // Eliminar la imagen antigua si existe
+          
             if ($categoria->imagen) {
                 \Storage::disk('public')->delete($categoria->imagen);
             }
