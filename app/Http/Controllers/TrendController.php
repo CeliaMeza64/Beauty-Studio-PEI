@@ -11,10 +11,9 @@ class TrendController extends Controller
 {
     public function index()
 {
-    // Obtener las tendencias actuales
+    
     $trends = Trend::paginate(10);
 
-    // Datos de reservas por servicio (con los más reservados)
     $monthStart = Carbon::now()->startOfMonth();
     $monthEnd = Carbon::now()->endOfMonth();
 
@@ -68,7 +67,7 @@ class TrendController extends Controller
     $trends = Servicio::withCount(['reservas' => function ($query) use ($monthStart, $monthEnd) {
                     $query->whereBetween('created_at', [$monthStart, $monthEnd]);
                 }])
-                ->with('imagenes')  // Cargar imágenes para el carrusel
+                ->with('images') 
                 ->orderByDesc('reservas_count')
                 ->take(5)  
                 ->get();
