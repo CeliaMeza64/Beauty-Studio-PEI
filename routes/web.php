@@ -56,6 +56,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('reservas/{reserva}', [ReservaController::class, 'destroy'])->name('reservas.destroy');
     Route::post('reservas/{reserva}/confirm', [ReservaController::class, 'confirm'])->name('reservas.confirm');
     Route::post('reservas/{reserva}/cancel', [ReservaController::class, 'cancel'])->name('reservas.cancel');
+
 });
 
 // Ruta para visualizar el formulario de creación de reservas sin autenticación

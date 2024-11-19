@@ -88,7 +88,53 @@
             <span id="horaError" style="color:red; display:none;">Por favor, selecciona una hora.</span>
         </div>
 
-        <button type="submit" class="btn btn-primary">Actualizar Reserva</button>
+        <!-- Estado -->
+<div class="form-group">
+    <label for="estado">Estado</label>
+    <select name="estado" id="estado" class="form-control">
+        @if ($reserva->estado == 'Aprobado')
+            <option value="Aprobado" {{ $reserva->estado == 'Aprobado' ? 'selected' : '' }}>Aprobado</option>
+            <option value="Realizado" {{ $reserva->estado == 'Realizado' ? 'selected' : '' }}>Realizado</option>
+            <option value="Rechazado" {{ $reserva->estado == 'Rechazado' ? 'selected' : '' }}>Rechazado</option>
+        @else
+            <option value="Pendiente" {{ $reserva->estado == 'Pendiente' ? 'selected' : '' }}>Pendiente</option>
+            <option value="Aprobado" {{ $reserva->estado == 'Aprobado' ? 'selected' : '' }}>Aprobado</option>
+            <option value="Realizado" {{ $reserva->estado == 'Realizado' ? 'selected' : '' }}>Realizado</option>
+            <option value="Cancelado" {{ $reserva->estado == 'Cancelado' ? 'selected' : '' }}>Cancelado</option>
+        @endif
+    </select>
+</div>
+
+        <div class="col-md-6 order-md-2 position-relative">
+                            <div class="form-group">
+                                <a href="{{ route('serviciosImagen.index', ['servicio' => $reserva->id]) }}" class="btn btn-primary mr-2 mb-3 add-image-btn" title="Agregar más imágenes"> 
+                                    <i class="fas fa-plus"></i> Imágenes
+                                </a>
+                                <div class="image-placeholder" id="imagePlaceholder" style="cursor: pointer; background-image: url({{ asset('storage/' . $reserva->imagen) }});">
+                                    @if (!$reserva->imagen)
+                                        
+                                    @endif
+                                </div>
+                                <input type="file" name="imagen" class="form-control-file d-none" id="imagenInput">
+                                <div class="invalid-feedback">Por favor, suba una imagen válida.</div>
+                            </div>
+                        </div>
+        <div class="row mt-3" id="preview-container"></div> <!-- Contenedor para las vistas previas -->
+
+        
+
+        <div class="row justify-content-start">
+                                <div class="col-md-6">
+                                    <div class="d-flex">
+                                        <button type="submit" class="btn btn-outline-success mr-2" style="flex: 1;">
+                                            <span class="fas fa-save"></span> Actualizar
+                                        </button>
+                                        <a href="{{ route('servicios.index') }}" class="btn btn-outline-danger" style="flex: 1;">
+                                            <i class="fa fa-times" aria-hidden="true"></i> Cancelar
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
     </form>
 </div>
 @endsection
@@ -177,4 +223,46 @@
         });
     });
     </script>
+    <script>
+    function previewImages() {
+        const previewContainer = document.getElementById('preview-container');
+        previewContainer.innerHTML = ''; // Limpiar el contenedor de vista previa
+
+        const files = document.getElementById('imagenes').files;
+        if (files) {
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const colDiv = document.createElement('div');
+                    colDiv.classList.add('col-md-3', 'mb-3');
+                    colDiv.innerHTML = `<img src="${e.target.result}" class="img-fluid rounded shadow" alt="Vista previa">`;
+                    previewContainer.appendChild(colDiv);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+    }
+
+document.getElementById('reservaForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    // Obtener valores de los campos
+    var estado = document.getElementById('estado').value;
+    var estadoError = document.getElementById('estadoError');
+
+    // Validación del estado del servicio
+    if (!estado) {
+        estadoError.style.display = 'inline';
+        return; // Detener el envío si no se selecciona un estado
+    } else {
+        estadoError.style.display = 'none';
+    }
+
+    // Continuar con el envío del formulario si todas las validaciones son correctas
+    this.submit();
+});
+
+
+</script>
+
 @endsection
