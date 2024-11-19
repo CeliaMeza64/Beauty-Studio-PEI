@@ -25,39 +25,39 @@
                                 <th>Fecha</th>
                                 <th>Hora</th>
                                 <th>Estado</th>
+                                <th>Imagen</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($reservas as $reserva)
                                 <tr>
+                                    <!-- Columna del identificador de la reserva -->
                                     <td>{{ ($reservas->currentPage() - 1) * $reservas->perPage() + $loop->iteration }}</td>
+                                    
                                     <td>{{ $reserva->nombre_cliente }}</td>
                                     <td>{{ $reserva->telefono_cliente }}</td>
                                     <td>{{ $reserva->servicio->nombre }}</td>
                                     <td>{{ \Carbon\Carbon::parse($reserva->fecha_reservacion)->format('d/m/Y') }}</td>
                                     <td>{{ $reserva->hora_reservacion }}</td>
                                     <td>{{ ucfirst($reserva->estado) }}</td>
-                                    <td class="d-flex align-items-center">
-                                        @if ($reserva->estado == 'pendiente')
-                                            <form action="{{ route('reservas.confirm', $reserva) }}" method="POST" style="display:inline;">
-                                                @csrf
-                                                <button type="submit" class="btn btn-success btn-sm mr-2">Confirmar</button>
-                                            </form>
-                                            <form action="{{ route('reservas.cancel', $reserva) }}" method="POST" style="display:inline;">
-                                                @csrf
-                                                <button type="submit" class="btn btn-danger btn-sm mr-2">Cancelar</button>
-                                            </form>
+                                    <td>
+                                        @if($reserva->imagen)
+                                            <img src="{{ asset('path/to/images/' . $reserva->imagen) }}" alt="Imagen de la reserva" style="width: 50px; height: auto;">
+                                        @else
+                                            <p class="text-muted">Sin imagen</p>
                                         @endif
+                                    </td>
+                                    <td class="d-flex align-items-center">
                                         <!-- Botón para el icono de editar -->
                                         <a href="{{ route('reservas.edit', $reserva) }}" class="btn btn-success btn-sm mr-2">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <!-- Botón para abrir el modal -->
                                         <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#eliminarModal_{{ $reserva->id }}">
-                                            Eliminar
+                                            <i class="fas fa-trash"></i>
                                         </button>
-                                        <!-- Modal -->
+                                        <!-- Modal de eliminación -->
                                         <div class="modal fade" id="eliminarModal_{{ $reserva->id }}" tabindex="-1" aria-labelledby="eliminarModalLabel_{{ $reserva->id }}" aria-hidden="true">
                                             <div class="modal-dialog">
                                                 <div class="modal-content">
@@ -105,5 +105,5 @@
 @stop
 
 @section('js')
-   
+
 @stop
