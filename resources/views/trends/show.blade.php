@@ -48,7 +48,6 @@
 </div>
 
 <style>
-<<<<<<< HEAD
     .carousel-inner {
         max-width: 100%; 
     }
@@ -61,25 +60,9 @@
         border-radius: 8px; 
     }
 
-=======
-    
-    .carousel-inner {
-        max-width: 100%; 
-    }
-
-    .carousel-item img {
-        width: 100%; 
-        height: 500px; 
-        object-fit: contain; 
-        object-position: center; 
-        border-radius: 8px; 
-    }
-
->>>>>>> 11fe12c4f1abbf130b353bc2aaed56d31c423e2c
     .card {
         border: 2px solid #000;
         border-radius: 12px;
-<<<<<<< HEAD
         background-color: #eaeaea;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
@@ -106,20 +89,5 @@
         border-radius: 8px; 
     }
     
-=======
-        padding: 0; 
-    }
-
-    h2.text-primary {
-        color: #0056b3;
-    }
-
- 
-    .carousel-control-prev-icon, .carousel-control-next-icon {
-        background-color: #0056b3;
-        border-radius: 50%;
-        padding: 10px;
-    }
->>>>>>> 11fe12c4f1abbf130b353bc2aaed56d31c423e2c
 </style>
 @endsection
