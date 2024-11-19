@@ -10,7 +10,7 @@
 
     <div class="row justify-content-center">
         @foreach($trends as $index => $trend)
-            <div class="col-lg-8 col-md-10 mb-5">
+            <div class="col-lg-12 col-md-12 mb-5"> 
                 <div class="card shadow-sm border-0">
                     <div class="card-body">
                         <h2 class="text-center mb-4 text-primary">Top {{ $index + 1 }}: {{ $trend->nombre }}</h2>
@@ -43,17 +43,34 @@
 </div>
 
 <style>
-    .carousel-item img {
-        max-height: 500px;
-        object-fit: cover;
-        border-radius: 8px;
+    
+    .carousel-inner {
+        max-width: 100%; 
     }
+
+    .carousel-item img {
+        width: 100%; 
+        height: 500px; 
+        object-fit: contain; 
+        object-position: center; 
+        border-radius: 8px; 
+    }
+
     .card {
         background-color: #f9f9f9;
         border-radius: 12px;
+        padding: 0; 
     }
+
     h2.text-primary {
         color: #0056b3;
+    }
+
+ 
+    .carousel-control-prev-icon, .carousel-control-next-icon {
+        background-color: #0056b3;
+        border-radius: 50%;
+        padding: 10px;
     }
 </style>
 @endsection
