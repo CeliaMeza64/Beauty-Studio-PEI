@@ -15,17 +15,15 @@
                     <div class="card-body">
                         <h2 class="text-center mb-4 text-primary">Top {{ $index + 1 }}: {{ $trend->nombre }}</h2>
 
-                        <!-- Carrusel del servicio en tendencia -->
                         <div id="carouselServicio{{ $trend->id }}" class="carousel slide" data-bs-ride="carousel">
                             <div class="carousel-inner rounded">
-                                @foreach($trend->imagenes as $i => $imagen)
+                                @foreach($trend->images as $i => $imagen)
                                     <div class="carousel-item {{ $i === 0 ? 'active' : '' }}">
-                                        <img src="{{ asset('storage/imagenes/' . $imagen->ruta) }}" class="d-block w-100" alt="{{ $trend->servicio->nombre }}">
+                                        <img src="{{ asset('storage/' . $imagen->path) }}" class="d-block w-100" alt="{{ $trend->nombre }}">
                                     </div>
                                 @endforeach
                             </div>
 
-                            <!-- Controles del carrusel -->
                             <button class="carousel-control-prev" type="button" data-bs-target="#carouselServicio{{ $trend->id }}" data-bs-slide="prev">
                                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                 <span class="visually-hidden">Previous</span>
