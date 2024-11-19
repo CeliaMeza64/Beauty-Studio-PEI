@@ -8,7 +8,7 @@
 <div class="container">
     <h1>Crear Reserva</h1>
 
-    <form action="{{ route('reservas.store') }}" method="POST" id="reservaForm">
+       <form action="{{ route('reservas.store') }}" method="POST" id="reservaForm" class="bg-light p-4 rounded shadow">
         @csrf
         <div class="form-group">
             <label for="nombre_cliente">Nombre del Cliente</label>
@@ -72,22 +72,33 @@
         </div>
 
         <br>
-        <div class="form-group">
-            <label for="hora_reservacion">Hora de la Reserva</label>
+        <div class="form-group mb-4">
+            <label for="hora_reservacion">
+                <i class="fas fa-clock"></i> Hora de la Reserva
+            </label>
             <select class="form-control" id="hora_reservacion" name="hora_reservacion" required>
                 <option value="">Seleccione una hora</option>
-                <option value="09:00">09:00 AM</option>
-                <option value="11:00">11:00 AM</option>
-                <option value="13:00">01:00 PM</option>
-                <option value="15:00">03:00 PM</option>
-                <option value="18:00">06:00 PM</option>
-                <option value="20:00">08:00 PM</option>
+                @php
+                    $duracionServicio = 60; // Ejemplo: 60 minutos
+                    $startHour = 9; // 09:00 AM
+                    $endHour = 20; // 08:00 PM
+                    $endTime = strtotime("{$endHour}:00");
+                    for ($i = $startHour; $i < $endHour; $i++) {
+                        for ($j = 0; $j < 60; $j += 30) {
+                            $value = sprintf('%02d:%02d', $i, $j); // Formato 24 horas
+                            $finReserva = strtotime($value) + ($duracionServicio * 60);
+                            if ($finReserva <= $endTime) {
+                                $label = date('h:i A', strtotime($value)); // Formato AM/PM
+                                echo "<option value=\"{$value}\" " . (old('hora_reservacion') == $value ? 'selected' : '') . ">{$label}</option>";
+                            }}      }
+                @endphp
             </select>
-            <span id="horaError" style="color:red; display:none;">Por favor, selecciona una hora.</span>
+            <span id="horaError" class="text-danger" style="display:none;">Por favor, selecciona una hora.</span>
             @error('hora_reservacion')
-                <span style="color:red;">{{ $message }}</span>
+            <span class="text-danger">{{ $message }}</span>
             @enderror
         </div>
+
         <br>
         <button type="submit" class="btn btn-primary" id="guardarReservaButton">
             Guardar Reserva
