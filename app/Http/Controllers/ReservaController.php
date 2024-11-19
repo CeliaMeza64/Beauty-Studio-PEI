@@ -33,6 +33,7 @@ class ReservaController extends Controller
             'servicio_id' => 'required|exists:servicios,id',
             'categoria_id' => 'required|exists:categorias,id',
             'fecha_reservacion' => 'required|date|after:today',
+            'estado' => 'required|string',
             'hora_reservacion' => [
                 'required',
                 function ($attribute, $value, $fail) {
@@ -54,8 +55,16 @@ class ReservaController extends Controller
             'fecha_reservacion.date' => 'La fecha de reservación no tiene un formato válido.',
             'hora_reservacion.required' => 'La hora de reservación es obligatoria.',
             'hora_reservacion.in' => 'La hora de reservación debe ser en intervalos de 30 minutos (por ejemplo, 09:00 o 09:30).',
+       'estado' => 'El estado debe ser requerido',
         ]);
-
+        $reserva = new Reserva();
+        $reserva->nombre_cliente = $request->input('nombre_cliente');
+        $reserva->telefono_cliente = $request->input('telefono_cliente');
+        $reserva->servicio_id = $request->input('servicio_id');
+        $reserva->categoria_id = $request->input('categoria_id');
+        $reserva->fecha_reservacion = $request->input('fecha_reservacion');
+        $reserva->hora_reservacion = $request->input('hora_reservacion');
+        $reserva->estado = 'pendiente';
         // Verificar si ya existe una reserva en esa fecha y hora
         $fecha = $request->input('fecha_reservacion');
         $hora = $request->input('hora_reservacion');
@@ -118,6 +127,7 @@ class ReservaController extends Controller
             'categoria_id' => 'required|exists:categorias,id',
             'fecha_reservacion' => 'required|date|after:today',
             'hora_reservacion' => 'required|in:09:00,11:00,13:00,15:00,18:00,20:00',
+            'estado' => 'required|in:Pendiente,Aprobado,Realizado,Rechazado,Cancelado',
         ], [
             'nombre_cliente.required' => 'El nombre del cliente es obligatorio.',
             'telefono_cliente.required' => 'El teléfono del cliente es obligatorio.',
@@ -129,7 +139,7 @@ class ReservaController extends Controller
             'hora_reservacion.required' => 'La hora de reservación es obligatoria.',
             'hora_reservacion.in' => 'La hora de reservación debe ser una de las siguientes: 09:00, 11:00, 13:00, 15:00, 18:00, 20:00.',
         ]);
-
+        $reserva->estado = $request->input('estado');
         // Verificar si ya existe una reserva en esa fecha y hora, excluyendo la actual
         $exists = Reserva::where('fecha_reservacion', $request->fecha_reservacion)
             ->where('hora_reservacion', $request->hora_reservacion)
