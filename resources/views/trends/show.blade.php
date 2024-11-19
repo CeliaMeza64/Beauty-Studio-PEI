@@ -10,10 +10,12 @@
 
     <div class="row justify-content-center">
         @foreach($trends as $index => $trend)
-            <div class="col-lg-8 col-md-10 mb-5">
+            <div class="col-lg-12 col-md-12 mb-5"> 
                 <div class="card shadow-sm border-0">
                     <div class="card-body">
-                        <h2 class="text-center mb-4 text-primary">Top {{ $index + 1 }}: {{ $trend->nombre }}</h2>
+                        <h2 class="text-center mb-4 text-white border-2 p-2 rounded custom-text">
+                            <em>Top {{ $index + 1 }}:</em> {{ $trend->nombre }}
+                        </h2>
 
                         <div id="carouselServicio{{ $trend->id }}" class="carousel slide" data-bs-ride="carousel">
                             <div class="carousel-inner rounded">
@@ -34,7 +36,10 @@
                             </button>
                         </div>
 
-                        <p class="text-center mt-3 mb-0"><strong>Reservas en el mes:</strong> {{ $trend->reservas_count }}</p>
+                        <p class="text-center mt-3 mb-0">
+                            <strong>Reservas en el mes:</strong> 
+                            <span class="reservas-count">{{ $trend->reservas_count }}</span>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -43,17 +48,46 @@
 </div>
 
 <style>
+    .carousel-inner {
+        max-width: 100%; 
+    }
+
     .carousel-item img {
-        max-height: 500px;
-        object-fit: cover;
-        border-radius: 8px;
+        width: 100%; 
+        height: 500px; 
+        object-fit: contain; 
+        object-position: center; 
+        border-radius: 8px; 
     }
+
     .card {
-        background-color: #f9f9f9;
+        border: 2px solid #000;
         border-radius: 12px;
+        background-color: #eaeaea;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
-    h2.text-primary {
-        color: #0056b3;
+
+    .custom-text {
+        color: #fff; 
+        text-shadow: 0 0 3px rgba(255, 0, 127, 0.7), 0 0 5px rgba(255, 0, 127, 0.7); 
+        background-color: rgba(255, 0, 127, 0.3); 
+        padding: 8px;
+        border-radius: 10px;
     }
+
+    .carousel-control-prev-icon, .carousel-control-next-icon {
+        background-color: #000;
+        border-radius: 50%;
+        padding: 10px;
+    }
+
+    .reservas-count {
+        background-color: rgba(255, 0, 127, 0.3); 
+        color: #fff; 
+        text-shadow: 0 0 3px rgba(255, 0, 127, 0.7), 0 0 5px rgba(255, 0, 127, 0.7); 
+        padding: 5px 10px; 
+        border-radius: 8px; 
+    }
+    
 </style>
 @endsection
