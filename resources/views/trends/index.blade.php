@@ -3,7 +3,10 @@
 @section('content')
     <div class="card">
         <div class="card-body">
-            <h3 class="text-center">Reservas por Servicio - Mes Actual</h3>
+            <!-- Contenedor rosa con texto blanco, sombra y texto en cursiva -->
+            <h3 class="text-center bg-pink text-white p-3" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); font-style: italic;">
+                Reservas por Servicio - Mes Actual
+            </h3>
             <div style="height: 300px; width: 100%; margin: auto;">
                 <canvas id="reservasChart"></canvas>
             </div>
