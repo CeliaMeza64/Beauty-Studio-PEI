@@ -10,10 +10,23 @@ use Carbon\Carbon;
 class TrendController extends Controller
 {
     public function index()
-    {
-        $trends = Trend::paginate(10);
-        return view('trends.index', compact('trends'));
-    }
+{
+    // Obtener las tendencias actuales
+    $trends = Trend::paginate(10);
+
+    // Datos de reservas por servicio (con los más reservados)
+    $monthStart = Carbon::now()->startOfMonth();
+    $monthEnd = Carbon::now()->endOfMonth();
+
+    $reservasPorServicio = Servicio::withCount(['reservas' => function ($query) use ($monthStart, $monthEnd) {
+            $query->whereBetween('created_at', [$monthStart, $monthEnd]);
+        }])
+        ->orderByDesc('reservas_count')
+        ->get();
+
+    return view('trends.index', compact('trends', 'reservasPorServicio'));
+}
+
 
     public function create()
     {

@@ -1,107 +1,86 @@
 @extends('adminlte::page')
 
-@section('breadcrumbs')
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item active" aria-current="page">Tendencias</li> 
-        </ol>
-    </nav>
-@endsection
-
 @section('content')
     <div class="card">
         <div class="card-body">
-            <div class="container">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <a href="{{ route('trends.create') }}" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Crear
-                    </a> 
-                </div>
-                @if(session('success'))
-                    <div class="alert alert-success">
-                        {{ session('success') }}
-                    </div>
-                @endif
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Título</th>
-                            <th>Descripción</th>
-                            <th>Imagen</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($trends as $trend)
-                            <tr>
-                                <td>{{ ($trends->currentPage() - 1) * $trends->perPage() + $loop->iteration }}</td>
-                                <td>{{ $trend->title }}</td>
-                                <td class="truncate">{{ $trend->description }}</td>
-                                <td>
-                                    @if ($trend->image && $trend->image !== 'noimage.jpg')
-                                        <img src="{{ asset('storage/trends_images/' . $trend->image) }}" alt="Imagen" style="width: 50px;">
-                                    @else
-                                        No hay imagen
-                                    @endif
-                                </td>
-                                <td class="d-flex align-items-center">
-                                    <a href="{{ route('trends.edit', $trend->id) }}" class="btn btn-success mr-2" title="Editar">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-
-                                    <!-- Botón para abrir el modal -->
-                                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#eliminarModal_{{ $trend->id }}" title="Eliminar">
-                                    <i class="fas fa-trash-alt"></i>
-                                    </button>
-
-                                    <!-- Modal para confirmar la eliminación -->
-                                    <div class="modal fade" id="eliminarModal_{{ $trend->id }}" tabindex="-1" role="dialog" aria-labelledby="eliminarModalLabel_{{ $trend->id }}" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="eliminarModalLabel_{{ $trend->id }}">Eliminar tendencia</h5>
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <p>¿Realmente quieres eliminar la tendencia {{ $trend->title }}?</p>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                                                    <form action="{{ route('trends.destroy', $trend->id) }}" method="POST" style="display:inline-block;">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-danger">Eliminar</button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div> 
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+            <h3 class="text-center">Reservas por Servicio - Mes Actual</h3>
+            <div style="height: 300px; width: 100%; margin: auto;">
+                <canvas id="reservasChart"></canvas>
             </div>
         </div>
     </div>
+@endsection
 
-    {{ $trends->links() }}
-@stop
+@section('js')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Generar colores dinámicamente
+        function generarColores(count) {
+            const colores = [];
+            for (let i = 0; i < count; i++) {
+                const r = Math.floor(Math.random() * 255);
+                const g = Math.floor(Math.random() * 255);
+                const b = Math.floor(Math.random() * 255);
+                colores.push(`rgba(${r}, ${g}, ${b}, 0.7)`); // Color con transparencia
+            }
+            return colores;
+        }
 
-@section('css')
-    <style>
-        .breadcrumb-item a, 
-        .breadcrumb-item.active {
-            font-size: 1.30em; 
-        }
-        .truncate {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 350px; 
-        }
-    </style>
-@stop
+        // Datos del gráfico
+        const labels = @json($reservasPorServicio->pluck('nombre'));
+        const data = @json($reservasPorServicio->pluck('reservas_count'));
+        const backgroundColors = generarColores(labels.length); // Generar colores según la cantidad de servicios
+
+        // Configuración del gráfico
+        const ctx = document.getElementById('reservasChart').getContext('2d');
+        const reservasChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Reservas por Servicio',
+                    data: data,
+                    backgroundColor: backgroundColors,
+                    borderColor: '#ffffff',
+                    borderWidth: 2,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#555',
+                            font: {
+                                family: 'Lobster',
+                                size: 14,
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#f8bbd0',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        titleFont: {
+                            family: 'Lobster',
+                            size: 14
+                        },
+                        bodyFont: {
+                            family: 'Lobster',
+                            size: 12
+                        }
+                    }
+                },
+                layout: {
+                    padding: {
+                        top: 10,
+                        bottom: 10
+                    }
+                }
+            }
+        });
+    </script>
+@endsection
