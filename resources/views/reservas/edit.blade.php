@@ -107,7 +107,7 @@
 
         <div class="col-md-6 order-md-2 position-relative">
                             <div class="form-group">
-                                <a href="{{ route('serviciosImagen.index', ['servicio' => $reserva->id]) }}" class="btn btn-primary mr-2 mb-3 add-image-btn" title="Agregar más imágenes"> 
+                                <a href="{{ route('serviciosImagen.index', ['servicio' => $servicio->id]) }}" class="btn btn-primary mr-2 mb-3 add-image-btn" title="Agregar más imágenes"> 
                                     <i class="fas fa-plus"></i> Imágenes
                                 </a>
                                 <div class="image-placeholder" id="imagePlaceholder" style="cursor: pointer; background-image: url({{ asset('storage/' . $reserva->imagen) }});">
@@ -142,25 +142,22 @@
 @section('scripts')
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Formatear el campo de teléfono mientras el usuario escribe
         document.getElementById('telefono_cliente').addEventListener('input', function(event) {
-            var value = event.target.value.replace(/[^0-9]/g, ''); // Eliminar caracteres no numéricos
+            var value = event.target.value.replace(/[^0-9]/g, ''); 
             if (value.length > 9) {
-                value = value.slice(0, 9); // Limitar a 9 caracteres
+                value = value.slice(0, 9); 
             }
             if (value.length > 4) {
-                value = value.slice(0, 4) + '-' + value.slice(4); // Añadir guion
+                value = value.slice(0, 4) + '-' + value.slice(4); 
             }
             event.target.value = value;
         });
 
-        // Evitar la entrada de números en el campo de nombre
         document.getElementById('nombre_cliente').addEventListener('input', function(event) {
-            var value = event.target.value.replace(/[^A-Za-z\s]/g, ''); // Eliminar caracteres no permitidos
+            var value = event.target.value.replace(/[^A-Za-z\s]/g, ''); 
             event.target.value = value;
         });
 
-        // Manejo del envío del formulario (similar al de la vista de creación)
         document.getElementById('reservaForm').addEventListener('submit', function(event) {
             event.preventDefault();
 
@@ -171,7 +168,6 @@
             var fecha = document.getElementById('fecha_reservacion').value;
             var hora = document.getElementById('hora_reservacion').value;
 
-            // Validación del nombre
             if (nombre.length === 0 || !/^[A-Za-z\s]+$/.test(nombre)) {
                 document.getElementById('nombreError').style.display = 'inline';
                 return;
@@ -179,7 +175,6 @@
                 document.getElementById('nombreError').style.display = 'none';
             }
 
-            // Validación del teléfono
             if (telefono.length === 0 || !/^\d{4}-\d{4}$/.test(telefono)) {
                 document.getElementById('telefonoError').style.display = 'inline';
                 return;
@@ -187,7 +182,6 @@
                 document.getElementById('telefonoError').style.display = 'none';
             }
 
-            // Validación de categoría
             if (!categoria) {
                 document.getElementById('categoriaError').style.display = 'inline';
                 return;
@@ -195,7 +189,6 @@
                 document.getElementById('categoriaError').style.display = 'none';
             }
 
-            // Validación de servicio
             if (!servicio) {
                 document.getElementById('servicioError').style.display = 'inline';
                 return;
@@ -203,7 +196,6 @@
                 document.getElementById('servicioError').style.display = 'none';
             }
 
-            // Validación de fecha
             if (!fecha) {
                 document.getElementById('fechaError').style.display = 'inline';
                 return;
@@ -211,7 +203,6 @@
                 document.getElementById('fechaError').style.display = 'none';
             }
 
-            // Validación de hora
             if (!hora) {
                 document.getElementById('horaError').style.display = 'inline';
                 return;
@@ -219,14 +210,14 @@
                 document.getElementById('horaError').style.display = 'none';
             }
 
-            this.submit(); // Enviar el formulario si todas las validaciones son correctas
+            this.submit(); 
         });
     });
     </script>
     <script>
     function previewImages() {
         const previewContainer = document.getElementById('preview-container');
-        previewContainer.innerHTML = ''; // Limpiar el contenedor de vista previa
+        previewContainer.innerHTML = ''; 
 
         const files = document.getElementById('imagenes').files;
         if (files) {
@@ -246,19 +237,16 @@
 document.getElementById('reservaForm').addEventListener('submit', function(event) {
     event.preventDefault();
 
-    // Obtener valores de los campos
     var estado = document.getElementById('estado').value;
     var estadoError = document.getElementById('estadoError');
 
-    // Validación del estado del servicio
     if (!estado) {
         estadoError.style.display = 'inline';
-        return; // Detener el envío si no se selecciona un estado
+        return; 
     } else {
         estadoError.style.display = 'none';
     }
 
-    // Continuar con el envío del formulario si todas las validaciones son correctas
     this.submit();
 });
 
