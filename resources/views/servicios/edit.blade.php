@@ -95,10 +95,10 @@
                             <div class="row justify-content-start">
                                 <div class="col-md-6">
                                     <div class="d-flex">
-                                        <button type="submit" class="btn btn-outline-success mr-2" style="flex: 1;">
-                                            <span class="fas fa-save"></span> Actualizar
+                                        <button type="submit" class="btn btn-outline-success mr-2" style="flex: 1;" tabindex="4">
+                                            <span class="fas fa-save"></span> Guardar
                                         </button>
-                                        <a href="{{ route('servicios.index') }}" class="btn btn-outline-danger" style="flex: 1;">
+                                        <a href="{{ route('servicios.index') }}" class="btn btn-outline-danger" style="flex: 1;" tabindex="4">
                                             <i class="fa fa-times" aria-hidden="true"></i> Cancelar
                                         </a>
                                     </div>

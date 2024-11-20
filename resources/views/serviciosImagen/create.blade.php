@@ -47,7 +47,7 @@ imagen @extends('adminlte::page')
                         <div class="col-md-6">
                             <div class="d-flex justify-content-start">
                                 <button type="submit" class="btn btn-outline-success mr-2">
-                                    <span class="fas fa-upload"></span> Subir Imagen
+                                <span class="fas fa-save"></span> Guardar
                                 </button>
                                 
                                 <a href="{{ route('serviciosImagen.index', ['servicio' => $servicioId]) }}" onclick="cancelarCreacion()" class="btn btn-outline-danger">

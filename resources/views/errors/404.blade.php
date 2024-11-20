@@ -8,14 +8,6 @@
 
 @section('content')
 
-<nav>
-    @if(auth()->check())
-        <span>{{ auth()->user()->name }}</span>
-    @else
-        <a href="{{ route('login') }}">Login</a>
-    @endif
-</nav>
-
 
 <div class="home-page">
     <h1>Oops!</h1>

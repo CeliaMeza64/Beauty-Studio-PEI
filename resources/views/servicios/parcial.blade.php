@@ -14,11 +14,11 @@
             @endif
         </td>
         <td class="text-center">{{ $servicio->duracion }}</td>
-        <td>
-            <a href="{{ route('servicios.edit', $servicio->id) }}" class="btn btn-success btn-sm" title="Editar">
+        <td class="d-flex align-items-center">
+            <a href="{{ route('servicios.edit', $servicio->id) }}" class="btn btn-success btn-sm mr-2" title="Editar">
                 <i class="fas fa-edit"></i>
             </a>
-            <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
+            <button type="button" class="btn btn-danger btn-sm " data-toggle="modal"
                     data-target="#eliminarModal_{{ $servicio->id }}" title="Eliminar">
                 <i class="fas fa-trash-alt"></i>
             </button>
