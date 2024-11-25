@@ -21,20 +21,23 @@ class ReservaController extends Controller
 
     public function create()
     {
-        $categorias = Categoria::with('servicios')->get();
-        return view('reservas.create', compact('categorias'));
+        $categorias = Categoria::all();
+        $servicios = Servicio::with('categoria')->get(); // Obtener servicios con sus categorías asociadas
+
+        return view('reservas.create', compact('categorias', 'servicios'));
     }
-    
+
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'nombre_cliente' => 'required|string|max:30',
             'telefono_cliente' => 'required|string|size:9|regex:/^\d{4}-\d{4}$/',
             'servicio_id' => 'required|exists:servicios,id',
             'categoria_id' => 'required|exists:categorias,id',
             'fecha_reservacion' => 'required|date|after:today',
             'hora_reservacion' => 'required|in:09:00,11:00,13:00,15:00,18:00,20:00',
-        ], [
+            'duracion' => 'required|integer'
+            ], [
             'nombre_cliente.required' => 'El nombre del cliente es obligatorio.',
             'telefono_cliente.required' => 'El teléfono del cliente es obligatorio.',
             'telefono_cliente.regex' => 'El teléfono debe tener el formato 3345-7865.',
@@ -44,8 +47,19 @@ class ReservaController extends Controller
             'fecha_reservacion.date' => 'La fecha de reservación no tiene un formato válido.',
             'hora_reservacion.required' => 'La hora de reservación es obligatoria.',
             'hora_reservacion.in' => 'La hora de reservación debe ser una de las siguientes: 09:00, 11:00, 13:00, 15:00, 18:00, 20:00.',
+            'duracion' => 'La duracion debe ser requerida',
+
         ]);
 
+        $reserva = new Reserva();
+        $reserva->nombre_cliente = $request->input('nombre_cliente');
+        $reserva->telefono_cliente = $request->input('telefono_cliente');
+        $reserva->servicio_id = $request->input('servicio_id');
+        $reserva->categoria_id = $request->input('categoria_id');
+        $reserva->fecha_reservacion = $request->input('fecha_reservacion');
+        $reserva->hora_reservacion = $request->input('hora_reservacion');
+        $reserva->duracion = $request->input('duracion');
+        
         // Verificar si ya existe una reserva en esa fecha y hora
         $fecha = $request->input('fecha_reservacion');
         $hora = $request->input('hora_reservacion');
@@ -56,11 +70,11 @@ class ReservaController extends Controller
 
         if ($reservaExistente) {
             return back()->withErrors(['hora_reservacion' => 'Ya existe una reserva para esta fecha y hora. Por favor, elija otro horario.'])
-                        ->withInput();
+                ->withInput();
         }
 
-        // Si no existe, proceder a guardar la nueva reserva
-        Reserva::create($validated);
+        $reserva->save();
+        
 
         // Redirigir a la página de índice con un mensaje de éxito
         return redirect()->route('reservas.create')->with('success', 'Reserva creada con éxito.');
@@ -73,6 +87,7 @@ class ReservaController extends Controller
             'telefono_cliente' => 'required|string|max:9|regex:/^\d{4}-\d{4}$/',
             'fecha_reservacion' => 'required|date|after:tomorrow',
             'hora_reservacion' => 'required|in:09:00,11:00,13:00,15:00,18:00,20:00',
+            'duracion' => 'required',
         ]);
 
         // Verificar si ya existe una reserva en esa fecha y hora
@@ -152,6 +167,7 @@ class ReservaController extends Controller
         $telefono = $reserva->telefono_cliente;
         $fecha = $reserva->fecha_reservacion;
         $hora = $reserva->hora_reservacion;
+        $duracion = $reserva->duracion;
 
         $printContent = "
             <html>
@@ -163,13 +179,14 @@ class ReservaController extends Controller
                     <li><strong>Teléfono:</strong> $telefono</li>
                     <li><strong>Fecha:</strong> $fecha</li>
                     <li><strong>Hora:</strong> $hora</li>
+                    <li><strong>Duracion:</strong> $duracion </li>
                 </ul>
             </body>
             </html>
         ";
 
         $printWindow = "<script>
-            var printContent = $printContent;
+            var printContent = `$printContent`;
             var printWindow = window.open('', '', 'height=600,width=800');
             printWindow.document.write(printContent);
             printWindow.document.close();
@@ -195,8 +212,8 @@ class ReservaController extends Controller
         $hora = $request->input('hora');
 
         $reservaExistente = Reserva::where('fecha_reservacion', $fecha)
-                                    ->where('hora_reservacion', $hora)
-                                    ->exists();
+            ->where('hora_reservacion', $hora)
+            ->exists();
 
         return response()->json(['disponible' => !$reservaExistente]);
     }
@@ -212,9 +229,11 @@ class ReservaController extends Controller
     {
         $categoria_id = $request->input('categoria_id');
         $servicios = Servicio::where('categoria_id', $categoria_id)->get();
-    
+
         return response()->json($servicios);
     }
+
+
         // NO TOQUE YIRENY 
 
     public function getReservas()
