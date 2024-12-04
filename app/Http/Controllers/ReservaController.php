@@ -175,6 +175,7 @@ class ReservaController extends Controller
             return redirect()->back()->withErrors(['hora_reservacion' => 'Ya existe una reserva para esa fecha y hora.'])->withInput();
         }
 
+        
         $reserva->update($validated);
 
         return redirect()->route('reservas.index')->with('success', 'Reserva actualizada correctamente.');

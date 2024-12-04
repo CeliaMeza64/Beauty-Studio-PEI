@@ -4,6 +4,7 @@
 {{''}}
 @endsection
 
+
 @section('content')
 <div class="container">
     <h1>Crear Reserva</h1>

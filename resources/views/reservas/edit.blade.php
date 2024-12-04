@@ -201,6 +201,8 @@
         }
     }
 
+    
+
 document.getElementById('reservaForm').addEventListener('submit', function(event) {
     event.preventDefault();
 
