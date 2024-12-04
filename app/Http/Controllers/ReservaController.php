@@ -142,24 +142,29 @@ class ReservaController extends Controller
     public function update(Request $request, Reserva $reserva)
     {
         $validated = $request->validate([
-            'nombre_cliente' => 'required|string|max:30',
-            'telefono_cliente' => 'required|string|size:9|regex:/^\d{4}-\d{4}$/',
-            'servicio_id' => 'required|exists:servicios,id',
-            'categoria_id' => 'required|exists:categorias,id',
-            'fecha_reservacion' => 'required|date|after:today',
-            'hora_reservacion' => 'required|date_format:H:i',
-        ], [
-            'nombre_cliente.required' => 'El nombre del cliente es obligatorio.',
-            'telefono_cliente.required' => 'El teléfono del cliente es obligatorio.',
-            'telefono_cliente.regex' => 'El teléfono debe tener el formato 3345-7865.',
-            'servicio_id.required' => 'El servicio es obligatorio.',
-            'categoria_id.required' => 'La categoría es obligatoria.',
-            'fecha_reservacion.required' => 'La fecha de reservación es obligatoria.',
-            'fecha_reservacion.date' => 'La fecha de reservación no tiene un formato válido.',
-            'hora_reservacion.required' => 'La hora de reservación es obligatoria.',
-            'hora_reservacion.in' => 'La hora de reservación debe ser una de las siguientes: 09:00, 11:00, 13:00, 15:00, 18:00, 20:00.',
+            [
+            'estado' => 'required|in:Pendiente,Aprobado,Rechazado,Cancelado,Realizado',        ],
+            
+
+            'estado.required' => 'El estado es obligatorio.',
+            'estado.in' => 'El estado debe ser uno de los valores permitidos.',
         ]);
 
+        if ($request->estado === 'Realizado' && $reserva->fecha_reservacion > now()->format('Y-m-d')) {
+            return redirect()->back()
+                ->withErrors(['estado' => 'No se puede marcar como "Realizado" si la fecha de la reservación no ha pasado.'])
+                ->withInput();
+        }
+        $exists = Reserva::where('fecha_reservacion', $request->fecha_reservacion)
+        ->where('hora_reservacion', $request->hora_reservacion)
+        ->where('id', '!=', $reserva->id) // Excluir la reserva actual
+        ->where('estado', '!=', 'Rechazado') // No considerar reservas rechazadas
+        ->exists();
+    if ($exists) {
+        return redirect()->back()
+            ->withErrors(['hora_reservacion' => 'Ya existe una reserva para esa fecha y hora.'])
+            ->withInput();
+    }
         // Verificar si ya existe una reserva en esa fecha y hora, excluyendo la actual
         $exists = Reserva::where('fecha_reservacion', $request->fecha_reservacion)
             ->where('hora_reservacion', $request->hora_reservacion)
@@ -169,12 +174,12 @@ class ReservaController extends Controller
         if ($exists) {
             return redirect()->back()->withErrors(['hora_reservacion' => 'Ya existe una reserva para esa fecha y hora.'])->withInput();
         }
-        $reserva->hora_reservacion = Carbon::createFromFormat('H:i', $request->hora_reservacion)->format('H:i');
 
         $reserva->update($validated);
 
         return redirect()->route('reservas.index')->with('success', 'Reserva actualizada correctamente.');
     }
+
 
     public function destroy(Reserva $reserva)
     {

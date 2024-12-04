@@ -12,7 +12,7 @@
         @csrf
         <div class="form-group">
             <label for="nombre_cliente">Nombre del Cliente</label>
-            <input type="text" class="form-control" id="nombre_cliente" name="nombre_cliente" value="{{ old('nombre_cliente') }}" maxlength="30" required>
+            <input type="text" class="form-control" id="nombre_cliente" name="nombre_cliente" placeholder="Ingrese su nombre"  value="{{ old('nombre_cliente') }}" maxlength="30" required>
             <span id="nombreError" style="color:red; display:none;">Completa este campo, formato en letras</span>
             @error('nombre_cliente')
                 <span style="color:red;">{{ $message }}</span>
@@ -22,9 +22,9 @@
         <br>
         <div class="form-group">
             <label for="telefono_cliente">Teléfono:</label>
-            <input type="text" id="telefono_cliente" name="telefono_cliente" class="form-control" placeholder="3345-7865" required
-                   maxlength="9" pattern="\d{4}-\d{4}" title="El teléfono debe tener el formato 3345-7865">
-            <span id="telefonoError" style="display:none; color:red;">El teléfono debe tener el formato 3345-7865.</span>
+            <input type="text" id="telefono_cliente" name="telefono_cliente" class="form-control" placeholder="XXXX-XXXX" required
+                   maxlength="9" pattern="\d{4}-\d{4}" title="El teléfono debe tener el formato XXXX-XXXX">
+            <span id="telefonoError" style="display:none; color:red;">El teléfono debe tener el formato XXXX-XXXX.</span>
             @error('telefono_cliente')
                 <span style="color:red;">{{ $message }}</span>
             @enderror

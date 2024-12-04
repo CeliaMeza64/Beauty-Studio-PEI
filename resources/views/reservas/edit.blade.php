@@ -23,25 +23,23 @@
         </div>
     @endif
 
-    <form action="{{ route('reservas.update', $reserva->id) }}" method="POST" id="reservaForm">
+    <form action="{{ route('reservas.update', $reserva->id) }}" method="POST">
         @csrf
         @method('PUT')
 
         <div class="mb-3">
             <label for="nombre_cliente" class="form-label">Nombre del Cliente</label>
-            <input type="text" class="form-control" id="nombre_cliente" name="nombre_cliente" value="{{ old('nombre_cliente', $reserva->nombre_cliente) }}" required maxlength="30">
-            <span id="nombreError" style="color:red; display:none;">Completa este campo, formato en letras</span>
+            <input type="text" class="form-control" id="nombre_cliente" name="nombre_cliente" value="{{ old('nombre_cliente', $reserva->nombre_cliente) }}" readonly>
         </div>
 
         <div class="mb-3">
             <label for="telefono_cliente" class="form-label">Teléfono del Cliente</label>
-            <input type="text" class="form-control" id="telefono_cliente" name="telefono_cliente" value="{{ old('telefono_cliente', $reserva->telefono_cliente) }}" required maxlength="9" pattern="\d{4}-\d{4}" title="El teléfono debe tener el formato 3345-7865">
-            <span id="telefonoError" style="color:red; display:none;">El teléfono debe tener el formato 3345-7865.</span>
+            <input type="text" class="form-control" id="telefono_cliente" name="telefono_cliente" value="{{ old('telefono_cliente', $reserva->telefono_cliente) }}" readonly>
         </div>
 
         <div class="mb-3">
-            <label for="categoria_id" class="form-label">Categoría:</label>
-            <select name="categoria_id" id="categoria_id" class="form-control" required>
+            <label for="categoria_id" class="form-label">Categoría</label>
+            <select name="categoria_id" id="categoria_id" class="form-control" disabled>
                 <option value="">Seleccione una categoría</option>
                 @foreach($categorias as $categoria)
                     <option value="{{ $categoria->id }}" {{ old('categoria_id', $reserva->categoria_id) == $categoria->id ? 'selected' : '' }}>
@@ -49,12 +47,11 @@
                     </option>
                 @endforeach
             </select>
-            <span id="categoriaError" style="color:red; display:none;">Por favor, selecciona una categoría.</span>
         </div>
 
         <div class="mb-3">
-            <label for="servicio_id" class="form-label">Servicio:</label>
-            <select name="servicio_id" id="servicio_id" class="form-control" required>
+            <label for="servicio_id" class="form-label">Servicio</label>
+            <select name="servicio_id" id="servicio_id" class="form-control" disabled>
                 <option value="">Seleccione un servicio</option>
                 @foreach($categorias as $categoria)
                     <optgroup label="{{ $categoria->nombre }}">
@@ -66,106 +63,45 @@
                     </optgroup>
                 @endforeach
             </select>
-            <span id="servicioError" style="color:red; display:none;">Por favor, selecciona un servicio.</span>
         </div>
 
         <div class="mb-3">
             <label for="fecha_reservacion" class="form-label">Fecha de Reservación</label>
-            <input type="date" class="form-control" id="fecha_reservacion" name="fecha_reservacion" value="{{ old('fecha_reservacion', $reserva->fecha_reservacion) }}" required min="{{ date('Y-m-d', strtotime('+1 day')) }}">
-            <span id="fechaError" style="color:red; display:none;">Por favor, selecciona una fecha válida.</span>
+            <input type="date" class="form-control" id="fecha_reservacion" name="fecha_reservacion" value="{{ old('fecha_reservacion', $reserva->fecha_reservacion) }}" readonly>
         </div>
 
         <div class="mb-3">
             <label for="hora_reservacion" class="form-label">Hora de Reservación</label>
-            <select class="form-control" id="hora_reservacion" name="hora_reservacion" required>
-                <option value="09:00" {{ old('hora_reservacion', $reserva->hora_reservacion) == '09:00' ? 'selected' : '' }}>09:00 AM</option>
-                <option value="11:00" {{ old('hora_reservacion', $reserva->hora_reservacion) == '11:00' ? 'selected' : '' }}>11:00 AM</option>
-                <option value="13:00" {{ old('hora_reservacion', $reserva->hora_reservacion) == '13:00' ? 'selected' : '' }}>01:00 PM</option>
-                <option value="15:00" {{ old('hora_reservacion', $reserva->hora_reservacion) == '15:00' ? 'selected' : '' }}>03:00 PM</option>
-                <option value="18:00" {{ old('hora_reservacion', $reserva->hora_reservacion) == '18:00' ? 'selected' : '' }}>06:00 PM</option>
-                <option value="20:00" {{ old('hora_reservacion', $reserva->hora_reservacion) == '20:00' ? 'selected' : '' }}>08:00 PM</option>
-            </select>
-            @if ($errors->has('hora_reservacion'))
-                <small class="text-danger">{{ $errors->first('hora_reservacion') }}</small>
-            @endif
-            <span id="horaError" style="color:red; display:none;">Por favor, selecciona una hora.</span>
+            <input type="text" class="form-control" id="hora_reservacion" name="hora_reservacion" value="{{ old('hora_reservacion', $reserva->hora_reservacion) }}" readonly>
         </div>
 
         <!-- Estado -->
-        <div class="form-group"> 
+        <div class="form-group">
             <label for="estado">Estado</label>
             <select name="estado" id="estado" class="form-control">
-                @switch($reserva->estado)
-                    @case('Pendiente')
-                        <option value="Pendiente" selected>Pendiente</option>
-                        <option value="Aprobado">Aprobado</option>
-                        <option value="Rechazado">Rechazado</option>
-                        @break
-
-                    @case('Aprobado')
-                        <option value="Aprobado" selected>Aprobado</option>
-                        <option value="Cancelado">Cancelado</option>
-                        <option 
-                    value="Realizado" 
-                    {{ $reserva->fecha_reservacion > now()->format('Y-m-d') ? 'disabled' : '' }}>
-                    Realizado
-                </option>
-                        @break
-
-                    @case('Rechazado')
-                        <option value="Rechazado" selected>Rechazado</option>
-                        @break
-
-                    @case('Cancelado')
-                        <option value="Cancelado" selected>Cancelado</option>
-                        @break
-
-                    @case('Realizado')
-                        <option value="Realizado" selected>Realizado</option>
-                        @break
-
-                    @default
-                        <option value="Pendiente" selected>Pendiente</option>
-                        <option value="Aprobado">Aprobado</option>
-                        <option value="Rechazado">Rechazado</option>
-                @endswitch
+                @if ($reserva->estado == 'Aprobado')
+                    <option value="Aprobado" {{ $reserva->estado == 'Aprobado' ? 'selected' : '' }}>Aprobado</option>
+                    <option value="Realizado" {{ $reserva->estado == 'Realizado' ? 'selected' : '' }}>Realizado</option>
+                    <option value="Rechazado" {{ $reserva->estado == 'Rechazado' ? 'selected' : '' }}>Rechazado</option>
+                @else
+                    <option value="Pendiente" {{ $reserva->estado == 'Pendiente' ? 'selected' : '' }}>Pendiente</option>
+                    <option value="Aprobado" {{ $reserva->estado == 'Aprobado' ? 'selected' : '' }}>Aprobado</option>
+                    <option value="Realizado" {{ $reserva->estado == 'Realizado' ? 'selected' : '' }}>Realizado</option>
+                    <option value="Cancelado" {{ $reserva->estado == 'Cancelado' ? 'selected' : '' }}>Cancelado</option>
+                @endif
             </select>
-            @if ($reserva->fecha_reservacion > now()->format('Y-m-d'))
-             <small class="text-danger">No se puede seleccionar "Realizado" si la fecha de la reservación no ha pasado.</small>
-            @endif
         </div>
 
-
-        <div class="col-md-6 order-md-2 position-relative">
-                            <div class="form-group">
-                                <a href="{{ route('serviciosImagen.index', ['servicio' => $servicio->id]) }}" class="btn btn-primary mr-2 mb-3 add-image-btn" title="Agregar más imágenes"> 
-                                    <i class="fas fa-plus"></i> Imágenes
-                                </a>
-                                <div class="image-placeholder" id="imagePlaceholder" style="cursor: pointer; background-image: url({{ asset('storage/' . $reserva->imagen) }});">
-                                    @if (!$reserva->imagen)
-                                        
-                                    @endif
-                                </div>
-                                <input type="file" name="imagen" class="form-control-file d-none" id="imagenInput">
-                                <div class="invalid-feedback">Por favor, suba una imagen válida.</div>
-                            </div>
-                        </div>
-        <div class="row mt-3" id="preview-container"></div> <!-- Contenedor para las vistas previas -->
-
-        
-
-        <div class="row justify-content-start">
-                                <div class="col-md-6">
-                                    <div class="d-flex">
-                                        <button type="submit" class="btn btn-outline-success mr-2" style="flex: 1;">
-                                            <span class="fas fa-save"></span> Actualizar
-                                        </button>
-                                        <a href="{{ route('reservas.index') }}" class="btn btn-outline-danger" style="flex: 1;">
-                                            <i class="fa fa-times" aria-hidden="true"></i> Cancelar
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
+        <div class="row justify-content-start mt-3">
+            <div class="col-md-6">
+                <button type="submit" class="btn btn-outline-success mr-2">
+                    <span class="fas fa-save"></span> Actualizar
+                </button>
+                <a href="{{ route('reservas.index') }}" class="btn btn-outline-danger">
+                    <i class="fa fa-times" aria-hidden="true"></i> Cancelar
+                </a>
+            </div>
+        </div>
     </form>
 </div>
 @endsection
@@ -281,7 +217,32 @@ document.getElementById('reservaForm').addEventListener('submit', function(event
     this.submit();
 });
 
-
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const reservaForm = document.getElementById('reservaForm');
+        const estadoField = document.getElementById('estado');
+        const fechaReservacion = document.getElementById('fecha_reservacion');
+        const estadoError = document.createElement('span');
+        estadoError.style.color = 'red';
+        estadoError.style.display = 'none';
+        estadoError.id = 'estadoError';
+        estadoError.textContent = 'El estado "Realizado" solo se puede seleccionar si la fecha de la reserva es igual o anterior a hoy.';
+        estadoField.parentElement.appendChild(estadoError);
 
+        reservaForm.addEventListener('submit', function (event) {
+            const fechaReserva = new Date(fechaReservacion.value);
+            const fechaHoy = new Date();
+            fechaHoy.setHours(0, 0, 0, 0); 
+
+            if (estadoField.value === 'Realizado' && fechaReserva > fechaHoy) {
+                event.preventDefault();
+                estadoError.style.display = 'inline';
+            } else {
+                estadoError.style.display = 'none';
+                this.submit();
+            }
+        });
+    });
+</script>
 @endsection
