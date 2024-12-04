@@ -85,25 +85,56 @@
                 <option value="18:00" {{ old('hora_reservacion', $reserva->hora_reservacion) == '18:00' ? 'selected' : '' }}>06:00 PM</option>
                 <option value="20:00" {{ old('hora_reservacion', $reserva->hora_reservacion) == '20:00' ? 'selected' : '' }}>08:00 PM</option>
             </select>
+            @if ($errors->has('hora_reservacion'))
+                <small class="text-danger">{{ $errors->first('hora_reservacion') }}</small>
+            @endif
             <span id="horaError" style="color:red; display:none;">Por favor, selecciona una hora.</span>
         </div>
 
         <!-- Estado -->
-<div class="form-group">
-    <label for="estado">Estado</label>
-    <select name="estado" id="estado" class="form-control">
-        @if ($reserva->estado == 'Aprobado')
-            <option value="Aprobado" {{ $reserva->estado == 'Aprobado' ? 'selected' : '' }}>Aprobado</option>
-            <option value="Realizado" {{ $reserva->estado == 'Realizado' ? 'selected' : '' }}>Realizado</option>
-            <option value="Rechazado" {{ $reserva->estado == 'Rechazado' ? 'selected' : '' }}>Rechazado</option>
-        @else
-            <option value="Pendiente" {{ $reserva->estado == 'Pendiente' ? 'selected' : '' }}>Pendiente</option>
-            <option value="Aprobado" {{ $reserva->estado == 'Aprobado' ? 'selected' : '' }}>Aprobado</option>
-            <option value="Realizado" {{ $reserva->estado == 'Realizado' ? 'selected' : '' }}>Realizado</option>
-            <option value="Cancelado" {{ $reserva->estado == 'Cancelado' ? 'selected' : '' }}>Cancelado</option>
-        @endif
-    </select>
-</div>
+        <div class="form-group"> 
+            <label for="estado">Estado</label>
+            <select name="estado" id="estado" class="form-control">
+                @switch($reserva->estado)
+                    @case('Pendiente')
+                        <option value="Pendiente" selected>Pendiente</option>
+                        <option value="Aprobado">Aprobado</option>
+                        <option value="Rechazado">Rechazado</option>
+                        @break
+
+                    @case('Aprobado')
+                        <option value="Aprobado" selected>Aprobado</option>
+                        <option value="Cancelado">Cancelado</option>
+                        <option 
+                    value="Realizado" 
+                    {{ $reserva->fecha_reservacion > now()->format('Y-m-d') ? 'disabled' : '' }}>
+                    Realizado
+                </option>
+                        @break
+
+                    @case('Rechazado')
+                        <option value="Rechazado" selected>Rechazado</option>
+                        @break
+
+                    @case('Cancelado')
+                        <option value="Cancelado" selected>Cancelado</option>
+                        @break
+
+                    @case('Realizado')
+                        <option value="Realizado" selected>Realizado</option>
+                        @break
+
+                    @default
+                        <option value="Pendiente" selected>Pendiente</option>
+                        <option value="Aprobado">Aprobado</option>
+                        <option value="Rechazado">Rechazado</option>
+                @endswitch
+            </select>
+            @if ($reserva->fecha_reservacion > now()->format('Y-m-d'))
+             <small class="text-danger">No se puede seleccionar "Realizado" si la fecha de la reservación no ha pasado.</small>
+            @endif
+        </div>
+
 
         <div class="col-md-6 order-md-2 position-relative">
                             <div class="form-group">
@@ -129,7 +160,7 @@
                                         <button type="submit" class="btn btn-outline-success mr-2" style="flex: 1;">
                                             <span class="fas fa-save"></span> Actualizar
                                         </button>
-                                        <a href="{{ route('servicios.index') }}" class="btn btn-outline-danger" style="flex: 1;">
+                                        <a href="{{ route('reservas.index') }}" class="btn btn-outline-danger" style="flex: 1;">
                                             <i class="fa fa-times" aria-hidden="true"></i> Cancelar
                                         </a>
                                     </div>

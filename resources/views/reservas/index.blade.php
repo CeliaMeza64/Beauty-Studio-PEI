@@ -17,15 +17,16 @@
                 @else
                     <table class="table table-bordered">
                         <thead>
-                            <tr>
+                            <tr >
                                 <th>#</th>
                                 <th>Nombre del Cliente</th>
                                 <th>Teléfono del Cliente</th>
                                 <th>Servicio</th>
                                 <th>Fecha</th>
                                 <th>Hora</th>
+                                <th>Duración</th>
+                                <th>Hora finalización</th>
                                 <th>Estado</th>
-                
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -36,11 +37,16 @@
                                     
                                     <td>{{ $reserva->nombre_cliente }}</td>
                                     <td>{{ $reserva->telefono_cliente }}</td>
-                                    <td>{{ $reserva->servicio->nombre }}</td>
+                                    <td>
+                                        @foreach ($reserva->servicios as $servicio)
+                                            {{ $servicio->nombre }}@if (!$loop->last), @endif
+                                        @endforeach
+                                    </td>
                                     <td>{{ \Carbon\Carbon::parse($reserva->fecha_reservacion)->format('d/m/Y') }}</td>
                                     <td>{{ $reserva->hora_reservacion }}</td>
+                                    <td>{{ $reserva->duracion }} minutos</td>
+                                    <td>{{ $reserva->hora_fin }}</td>
                                     <td>{{ ucfirst($reserva->estado) }}</td>
-                                    
                                     <td class="d-flex align-items-center">
                                         <a href="{{ route('reservas.edit', $reserva) }}" class="btn btn-success btn-sm mr-2">
                                             <i class="fas fa-edit"></i>
