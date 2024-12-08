@@ -108,23 +108,7 @@
         </button>
     </form>
 
-    <!-- Contenedor para el mensaje de error de disponibilidad -->
-    <div id="availabilityError" style="display: none; margin-top: 1em;" class="alert alert-danger">
-        <span id="availabilityErrorText">Ya existe una reserva para esta fecha y hora. Por favor, elija otro horario.</span>
-    </div>
 
-   
-    <!-- Contenedor para la pregunta de impresión -->
-    <div id="printConfirmation" style="display: none; margin-top: 1em;" class="alert alert-info">
-        <p>¿Desea imprimir la reserva?</p>
-        <button type="button" class="btn btn-secondary" id="cancelPrintButton">Cancelar</button>
-        <button type="button" class="btn btn-primary" id="printButton">Imprimir</button>
-    </div>
-
-    <!-- Contenedor para el mensaje final -->
-    <div id="finalMessage" style="display: none; margin-top: 1em;" class="alert alert-info">
-        <strong>¡Gracias por su reserva!</strong> En breve se le confirmará su reserva.
-    </div>
 
     <br>
     <br>
@@ -187,8 +171,9 @@
     </style>
     @endsection
 
-    <div class="modal fade" id="reservaModal" tabindex="-1" aria-labelledby="reservaModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+  <!-- Modal -->
+<div class="modal fade" id="reservaModal" tabindex="-1" aria-labelledby="reservaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="reservaModalLabel">Detalles de la Reserva</h5>
@@ -198,25 +183,65 @@
                 <p><strong>Nombre del Cliente:</strong> <span id="modalNombreCliente"></span></p>
                 <p><strong>Teléfono:</strong> <span id="modalTelefonoCliente"></span></p>
                 <p><strong>Servicios:</strong> <span id="modalServicios"></span></p>
-                <p><strong>Fecha de Reserva:</strong> <span id="modalFecha"></span></p>
+                <p><strong>Fecha de la Reserva:</strong> <span id="modalFecha"></span></p>
                 <p><strong>Hora de Inicio:</strong> <span id="modalHoraInicio"></span></p>
                 <p><strong>Duración Total:</strong> <span id="modalDuracion"></span></p>
-                <p><strong>Hora de Finalización:</strong> <span id="modalHoraFin"></span></p>
+                <p><strong>Hora de Fin:</strong> <span id="modalHoraFin"></span></p>
                 <p><strong>Estado:</strong> <span id="modalEstado"></span></p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary"   id="editButton"  data-bs-dismiss="modal">Editar</button>
-                <button type="button"  class="btn btn-primary" id="confirmButton">Confirmar</button>
+                <button type="button" class="btn btn-secondary" id="editarReservaButton">Editar</button>
+                <button type="button" class="btn btn-primary" id="aceptarReservaButton" data-bs-dismiss="modal">Aceptar</button>
             </div>
         </div>
     </div>
 </div>
-
-
-
-   
+ 
 <script>
-     
+document.getElementById('guardarReservaButton').addEventListener('click', function (event) {
+    event.preventDefault(); // Evitar el envío del formulario
+
+    const formData = new FormData(document.getElementById('reservaForm'));
+
+    fetch('{{ route("reservas.store") }}', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json',
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Llenar el modal con los datos de la reserva
+            document.getElementById('modalNombreCliente').textContent = data.reserva.nombre_cliente;
+            document.getElementById('modalTelefonoCliente').textContent = data.reserva.telefono_cliente;
+            document.getElementById('modalServicios').textContent = data.reserva.servicios.join(', ');
+            document.getElementById('modalFecha').textContent = data.reserva.fecha_reservacion;
+            document.getElementById('modalHoraInicio').textContent = data.reserva.hora_reservacion;
+            document.getElementById('modalDuracion').textContent = data.reserva.duracion + ' minutos';
+            document.getElementById('modalHoraFin').textContent = data.reserva.hora_fin;
+            document.getElementById('modalEstado').textContent = data.reserva.estado;
+
+            // Mostrar el modal
+            const modal = new bootstrap.Modal(document.getElementById('reservaModal'));
+            modal.show();
+        } else {
+            alert('Error al procesar la reserva. Inténtelo de nuevo.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Ha ocurrido un error al procesar la solicitud.');
+    });
+});
+
+// Manejar el botón de "Editar"
+document.getElementById('editarReservaButton').addEventListener('click', function () {
+    const modal = bootstrap.Modal.getInstance(document.getElementById('reservaModal'));
+    modal.hide();
+});
 
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -309,35 +334,6 @@
     });
 
 });
-          // Manejo del botón de editar
-        document.getElementById('editButton').addEventListener('click', function() {
-        document.getElementById('confirmationMessage').style.display = 'none';
-        document.getElementById('reservaForm').scrollIntoView({ behavior: 'smooth' });
-    });
-
-    // Manejo del botón de confirmar
-    document.getElementById('confirmButton').addEventListener('click', function() {
-        document.getElementById('confirmationMessage').style.display = 'none';
-        document.getElementById('printConfirmation').style.display = 'block';
-    });
-   
-
-  // Manejo del botón de cancelar impresión
-  document.getElementById('cancelPrintButton').addEventListener('click', function() {
-        document.getElementById('printConfirmation').style.display = 'none';
-        document.getElementById('reservaForm').submit();
-        document.getElementById('finalMessage').style.display = 'block'; // Mostrar mensaje final
-    });
-
-    // Manejo del botón de imprimir
-    document.getElementById('printButton').addEventListener('click', function() {
-        window.print();
-        document.getElementById('printConfirmation').style.display = 'none';
-        document.getElementById('reservaForm').submit();
-        document.getElementById('finalMessage').style.display = 'block'; // Mostrar mensaje final
-    });
-
-  
 
     // Función para actualizar los servicios cuando se marca una categoría
 function updateServicios(categoriaId) {
@@ -360,7 +356,6 @@ document.addEventListener('DOMContentLoaded', function () {
         updateServicios(checkbox.value);
     });
 });
-
 
 </script>
 </div>

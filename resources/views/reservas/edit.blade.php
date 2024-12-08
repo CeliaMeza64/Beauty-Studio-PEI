@@ -82,16 +82,29 @@
                 @if ($reserva->estado == 'Aprobado')
                     <option value="Aprobado" {{ $reserva->estado == 'Aprobado' ? 'selected' : '' }}>Aprobado</option>
                     <option value="Realizado" {{ $reserva->estado == 'Realizado' ? 'selected' : '' }}>Realizado</option>
-                    <option value="Rechazado" {{ $reserva->estado == 'Rechazado' ? 'selected' : '' }}>Rechazado</option>
+                    <option value="Rechazado" {{ $reserva->estado == 'Rechazado' ? 'selected' : '' }}>Cancelado</option>
                 @else
                     <option value="Pendiente" {{ $reserva->estado == 'Pendiente' ? 'selected' : '' }}>Pendiente</option>
                     <option value="Aprobado" {{ $reserva->estado == 'Aprobado' ? 'selected' : '' }}>Aprobado</option>
-                    <option value="Realizado" {{ $reserva->estado == 'Realizado' ? 'selected' : '' }}>Realizado</option>
-                    <option value="Cancelado" {{ $reserva->estado == 'Cancelado' ? 'selected' : '' }}>Cancelado</option>
+                    <option value="Cancelado" {{ $reserva->estado == 'Cancelado' ? 'selected' : '' }}>Rechazado</option>
                 @endif
             </select>
         </div>
+        <div class="col-md-6 order-md-2 position-relative">
+                            <div class="form-group">
+                                <a href="{{ route('serviciosImagen.index', ['servicio' => $servicio->id]) }}" class="btn btn-primary mr-2 mb-3 add-image-btn" title="Agregar más imágenes"> 
+                                    <i class="fas fa-plus"></i> Imágenes
+                                </a>
+                                <div class="image-placeholder" id="imagePlaceholder" style="cursor: pointer; background-image: url({{ asset('storage/' . $reserva->imagen) }});">
+                                    @if (!$reserva->imagen)
 
+                                    @endif
+                                </div>
+                                <input type="file" name="imagen" class="form-control-file d-none" id="imagenInput">
+                                <div class="invalid-feedback">Por favor, suba una imagen válida.</div>
+                            </div>
+                        </div>
+                        
         <div class="row justify-content-start mt-3">
             <div class="col-md-6">
                 <button type="submit" class="btn btn-outline-success mr-2">

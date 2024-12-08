@@ -142,10 +142,12 @@ class ReservaController extends Controller
     public function update(Request $request, Reserva $reserva)
     {
         $validated = $request->validate([
-            [
-            'estado' => 'required|in:Pendiente,Aprobado,Rechazado,Cancelado,Realizado',        ],
             
-
+            'estado' => 'required|in:Pendiente,Aprobado,Rechazado,Cancelado,Realizado',        ],
+            [
+        
+        ], [
+            
             'estado.required' => 'El estado es obligatorio.',
             'estado.in' => 'El estado debe ser uno de los valores permitidos.',
         ]);
@@ -175,7 +177,6 @@ class ReservaController extends Controller
             return redirect()->back()->withErrors(['hora_reservacion' => 'Ya existe una reserva para esa fecha y hora.'])->withInput();
         }
 
-        
         $reserva->update($validated);
 
         return redirect()->route('reservas.index')->with('success', 'Reserva actualizada correctamente.');
@@ -194,37 +195,19 @@ class ReservaController extends Controller
         $reserva->estado = 'confirmada';
         $reserva->save();
 
-        // Generar el contenido para impresión
-        $nombre = $reserva->nombre_cliente;
-        $telefono = $reserva->telefono_cliente;
-        $fecha = $reserva->fecha_reservacion;
-        $hora = $reserva->hora_reservacion;
-
-        $printContent = "
-            <html>
-            <head><title>Imprimir Reserva</title></head>
-            <body>
-                <h1>Reserva Confirmada</h1>
-                <ul>
-                    <li><strong>Nombre:</strong> $nombre</li>
-                    <li><strong>Teléfono:</strong> $telefono</li>
-                    <li><strong>Fecha:</strong> $fecha</li>
-                    <li><strong>Hora:</strong> $hora</li>
-                </ul>
-            </body>
-            </html>
-        ";
-
-        $printWindow = "<script>
-            var printContent = $printContent;
-            var printWindow = window.open('', '', 'height=600,width=800');
-            printWindow.document.write(printContent);
-            printWindow.document.close();
-            printWindow.focus();
-            printWindow.print();
-        </script>";
-
-        return redirect()->route('reservas.index')->with('success', 'Reserva confirmada exitosamente.')->with('printWindow', $printWindow);
+        $datosModal = [
+            'nombre_cliente' => $reserva->nombre_cliente,
+            'telefono_cliente' => $reserva->telefono_cliente,
+            'fecha_reservacion' => $reserva->fecha_reservacion,
+            'hora_reservacion' => $reserva->hora_reservacion,
+            'estado' => $reserva->estado,
+        ];
+    
+        return redirect()->route('reservas.index')->with([
+            'success' => 'Reserva confirmada exitosamente.',
+            'mostrarModal' => true,
+            'datosModal' => $datosModal
+        ]);
     }
 
     public function cancel(Request $request, $id)
@@ -262,8 +245,7 @@ class ReservaController extends Controller
     
         return response()->json($servicios);
     }
-     
-  
+
 
     public function getReservas()
 {
