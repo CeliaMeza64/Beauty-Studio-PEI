@@ -46,6 +46,8 @@ Auth::routes();
 Route::post('reservas', [ReservaController::class, 'store'])->name('reservas.store');
 Route::post('reservas/check-availability', [ReservaController::class, 'checkAvailability'])->name('reservas.checkAvailability');
 Route::post('/reservas/filtrar-servicios', [ReservaController::class, 'filtrarServicios'])->name('reservas.filtrarServicios');
+Route::get('/reservas/descargar/{id}', [ReservaController::class, 'descargarPDF'])->name('reservas.descargar');
+Route::get('/reservas/{id}/recibo', [ReservaController::class, 'descargarRecibo'])->name('reservas.recibo');
 
 
 // Rutas que requieren autenticación

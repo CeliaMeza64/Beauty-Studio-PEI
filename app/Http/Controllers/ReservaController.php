@@ -8,6 +8,7 @@ use App\Models\Servicio;
 use App\Models\Categoria;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReservaController extends Controller
 {
@@ -139,6 +140,18 @@ class ReservaController extends Controller
         $categorias = Categoria::all();
         return view('reservas.edit', compact('reserva', 'servicios', 'categorias'));
     }
+
+
+    public function descargarPDF($id)
+    {
+        $reserva = Reserva::findOrFail($id); // Busca la reserva
+    
+        // Renderiza la vista como PDF
+        $pdf = Pdf::loadView('reservas.recibo', compact('reserva'));
+        return $pdf->download('recibo_reserva_'.$reserva->id.'.pdf');
+    }
+    
+
     public function update(Request $request, Reserva $reserva)
     {
         $validated = $request->validate([

@@ -196,7 +196,25 @@
         </div>
     </div>
 </div>
- 
+ <!-- Modal de Impresión -->
+<div class="modal fade" id="imprimirModal" tabindex="-1" aria-labelledby="imprimirModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imprimirModalLabel">Imprimir Reserva</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Desea imprimir los detalles de la reserva?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="imprimirReservaButton">Imprimir</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 document.getElementById('guardarReservaButton').addEventListener('click', function (event) {
     event.preventDefault(); // Evitar el envío del formulario
@@ -358,5 +376,59 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 </script>
+<script>
+    // Capturar el botón "Aceptar" del modal de reserva
+    document.getElementById('aceptarReservaButton').addEventListener('click', function () {
+        // Cerrar el modal de reserva
+        let reservaModal = bootstrap.Modal.getInstance(document.getElementById('reservaModal'));
+        reservaModal.hide();
+
+        // Abrir el modal de impresión
+        let imprimirModal = new bootstrap.Modal(document.getElementById('imprimirModal'));
+        imprimirModal.show();
+    });
+    document.getElementById('imprimirReservaButton').addEventListener('click', function () {
+    // Captura el contenido del modal
+    const modalContent = document.querySelector('#reservaModal .modal-content').innerHTML;
+
+    // Crear una nueva ventana para impresión
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    printWindow.document.open();
+    printWindow.document.write(`
+        <html>
+            <head>
+                <title>Detalles de la Reserva</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        margin: 20px;
+                    }
+                    .modal-header, .modal-footer {
+                        display: none;
+                    }
+                    .modal-body {
+                        margin: 0 auto;
+                        text-align: left;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="modal-body">
+                    ${modalContent}
+                </div>
+            </body>
+        </html>
+    `);
+    printWindow.document.close();
+
+    // Activar la impresión
+    printWindow.print();
+    printWindow.close();
+   
+
+});
+
+</script>
+
 </div>
 @endsection
