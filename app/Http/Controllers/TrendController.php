@@ -18,7 +18,7 @@ class TrendController extends Controller
     $monthEnd = Carbon::now()->endOfMonth();
 
     $reservasPorServicio = Servicio::withCount(['reservas' => function ($query) use ($monthStart, $monthEnd) {
-            $query->whereBetween('created_at', [$monthStart, $monthEnd]);
+            $query->whereBetween('reservas.created_at', [$monthStart, $monthEnd]);
         }])
         ->orderByDesc('reservas_count')
         ->get();

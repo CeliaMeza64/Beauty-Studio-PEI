@@ -135,31 +135,27 @@
         eventClick: function(info) {
             var reservaId = info.event.id;
 
-            // Petición AJAX para obtener los detalles de la reserva seleccionada
             fetch(`/reservas/detalles/${reservaId}`)
-                .then(response => response.json())
-                .then(data => {
-                    // Limpiar el contenido anterior
-                    eventDetailsEl.innerHTML = '';
+    .then(response => response.json())
+    .then(data => {
+        eventDetailsEl.innerHTML = '';
 
-                    if (data) {
-                        // Mostrar los detalles de la reserva seleccionada
-                        var divReserva = document.createElement('div');
-                        divReserva.innerHTML = `
-                            <p><strong>Cliente:</strong> ${data.title}</p>
-                            <p><strong>Hora:</strong> ${data.time}</p>
-                            <p><strong>Teléfono:</strong> ${data.description}</p>
-                            <p><strong>Servicio:</strong> ${data.servicio}</p>
-                            <hr>`;
-                        eventDetailsEl.appendChild(divReserva);
-                    } else {
-                        eventDetailsEl.innerHTML = '<p>No hay detalles disponibles para esta reserva.</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error al cargar los detalles de la reserva:', error);
-                    eventDetailsEl.innerHTML = '<p>Error al cargar los detalles de la reserva.</p>';
-                });
+        if (data) {
+            eventDetailsEl.innerHTML = `
+                <p><strong>Cliente:</strong> ${data.title}</p>
+                <p><strong>Hora:</strong> ${data.time}</p>
+                <p><strong>Teléfono:</strong> ${data.description}</p>
+                <p><strong>Servicios:</strong> ${data.servicios}</p>
+                <hr>`;
+        } else {
+            eventDetailsEl.innerHTML = '<p>No hay detalles disponibles para esta reserva.</p>';
+        }
+    })
+    .catch(error => {
+        console.error('Error al cargar los detalles de la reserva:', error);
+        eventDetailsEl.innerHTML = '<p>Error al cargar los detalles de la reserva.</p>';
+    });
+
         }
     });
 

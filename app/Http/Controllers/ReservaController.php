@@ -266,7 +266,7 @@ class ReservaController extends Controller
     date_default_timezone_set('America/Tegucigalpa');
 
     // Obtener todas las reservas
-    $reservas = Reserva::all();
+    $reservas = Reserva::with('servicios')->get();
     
     if ($reservas->isEmpty()) {
         return response()->json([]);
@@ -275,13 +275,12 @@ class ReservaController extends Controller
     $events = [];
 
     foreach ($reservas as $reserva) {
-        // Crear un evento para cada reserva con su hora y detalles
+        $nombresServicios = $reserva->servicios->pluck('nombre')->join(', '); // Lista de servicios
         $events[] = [
-            'id' => $reserva->id, // Usamos el ID para identificar la reserva en el evento 'eventClick'
-            'title' => $reserva->nombre_cliente, // Mostrar el nombre del cliente
-            'start' => $reserva->fecha_reservacion . 'T' . $reserva->hora_reservacion, // Incluir la fecha y hora
-            'description' => $reserva->telefono_cliente, // Teléfono del cliente
-            'servicio' => $reserva->servicio->nombre, // Nombre del servicio reservado
+            'id' => $reserva->id,
+            'title' => $reserva->nombre_cliente . ' - ' . $nombresServicios,
+            'start' => $reserva->fecha_reservacion . 'T' . $reserva->hora_reservacion,
+            'description' => $reserva->telefono_cliente,
         ];
     }
 
@@ -291,19 +290,20 @@ class ReservaController extends Controller
 public function reservasPorDia($fecha)
 {
     // Obtener las reservas de la fecha seleccionada
-    $reservas = Reserva::with('servicio')
+    $reservas = Reserva::with('servicios')
         ->whereDate('fecha_reservacion', $fecha)
         ->orderBy('hora_reservacion', 'asc') // Ordenar por hora
         ->get();
 
     $events = [];
     foreach ($reservas as $reserva) {
+        $nombresServicios = $reserva->servicios->pluck('nombre')->join(', ');
         $events[] = [
             'id' => $reserva->id,
             'title' => $reserva->nombre_cliente,
             'time' => $reserva->hora_reservacion,
             'description' => $reserva->telefono_cliente,
-            'servicio' => $reserva->servicio->nombre
+            'servicios' => $nombresServicios,
         ];
     }
 
@@ -313,17 +313,18 @@ public function reservasPorDia($fecha)
 public function detallesReserva($id)
 {
     // Obtener los detalles de la reserva específica
-    $reserva = Reserva::with('servicio')->find($id);
+    $reserva = Reserva::with('servicios')->find($id);
 
     if (!$reserva) {
         return response()->json(null, 404); // Reserva no encontrada
     }
 
+    $nombresServicios = $reserva->servicios->pluck('nombre')->join(', ');
     $detalle = [
         'title' => $reserva->nombre_cliente,
         'time' => $reserva->hora_reservacion,
         'description' => $reserva->telefono_cliente,
-        'servicio' => $reserva->servicio->nombre
+        'servicios' => $nombresServicios,
     ];
 
     return response()->json($detalle);
