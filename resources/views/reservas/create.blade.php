@@ -103,12 +103,11 @@
             @enderror
         </div>
         <br>
-        <button type="submit" class="btn btn-primary" id="guardarReservaButton">
-            Guardar Reserva
-        </button>
+        <button type="button" class="btn btn-primary" id="guardarReservaButton">
+    Guardar Reserva
+</button>
+
     </form>
-
-
 
     <br>
     <br>
@@ -197,7 +196,7 @@
     </div>
 </div>
  <!-- Modal de Impresión -->
-<div class="modal fade" id="imprimirModal" tabindex="-1" aria-labelledby="imprimirModalLabel" aria-hidden="true">
+ <div class="modal fade" id="imprimirModal" tabindex="-1" aria-labelledby="imprimirModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -208,61 +207,90 @@
                 <p>¿Desea imprimir los detalles de la reserva?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="imprimirReservaButton">Imprimir</button>
+                <button type="button" class="btn btn-primary" onclick="window.print()">Imprimir</button>
             </div>
         </div>
     </div>
 </div>
 
+
 <script>
-document.getElementById('guardarReservaButton').addEventListener('click', function (event) {
-    event.preventDefault(); // Evitar el envío del formulario
+    // Función que se activa cuando se hace clic en el botón "Guardar Reserva"
+    document.getElementById('guardarReservaButton').addEventListener('click', function (event) {
+        event.preventDefault(); // Evitar el envío del formulario por defecto
 
-    const formData = new FormData(document.getElementById('reservaForm'));
+        // Capturar datos del formulario
+        const nombre = document.getElementById('nombre_cliente').value;
+        const telefono = document.getElementById('telefono_cliente').value;
+        const fecha = document.getElementById('fecha_reservacion').value;
+        const hora = document.getElementById('hora_reservacion').value;
 
-    fetch('{{ route("reservas.store") }}', {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Accept': 'application/json',
-        },
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Llenar el modal con los datos de la reserva
-            document.getElementById('modalNombreCliente').textContent = data.reserva.nombre_cliente;
-            document.getElementById('modalTelefonoCliente').textContent = data.reserva.telefono_cliente;
-            document.getElementById('modalServicios').textContent = data.reserva.servicios.join(', ');
-            document.getElementById('modalFecha').textContent = data.reserva.fecha_reservacion;
-            document.getElementById('modalHoraInicio').textContent = data.reserva.hora_reservacion;
-            document.getElementById('modalDuracion').textContent = data.reserva.duracion + ' minutos';
-            document.getElementById('modalHoraFin').textContent = data.reserva.hora_fin;
-            document.getElementById('modalEstado').textContent = data.reserva.estado;
-
-            // Mostrar el modal
-            const modal = new bootstrap.Modal(document.getElementById('reservaModal'));
-            modal.show();
-        } else {
-            alert('Error al procesar la reserva. Inténtelo de nuevo.');
+        // Validar datos básicos
+        if (!nombre || !telefono || !fecha || !hora) {
+            alert('Por favor, completa todos los campos.');
+            return;
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Ha ocurrido un error al procesar la solicitud.');
+
+        // Mostrar datos en el modal
+        document.getElementById('modalNombreCliente').innerText = nombre;
+        document.getElementById('modalTelefonoCliente').innerText = telefono;
+        document.getElementById('modalFecha').innerText = fecha;
+        document.getElementById('modalHoraInicio').innerText = hora;
+
+        // Mostrar el modal de reserva
+        const reservaModal = new bootstrap.Modal(document.getElementById('reservaModal'));
+        reservaModal.show();
+
+        // Función para confirmar la reserva
+        document.getElementById('aceptarReservaButton').addEventListener('click', function () {
+            // Enviar la solicitud de reserva utilizando fetch
+            const formData = new FormData(document.getElementById('reservaForm'));
+
+            fetch('{{ route("reservas.store") }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json',
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Llenar el modal con los datos de la reserva
+                    document.getElementById('modalNombreCliente').textContent = data.reserva.nombre_cliente;
+                    document.getElementById('modalTelefonoCliente').textContent = data.reserva.telefono_cliente;
+                    document.getElementById('modalServicios').textContent = data.reserva.servicios.join(', ');
+                    document.getElementById('modalFecha').textContent = data.reserva.fecha_reservacion;
+                    document.getElementById('modalHoraInicio').textContent = data.reserva.hora_reservacion;
+                    document.getElementById('modalDuracion').textContent = data.reserva.duracion + ' minutos';
+                    document.getElementById('modalHoraFin').textContent = data.reserva.hora_fin;
+                    document.getElementById('modalEstado').textContent = data.reserva.estado;
+
+                    // Mostrar el modal con los detalles de la reserva
+                    const modal = new bootstrap.Modal(document.getElementById('reservaModal'));
+                    modal.show();
+                    
+                    // Cerrar el modal original y redirigir o actualizar según corresponda
+                    reservaModal.hide();
+                    window.location.reload(); // Actualiza la página para mostrar la nueva reserva (opcional)
+                } else {
+                    alert('Error al procesar la reserva. Inténtelo de nuevo.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Ha ocurrido un error al procesar la solicitud.');
+            });
+        });
     });
-});
 
-// Manejar el botón de "Editar"
-document.getElementById('editarReservaButton').addEventListener('click', function () {
-    const modal = bootstrap.Modal.getInstance(document.getElementById('reservaModal'));
-    modal.hide();
-});
+    // Acción para imprimir y enviar el formulario (sin cambios)
+    document.getElementById('imprimirModal').addEventListener('hidden.bs.modal', function () {
+        // Enviar el formulario después de cerrar el modal de impresión
+        document.getElementById('reservaForm').submit();
+    });
 
-
-    document.addEventListener('DOMContentLoaded', function() {
     // Formatear el campo de teléfono mientras el usuario escribe
     document.getElementById('telefono_cliente').addEventListener('input', function(event) {
         var value = event.target.value.replace(/[^0-9]/g, ''); // Eliminar caracteres no numéricos
@@ -310,72 +338,32 @@ document.getElementById('editarReservaButton').addEventListener('click', functio
             .catch(error => console.error('Error:', error));
         }
     });
-    document.getElementById('guardarReservaButton').addEventListener('click', function (event) {
-    event.preventDefault(); 
-
-    const formData = new FormData(document.getElementById('reservaForm'));
-
-    fetch('{{ route("reservas.store") }}', {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Accept': 'application/json',
-        },
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Mostrar el modal con los datos recibidos
-            document.getElementById('modalNombreCliente').textContent = data.reserva.nombre_cliente;
-            document.getElementById('modalTelefonoCliente').textContent = data.reserva.telefono_cliente;
-            document.getElementById('modalServicios').textContent = data.reserva.servicios.join(', ');
-            document.getElementById('modalFecha').textContent = data.reserva.fecha_reservacion;
-            document.getElementById('modalHoraInicio').textContent = data.reserva.hora_reservacion;
-            document.getElementById('modalDuracion').textContent = data.reserva.duracion + ' minutos';
-            document.getElementById('modalHoraFin').textContent = data.reserva.hora_fin;
-            document.getElementById('modalEstado').textContent = data.reserva.estado;
-
-            // Mostrar el modal
-            const modal = new bootstrap.Modal(document.getElementById('reservaModal'));
-            modal.show();
-        } else {
-            alert('Error al procesar la reserva. Inténtelo de nuevo.');
-        }
-
-    })
-        
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Ha ocurrido un error al procesar la solicitud.');
-    });
-
-});
 
     // Función para actualizar los servicios cuando se marca una categoría
-function updateServicios(categoriaId) {
-    var serviciosContainer = document.getElementById('servicios_categoria_' + categoriaId);
-    var categoriaCheckbox = document.getElementById('categoria_' + categoriaId);
+    function updateServicios(categoriaId) {
+        var serviciosContainer = document.getElementById('servicios_categoria_' + categoriaId);
+        var categoriaCheckbox = document.getElementById('categoria_' + categoriaId);
 
-    // Si la categoría está seleccionada, mostrar los servicios
-    if (categoriaCheckbox.checked) {
-        serviciosContainer.style.display = 'block';
-    } else {
-        serviciosContainer.style.display = 'none';
+        // Si la categoría está seleccionada, mostrar los servicios
+        if (categoriaCheckbox.checked) {
+            serviciosContainer.style.display = 'block';
+        } else {
+            serviciosContainer.style.display = 'none';
+        }
     }
-}
 
-// Inicializar la visibilidad de los servicios cuando la página se carga
-document.addEventListener('DOMContentLoaded', function () {
-    // Recorremos todos los checkboxes de categorías para mantener el estado de los servicios
-    var categoriasCheckboxes = document.querySelectorAll('.categoria-checkbox');
-    categoriasCheckboxes.forEach(function (checkbox) {
-        updateServicios(checkbox.value);
+    // Inicializar la visibilidad de los servicios cuando la página se carga
+    document.addEventListener('DOMContentLoaded', function () {
+        // Recorremos todos los checkboxes de categorías para mantener el estado de los servicios
+        var categoriasCheckboxes = document.querySelectorAll('.categoria-checkbox');
+        categoriasCheckboxes.forEach(function (checkbox) {
+            updateServicios(checkbox.value);
+        });
     });
-});
-
 </script>
+
+
+
 <script>
     // Capturar el botón "Aceptar" del modal de reserva
     document.getElementById('aceptarReservaButton').addEventListener('click', function () {
