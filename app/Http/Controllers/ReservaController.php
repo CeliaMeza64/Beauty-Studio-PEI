@@ -265,27 +265,23 @@ class ReservaController extends Controller
     // Establecer la zona horaria
     date_default_timezone_set('America/Tegucigalpa');
 
-    // Obtener todas las reservas
-    $reservas = Reserva::with('servicios')->get();
-    
-    if ($reservas->isEmpty()) {
-        return response()->json([]);
-    }
+    // Agrupar reservas por fecha y contar
+    $reservasPorDia = Reserva::selectRaw('fecha_reservacion, COUNT(*) as cantidad')
+        ->groupBy('fecha_reservacion')
+        ->get();
 
     $events = [];
 
-    foreach ($reservas as $reserva) {
-        $nombresServicios = $reserva->servicios->pluck('nombre')->join(', '); // Lista de servicios
+    foreach ($reservasPorDia as $dia) {
         $events[] = [
-            'id' => $reserva->id,
-            'title' => $reserva->nombre_cliente . ' - ' . $nombresServicios,
-            'start' => $reserva->fecha_reservacion . 'T' . $reserva->hora_reservacion,
-            'description' => $reserva->telefono_cliente,
+            'title' => $dia->cantidad . ' reservas', // Cantidad de reservas como título
+            'start' => $dia->fecha_reservacion, // Fecha del evento
         ];
     }
 
     return response()->json($events);
 }
+
 
 public function reservasPorDia($fecha)
 {
@@ -297,15 +293,19 @@ public function reservasPorDia($fecha)
 
     $events = [];
     foreach ($reservas as $reserva) {
-        $nombresServicios = $reserva->servicios->pluck('nombre')->join(', ');
+        $nombresServicios = $reserva->servicios->isNotEmpty()
+        ? $reserva->servicios->pluck('nombre')->join(', ')
+        : 'Sin servicios';
         $events[] = [
             'id' => $reserva->id,
-            'title' => $reserva->nombre_cliente,
+            'title' => $reserva->nombre_cliente . ' - ' . $nombresServicios,
             'time' => $reserva->hora_reservacion,
             'description' => $reserva->telefono_cliente,
-            'servicios' => $nombresServicios,
+            'servicios' => $nombresServicios ?: 'Sin servicios',
         ];
     }
+
+    
 
     return response()->json($events);
 }

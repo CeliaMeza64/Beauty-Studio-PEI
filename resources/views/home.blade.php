@@ -74,7 +74,7 @@
 <script src="{{ asset('assets/js/es.js') }}"></script>
 
     <script>
-       document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
     var eventDetailsEl = document.getElementById('event-details');
     var reservasColumn = document.getElementById('reservas-column'); // Columna de reservas
@@ -93,34 +93,54 @@
         slotMinTime: '09:00:00', // Hora mínima (9 AM)
         slotMaxTime: '21:00:00', // Hora máxima (9 PM)
         
-        // Cuando se hace clic en una fecha (solo en la vista de mes)
+        // Cuando se hace clic en una fecha
         dateClick: function(info) {
             var selectedDate = info.dateStr;
-            
+
             // Petición AJAX para obtener las reservas del día seleccionado
             fetch(`/reservas/por-dia/${selectedDate}`)
                 .then(response => response.json())
                 .then(data => {
+                    
+                    console.log("Reservas recibidas:", data);
                     // Limpiar el contenido anterior
                     eventDetailsEl.innerHTML = '';
 
                     if (data.length > 0) {
-                        // Mostrar la cantidad y detalles de reservas
+                        // Mostrar la cantidad de reservas
                         var cantidadReservas = data.length;
                         var divCantidad = document.createElement('div');
                         divCantidad.innerHTML = `<strong>Cantidad de Reservas:</strong> ${cantidadReservas}`;
                         eventDetailsEl.appendChild(divCantidad);
 
-                        // Mostrar los detalles de cada reserva
+                        // Mostrar las reservas por hora
+                        var reservasPorHora = {};
                         data.forEach(function(reserva) {
-                            var divReserva = document.createElement('div');
-                            divReserva.innerHTML = `
-                                <p><strong>Cliente:</strong> ${reserva.title}</p>
-                                <p><strong>Hora:</strong> ${reserva.time}</p>
-                                <p><strong>Teléfono:</strong> ${reserva.description}</p>
-                                <hr>`;
-                            eventDetailsEl.appendChild(divReserva);
+                            // Crear un objeto con la hora como clave
+                            var hora = reserva.time;
+                            if (!reservasPorHora[hora]) {
+                                reservasPorHora[hora] = [];
+                            }
+                            reservasPorHora[hora].push(reserva);
                         });
+
+                        // Mostrar las reservas por hora
+                        for (const hora in reservasPorHora) {
+                            var divHora = document.createElement('div');
+                            divHora.innerHTML = `<strong>Hora:</strong> ${hora}`;
+                            eventDetailsEl.appendChild(divHora);
+
+                            reservasPorHora[hora].forEach(function(reserva) {
+                                var divReserva = document.createElement('div');
+                                divReserva.innerHTML = `
+                                    <p><strong>Cliente:</strong> ${reserva.title}</p>
+                                    <p><strong>Hora:</strong> ${reserva.time}</p>
+                                    <p><strong>Teléfono:</strong> ${reserva.description}</p>
+                                     <p><strong>Servicios:</strong> ${reserva.servicios}</p>
+                                    <hr>`;
+                                eventDetailsEl.appendChild(divReserva);
+                            });
+                        }
                     } else {
                         eventDetailsEl.innerHTML = '<p>No hay reservas para este día.</p>';
                     }
@@ -136,31 +156,31 @@
             var reservaId = info.event.id;
 
             fetch(`/reservas/detalles/${reservaId}`)
-    .then(response => response.json())
-    .then(data => {
-        eventDetailsEl.innerHTML = '';
+                .then(response => response.json())
+                .then(data => {
+                    eventDetailsEl.innerHTML = '';
 
-        if (data) {
-            eventDetailsEl.innerHTML = `
-                <p><strong>Cliente:</strong> ${data.title}</p>
-                <p><strong>Hora:</strong> ${data.time}</p>
-                <p><strong>Teléfono:</strong> ${data.description}</p>
-                <p><strong>Servicios:</strong> ${data.servicios}</p>
-                <hr>`;
-        } else {
-            eventDetailsEl.innerHTML = '<p>No hay detalles disponibles para esta reserva.</p>';
-        }
-    })
-    .catch(error => {
-        console.error('Error al cargar los detalles de la reserva:', error);
-        eventDetailsEl.innerHTML = '<p>Error al cargar los detalles de la reserva.</p>';
-    });
-
+                    if (data) {
+                        eventDetailsEl.innerHTML = `
+                            <p><strong>Cliente:</strong> ${data.title}</p>
+                            <p><strong>Hora:</strong> ${data.time}</p>
+                            <p><strong>Teléfono:</strong> ${data.description}</p>
+                            <p><strong>Servicios:</strong> ${data.servicios}</p>
+                            <hr>`;
+                    } else {
+                        eventDetailsEl.innerHTML = '<p>No hay detalles disponibles para esta reserva.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al cargar los detalles de la reserva:', error);
+                    eventDetailsEl.innerHTML = '<p>Error al cargar los detalles de la reserva.</p>';
+                });
         }
     });
 
     calendar.render();
 });
+    
 
     </script>
 @endsection
