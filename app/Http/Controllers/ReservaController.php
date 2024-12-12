@@ -298,7 +298,7 @@ public function reservasPorDia($fecha)
         : 'Sin servicios';
         $events[] = [
             'id' => $reserva->id,
-            'title' => $reserva->nombre_cliente . ' - ' . $nombresServicios,
+            'title' => $reserva->nombre_cliente ,
             'time' => $reserva->hora_reservacion,
             'description' => $reserva->telefono_cliente,
             'servicios' => $nombresServicios ?: 'Sin servicios',

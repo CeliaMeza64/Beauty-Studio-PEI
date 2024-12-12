@@ -127,7 +127,6 @@
                         // Mostrar las reservas por hora
                         for (const hora in reservasPorHora) {
                             var divHora = document.createElement('div');
-                            divHora.innerHTML = `<strong>Hora:</strong> ${hora}`;
                             eventDetailsEl.appendChild(divHora);
 
                             reservasPorHora[hora].forEach(function(reserva) {
