@@ -40,7 +40,7 @@
                     <input class="form-check-input categoria-checkbox" type="checkbox" name="categoria_id[]" value="{{ $categoria->id }}" id="categoria_{{ $categoria->id }}"
                     {{ (is_array(old('categoria_id')) && in_array($categoria->id, old('categoria_id'))) ? 'checked' : '' }} onchange="updateServicios({{ $categoria->id }})">
                     <label class="form-check-label" for="categoria_{{ $categoria->id }}">
-                        {{ $categoria->nombre }}
+                       <b> {{ $categoria->nombre }}</b>
                     </label>
                 </div>
                 <div class="servicios" id="servicios_categoria_{{ $categoria->id }}" style="display: none;">
