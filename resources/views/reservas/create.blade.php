@@ -12,7 +12,7 @@
     <form action="{{ route('reservas.store') }}" method="POST" id="reservaForm">
         @csrf
         <div class="form-group">
-            <label for="nombre_cliente">Nombre del Cliente</label>
+            <label for="nombre_cliente"> <i class="fas fa-user"></i> Nombre del Cliente</label>
             <input type="text" class="form-control" id="nombre_cliente" name="nombre_cliente" placeholder="Ingrese su nombre"  value="{{ old('nombre_cliente') }}" maxlength="30" required>
             <span id="nombreError" style="color:red; display:none;">Completa este campo, formato en letras</span>
             @error('nombre_cliente')
@@ -22,7 +22,7 @@
 
         <br>
         <div class="form-group">
-            <label for="telefono_cliente">Teléfono:</label>
+            <label for="telefono_cliente"><i class="fas fa-phone"></i> Teléfono:</label>
             <input type="text" id="telefono_cliente" name="telefono_cliente" class="form-control" placeholder="XXXX-XXXX" required
                    maxlength="9" pattern="\d{4}-\d{4}" title="El teléfono debe tener el formato XXXX-XXXX">
             <span id="telefonoError" style="display:none; color:red;">El teléfono debe tener el formato XXXX-XXXX.</span>
@@ -44,7 +44,7 @@
                     </label>
                 </div>
                 <div class="servicios" id="servicios_categoria_{{ $categoria->id }}" style="display: none;">
-                    <label>Servicios:</label>
+                    <label><i class="fas fa-briefcase"></i> Servicios:</label>
                     @foreach($categoria->servicios as $servicio)
                         <div class="form-check">
                             <input class="form-check-input servicio-checkbox" type="checkbox" name="servicios[]" value="{{ $servicio->id }}"
@@ -67,7 +67,7 @@
 
         <br>
         <div class="form-group">
-            <label for="fecha_reservacion">Fecha de la Reserva</label>
+            <label for="fecha_reservacion"><i class="fas fa-calendar-alt"></i> Fecha de la Reserva</label>
             <input type="date" class="form-control" id="fecha_reservacion" name="fecha_reservacion" value="{{ old('fecha_reservacion') }}" required min="{{ date('Y-m-d', strtotime('+1 day')) }}">
             <span id="fechaError" style="color:red; display:none;">Por favor, selecciona una fecha válida.</span>
             @error('fecha_reservacion')
