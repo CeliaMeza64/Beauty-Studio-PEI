@@ -9,8 +9,9 @@
     </nav>
 @endsection
 
+
 @section('content')
-<div class="container">
+<div class="bg-light p-4 rounded shadow" >
     <h2>Editar Reserva</h2>
 
     @if ($errors->any())
@@ -23,14 +24,17 @@
         </div>
     @endif
 
+
     <form action="{{ route('reservas.update', $reserva->id) }}" method="POST">
         @csrf
         @method('PUT')
+
 
         <div class="mb-3">
             <label for="nombre_cliente" class="form-label">Nombre del Cliente</label>
             <input type="text" class="form-control" id="nombre_cliente" name="nombre_cliente" value="{{ old('nombre_cliente', $reserva->nombre_cliente) }}" readonly>
         </div>
+
 
         <div class="mb-3">
             <label for="telefono_cliente" class="form-label">Teléfono del Cliente</label>
@@ -38,6 +42,7 @@
         </div>
 
         
+
         <div class="mb-3">
     <label class="form-label">Servicios</label>
     <div id="servicios-container">
@@ -59,38 +64,47 @@
 </div>
 
 
+
         <div class="mb-3">
             <label for="fecha_reservacion" class="form-label">Fecha de Reservación</label>
             <input type="date" class="form-control" id="fecha_reservacion" name="fecha_reservacion" value="{{ old('fecha_reservacion', $reserva->fecha_reservacion) }}" readonly>
         </div>
+
 
         <div class="mb-3">
             <label for="hora_reservacion" class="form-label">Hora de Reservación</label>
             <input type="text" class="form-control" id="hora_reservacion" name="hora_reservacion" value="{{ old('hora_reservacion', $reserva->hora_reservacion) }}" readonly>
         </div>
 
+        
         <!-- Estado -->
         <div class="form-group">
             <label for="estado">Estado</label>
             <select name="estado" id="estado" class="form-control">
+                
                 @if ($reserva->estado == 'Aprobado')
                     <option value="Aprobado" {{ $reserva->estado == 'Aprobado' ? 'selected' : '' }}>Aprobado</option>
                     <option value="Realizado" {{ $reserva->estado == 'Realizado' ? 'selected' : '' }}>Realizado</option>
                     <option value="Rechazado" {{ $reserva->estado == 'Rechazado' ? 'selected' : '' }}>Cancelado</option>
                 @else
+
                     <option value="Pendiente" {{ $reserva->estado == 'Pendiente' ? 'selected' : '' }}>Pendiente</option>
                     <option value="Aprobado" {{ $reserva->estado == 'Aprobado' ? 'selected' : '' }}>Aprobado</option>
                     <option value="Cancelado" {{ $reserva->estado == 'Cancelado' ? 'selected' : '' }}>Rechazado</option>
                 @endif
             </select>
         </div>
+
         <div class="col-md-6 order-md-2 position-relative">
                             <div class="form-group">
-                                <a href="{{ route('serviciosImagen.index', ['servicio' => $servicio->id]) }}" class="btn btn-primary mr-2 mb-3 add-image-btn" title="Agregar más imágenes"> 
+                                <a href="{{ route('servicios.store', ['servicio' => $servicio->id]) }}" class="btn btn-primary mr-2 mb-3 add-image-btn" title="Agregar más imágenes"> 
                                     <i class="fas fa-plus"></i> Imágenes
+
                                 </a>
+
                                 <div class="image-placeholder" id="imagePlaceholder" style="cursor: pointer; background-image: url({{ asset('storage/' . $reserva->imagen) }});">
                                     @if (!$reserva->imagen)
+
 
                                     @endif
                                 </div>
@@ -99,6 +113,7 @@
                             </div>
                         </div>
                         
+
         <div class="row justify-content-start mt-3">
             <div class="col-md-6">
                 <button type="submit" class="btn btn-outline-success mr-2">
@@ -113,7 +128,9 @@
 </div>
 @endsection
 
+
 @section('scripts')
+
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('telefono_cliente').addEventListener('input', function(event) {
@@ -127,10 +144,12 @@
             event.target.value = value;
         });
 
+
         document.getElementById('nombre_cliente').addEventListener('input', function(event) {
             var value = event.target.value.replace(/[^A-Za-z\s]/g, ''); 
             event.target.value = value;
         });
+
 
         document.getElementById('reservaForm').addEventListener('submit', function(event) {
             event.preventDefault();
@@ -142,45 +161,58 @@
             var fecha = document.getElementById('fecha_reservacion').value;
             var hora = document.getElementById('hora_reservacion').value;
 
+
             if (nombre.length === 0 || !/^[A-Za-z\s]+$/.test(nombre)) {
                 document.getElementById('nombreError').style.display = 'inline';
                 return;
+
             } else {
+
                 document.getElementById('nombreError').style.display = 'none';
             }
 
             if (telefono.length === 0 || !/^\d{4}-\d{4}$/.test(telefono)) {
                 document.getElementById('telefonoError').style.display = 'inline';
                 return;
+
             } else {
+
                 document.getElementById('telefonoError').style.display = 'none';
             }
 
             if (!categoria) {
                 document.getElementById('categoriaError').style.display = 'inline';
                 return;
+
             } else {
+
                 document.getElementById('categoriaError').style.display = 'none';
             }
 
             if (!servicio) {
                 document.getElementById('servicioError').style.display = 'inline';
                 return;
+
             } else {
+
                 document.getElementById('servicioError').style.display = 'none';
             }
 
             if (!fecha) {
                 document.getElementById('fechaError').style.display = 'inline';
                 return;
+
             } else {
+
                 document.getElementById('fechaError').style.display = 'none';
             }
 
             if (!hora) {
                 document.getElementById('horaError').style.display = 'inline';
                 return;
+
             } else {
+
                 document.getElementById('horaError').style.display = 'none';
             }
 
@@ -188,6 +220,7 @@
         });
     });
     </script>
+
     <script>
     // Función para actualizar los servicios según la categoría seleccionada
     function updateServicios(categoriaId) {
@@ -217,6 +250,7 @@
             }
         });
     });
+
 </script>
 
     <script>
@@ -258,6 +292,7 @@ document.getElementById('reservaForm').addEventListener('submit', function(event
 });
 
 </script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const reservaForm = document.getElementById('reservaForm');
@@ -284,5 +319,7 @@ document.getElementById('reservaForm').addEventListener('submit', function(event
             }
         });
     });
+
 </script>
 @endsection
+
