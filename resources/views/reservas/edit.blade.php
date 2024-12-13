@@ -37,33 +37,27 @@
             <input type="text" class="form-control" id="telefono_cliente" name="telefono_cliente" value="{{ old('telefono_cliente', $reserva->telefono_cliente) }}" readonly>
         </div>
 
+        
         <div class="mb-3">
-            <label for="categoria_id" class="form-label">Categoría</label>
-            <select name="categoria_id" id="categoria_id" class="form-control" disabled>
-                <option value="">Seleccione una categoría</option>
-                @foreach($categorias as $categoria)
-                    <option value="{{ $categoria->id }}" {{ old('categoria_id', $reserva->categoria_id) == $categoria->id ? 'selected' : '' }}>
-                        {{ $categoria->nombre }}
-                    </option>
+    <label class="form-label">Servicios</label>
+    <div id="servicios-container">
+        @foreach($categorias as $categoria)
+            <div class="categoria-servicios">
+                <h5>{{ $categoria->nombre }}</h5>
+                @foreach($categoria->servicios as $servicio)
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="servicios[]" value="{{ $servicio->id }}" id="servicio_{{ $servicio->id }}"
+                            {{ in_array($servicio->id, old('servicios', $reserva->servicios->pluck('id')->toArray())) ? 'checked' : '' }} disabled>
+                        <label class="form-check-label" for="servicio_{{ $servicio->id }}">
+                            {{ $servicio->nombre }}
+                        </label>
+                    </div>
                 @endforeach
-            </select>
-        </div>
+            </div>
+        @endforeach
+    </div>
+</div>
 
-        <div class="mb-3">
-            <label for="servicio_id" class="form-label">Servicio</label>
-            <select name="servicio_id" id="servicio_id" class="form-control" disabled>
-                <option value="">Seleccione un servicio</option>
-                @foreach($categorias as $categoria)
-                    <optgroup label="{{ $categoria->nombre }}">
-                        @foreach($categoria->servicios as $servicio)
-                            <option value="{{ $servicio->id }}" {{ old('servicio_id', $reserva->servicio_id) == $servicio->id ? 'selected' : '' }}>
-                                {{ $servicio->nombre }}
-                            </option>
-                        @endforeach
-                    </optgroup>
-                @endforeach
-            </select>
-        </div>
 
         <div class="mb-3">
             <label for="fecha_reservacion" class="form-label">Fecha de Reservación</label>
@@ -194,6 +188,37 @@
         });
     });
     </script>
+    <script>
+    // Función para actualizar los servicios según la categoría seleccionada
+    function updateServicios(categoriaId) {
+        const categoriaCheckbox = document.getElementById('categoria_' + categoriaId);
+        const serviciosDiv = document.getElementById('servicios_categoria_' + categoriaId);
+
+        if (categoriaCheckbox.checked) {
+            // Mostrar servicios si la categoría está seleccionada
+            serviciosDiv.style.display = 'block';
+        } else {
+            // Ocultar servicios si la categoría no está seleccionada
+            serviciosDiv.style.display = 'none';
+        }
+    }
+
+    // Al cargar la página, verificar qué categorías están seleccionadas y mostrar los servicios correspondientes
+    document.addEventListener('DOMContentLoaded', function() {
+        // Obtener todos los checkboxes de categorías
+        const categoriasCheckboxes = document.querySelectorAll('.categoria-checkbox');
+
+        // Iterar sobre cada categoría para ver si está seleccionada y mostrar los servicios
+        categoriasCheckboxes.forEach(function(categoriaCheckbox) {
+            const categoriaId = categoriaCheckbox.value;
+            if (categoriaCheckbox.checked) {
+                // Mostrar los servicios de la categoría seleccionada
+                updateServicios(categoriaId);
+            }
+        });
+    });
+</script>
+
     <script>
     function previewImages() {
         const previewContainer = document.getElementById('preview-container');
