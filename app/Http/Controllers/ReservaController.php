@@ -33,6 +33,29 @@ class ReservaController extends Controller
         $categorias = Categoria::with('servicios')->get();
         return view('reservas.create', compact('categorias'));
     }
+    public function buscar(Request $request)
+    {
+        $search = $request->input('search');
+        $reservas = Reserva::with('servicios')
+            ->when($search, function ($query, $search) {
+                $query->where('nombre_cliente', 'like', '%' . $search . '%')
+                    ->orWhere('fecha_reservacion', 'like', '%' . $search . '%')
+                    ->orWhere('hora_reservacion', 'like', '%' . $search . '%');
+            })
+            ->orderBy('fecha_reservacion')
+            ->orderBy('hora_reservacion')
+            ->paginate(7);
+
+     
+    
+        $html = view('reservas.parcial', compact('reservas'))->render();
+        $pagination = $reservas->links()->render();
+    
+        return response()->json(['html' => $html, 'pagination' => $pagination]);
+    }
+    
+
+
 
     public function store(Request $request) {
         $duracionServicio = 60; // Duración del servicio en minutos

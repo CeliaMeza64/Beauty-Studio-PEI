@@ -54,6 +54,9 @@ Route::get('/reservas/{id}/recibo', [ReservaController::class, 'descargarRecibo'
 Route::middleware('auth')->group(function () {
     Route::get('reservas', [ReservaController::class, 'index'])->name('reservas.index');
     Route::get('reservas/{reserva}/edit', [ReservaController::class, 'edit'])->name('reservas.edit');
+   
+    Route::get('/reservas/buscar', [ReservaController::class, 'buscar'])->name('reservas.buscar');
+
     Route::put('reservas/{reserva}', [ReservaController::class, 'update'])->name('reservas.update');
     Route::delete('reservas/{reserva}', [ReservaController::class, 'destroy'])->name('reservas.destroy');
     Route::post('reservas/{reserva}/confirm', [ReservaController::class, 'confirm'])->name('reservas.confirm');
