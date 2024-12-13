@@ -243,7 +243,7 @@
         document.getElementById('modalHoraFinal').innerText = formatoHora(horaInicio);
 
 
-        document.getElementById('modalEstadoReserva').innerText = "Pendiente";
+        document.getElementById('modalEstadoReserva').innerText = "Pendiente. Para confirmar su reserva nos comunicaremos, puede contactarnos por WhatsApp";
 
 
         const reservaModal = new bootstrap.Modal(document.getElementById('reservaModal'));
