@@ -17,7 +17,7 @@
                         <i class="fas fa-plus"></i> Crear Reserva
                     </a>
 
-                    <input type="text" id="search" class="form-control" style="width: 500px;" placeholder="Buscar reservas por cliente o fecha">
+                    <input type="text" id="search" class="form-control" style="width: 500px;" placeholder="Buscar reservas por cliente, hora o fecha">
                 </div>
 
                 <div class="table-responsive">

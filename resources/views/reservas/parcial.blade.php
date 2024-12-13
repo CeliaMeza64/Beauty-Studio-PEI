@@ -17,13 +17,34 @@
         <a href="{{ route('reservas.edit', $reserva) }}" class="btn btn-success btn-sm mr-2">
             <i class="fas fa-edit"></i>
         </a>
-        <form action="{{ route('reservas.destroy', $reserva) }}" method="POST" style="display: inline;">
-            @csrf
-            @method('DELETE')
-            <button type="submit" class="btn btn-danger btn-sm">
-                <i class="fas fa-trash"></i>
-            </button>
-        </form>
+        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#eliminarModal_{{ $reserva->id }}" title="Eliminar">
+            <i class="fas fa-trash"></i>
+        </button>
+
+        <!-- Modal de eliminación -->
+        <div class="modal fade" id="eliminarModal_{{ $reserva->id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Eliminar Reserva</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        ¿Realmente quieres eliminar la reserva de {{ $reserva->nombre_cliente }} para el {{ \Carbon\Carbon::parse($reserva->fecha_reservacion)->format('d/m/Y') }}?
+                    </div>
+                    <div class="modal-footer">
+                        <form action="{{ route('reservas.destroy', $reserva) }}" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </td>
 </tr>
 @endforeach
