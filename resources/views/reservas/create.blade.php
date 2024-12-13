@@ -84,16 +84,16 @@
             <select class="form-control" id="hora_reservacion" name="hora_reservacion" required>
                 <option value="">Seleccione una hora</option>
                 @php
-                    $duracionServicio = 60; // Ejemplo: 60 minutos
-                    $startHour = 9; // 09:00 AM
-                    $endHour = 21; // 08:00 PM
+                    $duracionServicio = 60; 
+                    $startHour = 9; 
+                    $endHour = 21; 
                     $endTime = strtotime("{$endHour}:00");
                     for ($i = $startHour; $i < $endHour; $i++) {
                         for ($j = 0; $j < 60; $j += 30) {
-                            $value = sprintf('%02d:%02d', $i, $j); // Formato 24 horas
+                            $value = sprintf('%02d:%02d', $i, $j); 
                             $finReserva = strtotime($value) + ($duracionServicio * 60);
                             if ($finReserva <= $endTime) {
-                                $label = date('h:i A', strtotime($value)); // Formato AM/PM
+                                $label = date('h:i A', strtotime($value)); 
                                 echo "<option value=\"{$value}\" " . (old('hora_reservacion') == $value ? 'selected' : '') . ">{$label}</option>";
                             }}      }
                 @endphp
@@ -138,7 +138,8 @@
         </div>
     </div>
 </div>
- <!-- Modal de Impresión -->
+ 
+
  <div class="modal fade" id="imprimirModal" tabindex="-1" aria-labelledby="imprimirModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -160,20 +161,23 @@
 
     <script>
     document.getElementById('guardarReservaButton').addEventListener('click', function (event) {
-        event.preventDefault(); // Evitar el envío del formulario por defecto
-        // Capturar datos del formulario
+        event.preventDefault(); 
+
+
         const nombre = document.getElementById('nombre_cliente').value;
         const telefono = document.getElementById('telefono_cliente').value;
         const fecha = document.getElementById('fecha_reservacion').value;
         const hora = document.getElementById('hora_reservacion').value;
         const categoriasSeleccionadas = [];
-        let totalServicios = 0;  // Variable para contar la cantidad total de servicios seleccionados
+        let totalServicios = 0;  
+
         document.querySelectorAll('.categoria-checkbox:checked').forEach(categoria => {
             const categoriaId = categoria.value;
             const servicios = [];
             document.querySelectorAll(`#servicios_categoria_${categoriaId} .servicio-checkbox:checked`).forEach(servicio => {
                 servicios.push(servicio.parentNode.textContent.trim());
-                totalServicios++; // Contar los servicios seleccionados
+                totalServicios++; 
+
             });
             categoriasSeleccionadas.push({
                 nombre: categoria.nextElementSibling.textContent.trim(),
@@ -182,7 +186,7 @@
         });
 
         const alertaContainer = document.getElementById('alertaContainer');
-        alertaContainer.innerHTML = ''; // Limpiar alertas anteriores
+        alertaContainer.innerHTML = ''; 
 
         if (!nombre || !/^[A-Za-z\s]+$/.test(nombre)) {
             alertaContainer.innerHTML = `<div class="alert alert-danger" role="alert">
@@ -215,21 +219,22 @@
             return;
         }
 
-        // Calcular duración total en minutos (60 minutos por servicio)
+       
+
         const duracionTotal = totalServicios * 60;
 
-        // Calcular la hora final de la reserva
-        const horaInicio = new Date(`${fecha}T${hora}:00`); // Usamos el formato YYYY-MM-DDTHH:mm
-        horaInicio.setMinutes(horaInicio.getMinutes() + duracionTotal); // Sumar la duración en minutos
 
-        // Función para formatear la hora en formato de 24 horas (HH:mm)
+        const horaInicio = new Date(`${fecha}T${hora}:00`); 
+        horaInicio.setMinutes(horaInicio.getMinutes() + duracionTotal); 
+
+
         const formatoHora = (fecha) => {
             let horas = fecha.getHours().toString().padStart(2, '0');
             let minutos = fecha.getMinutes().toString().padStart(2, '0');
             return `${horas}:${minutos}`;
         };
 
-        // Mostrar datos en el modal
+
         document.getElementById('modalNombreCliente').innerText = nombre;
         document.getElementById('modalTelefonoCliente').innerText = telefono;
         document.getElementById('modalFecha').innerText = fecha;
@@ -237,14 +242,14 @@
         document.getElementById('modalDuracionTotal').innerText = duracionTotal;
         document.getElementById('modalHoraFinal').innerText = formatoHora(horaInicio);
 
-        // Estado de la reserva
+
         document.getElementById('modalEstadoReserva').innerText = "Pendiente";
 
-        // Mostrar el modal de reserva
+
         const reservaModal = new bootstrap.Modal(document.getElementById('reservaModal'));
         reservaModal.show();
 
-        // Función para confirmar la reserva
+
         document.getElementById('aceptarReservaButton').addEventListener('click', function () {
             const formData = new FormData();
             formData.append('nombre_cliente', nombre);
@@ -253,7 +258,7 @@
             formData.append('hora_reservacion', hora);
             formData.append('duracion', duracionTotal);
 
-            // Enviar la solicitud de reserva utilizando fetch
+
             fetch('{{ route("reservas.store") }}', {
                 method: 'POST',
                 headers: {
@@ -273,55 +278,56 @@
                 alert('Ha ocurrido un error al procesar la solicitud.');
             });
         });
-        // Configuración del botón "Editar"
-document.getElementById('editarReservaButton').addEventListener('click', function () {
-    // Obtener instancia del modal actual
-    const modal = bootstrap.Modal.getInstance(document.getElementById('reservaModal'));
-    // Cerrar el modal actual
+
+        document.getElementById('editarReservaButton').addEventListener('click', function () {
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById('reservaModal'));
     modal.hide();
 
-    // Mostrar el formulario de edición
-    document.getElementById('reservaForm').scrollIntoView({ behavior: 'smooth' });
-    document.getElementById('reservaForm').style.display = 'block'; // Asegúrate de que el formulario sea visible
 
-    // Opcional: Poblar el formulario con datos del modal
+    document.getElementById('reservaForm').scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('reservaForm').style.display = 'block'; 
+
+
+    
     document.getElementById('formNombreCliente').value = document.getElementById('modalNombreCliente').innerText;
     document.getElementById('formTelefonoCliente').value = document.getElementById('modalTelefonoCliente').innerText;
     document.getElementById('formFechaReserva').value = document.getElementById('modalFecha').innerText;
-    // Agrega aquí los demás campos según tu formulario
+   
 });
 
     });
 
-    // Acción para imprimir y enviar el formulario (sin cambios)
     document.getElementById('imprimirModal').addEventListener('hidden.bs.modal', function () {
-        // Enviar el formulario después de cerrar el modal de impresión
+
         document.getElementById('reservaForm').submit();
     });
 
-    // Formatear el campo de teléfono mientras el usuario escribe
+    
     document.getElementById('telefono_cliente').addEventListener('input', function(event) {
-        var value = event.target.value.replace(/[^0-9]/g, ''); // Eliminar caracteres no numéricos
+        var value = event.target.value.replace(/[^0-9]/g, ''); 
         if (value.length > 9) {
-            value = value.slice(0, 9); // Limitar a 9 caracteres
+            value = value.slice(0, 9); 
         }
         if (value.length > 4) {
-            value = value.slice(0, 4) + '-' + value.slice(4); // Añadir guion
+            value = value.slice(0, 4) + '-' + value.slice(4); 
         }
         event.target.value = value;
     });
 
-    // Evitar la entrada de números en el campo de nombre
+    
     document.getElementById('nombre_cliente').addEventListener('input', function(event) {
-        var value = event.target.value.replace(/[^A-Za-z\s]/g, ''); // Eliminar caracteres no permitidos
+        var value = event.target.value.replace(/[^A-Za-z\s]/g, ''); 
         event.target.value = value;
     });
 
-    // Manejo del cambio de categoría
+    
+
     document.getElementById('categoria_id').addEventListener('change', function(event) {
         var categoriaId = event.target.value;
 
-        // Limpia las opciones de servicios
+       
+
         var servicioSelect = document.getElementById('servicio_id');
         servicioSelect.innerHTML = '<option value="">Seleccione un servicio</option>';
 
@@ -347,12 +353,12 @@ document.getElementById('editarReservaButton').addEventListener('click', functio
         }
     });
 
-    // Función para actualizar los servicios cuando se marca una categoría
+    
     function updateServicios(categoriaId) {
         var serviciosContainer = document.getElementById('servicios_categoria_' + categoriaId);
         var categoriaCheckbox = document.getElementById('categoria_' + categoriaId);
 
-        // Si la categoría está seleccionada, mostrar los servicios
+       
         if (categoriaCheckbox.checked) {
             serviciosContainer.style.display = 'block';
         } else {
@@ -360,9 +366,10 @@ document.getElementById('editarReservaButton').addEventListener('click', functio
         }
     }
 
-    // Inicializar la visibilidad de los servicios cuando la página se carga
+    
     document.addEventListener('DOMContentLoaded', function () {
-        // Recorremos todos los checkboxes de categorías para mantener el estado de los servicios
+       
+
         var categoriasCheckboxes = document.querySelectorAll('.categoria-checkbox');
         categoriasCheckboxes.forEach(function (checkbox) {
             updateServicios(checkbox.value);
@@ -370,21 +377,22 @@ document.getElementById('editarReservaButton').addEventListener('click', functio
     });
 </script>
 <script>
-    // Capturar el botón "Aceptar" del modal de reserva
+    
+
     document.getElementById('aceptarReservaButton').addEventListener('click', function () {
-        // Cerrar el modal de reserva
+        
         let reservaModal = bootstrap.Modal.getInstance(document.getElementById('reservaModal'));
         reservaModal.hide();
 
-        // Abrir el modal de impresión
+        
         let imprimirModal = new bootstrap.Modal(document.getElementById('imprimirModal'));
         imprimirModal.show();
     });
     document.getElementById('imprimirReservaButton').addEventListener('click', function () {
-    // Captura el contenido del modal
+    
     const modalContent = document.querySelector('#reservaModal .modal-content').innerHTML;
 
-    // Crear una nueva ventana para impresión
+    
     const printWindow = window.open('', '_blank', 'width=800,height=600');
     printWindow.document.open();
     printWindow.document.write(`
@@ -414,7 +422,7 @@ document.getElementById('editarReservaButton').addEventListener('click', functio
     `);
     printWindow.document.close();
 
-    // Activar la impresión
+    
     printWindow.print();
     printWindow.close();
 });
