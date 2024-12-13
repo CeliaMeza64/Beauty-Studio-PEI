@@ -74,49 +74,57 @@
 <script src="{{ asset('assets/js/es.js') }}"></script>
 
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
     var eventDetailsEl = document.getElementById('event-details');
-    var reservasColumn = document.getElementById('reservas-column'); // Columna de reservas
 
     var calendar = new FullCalendar.Calendar(calendarEl, {
         locale: 'es',
         initialView: 'dayGridMonth', // Comenzamos con la vista mensual
         events: '/reservas/calendario', // Cargar eventos de la base de datos
-
         headerToolbar: {
             left: 'prev,next today',
             center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            right: 'dayGridMonth,timeGridWeek,timeGridDay',
         },
         height: 'auto',
         slotMinTime: '09:00:00', // Hora mínima (9 AM)
         slotMaxTime: '21:00:00', // Hora máxima (9 PM)
-        
-        // Cuando se hace clic en una fecha
+
+        // Renderizar eventos de forma condicional según la vista
+        eventContent: function(arg) {
+            // Vista mensual: solo mostrar la cantidad de reservas
+            if (arg.view.type === 'dayGridMonth') {
+                return { html: `<span>${arg.event.title}</span>` };
+            }
+
+            // Vista semanal y diaria: mostrar detalles completos
+            if (arg.view.type === 'timeGridWeek' || arg.view.type === 'timeGridDay') {
+                return {
+                    html: `
+                        <div>
+                            <strong>${arg.event.title}</strong><br>
+                            <span>${arg.event.extendedProps.time || ''}</span><br>
+                            <small>${arg.event.extendedProps.description || ''}</small>
+                        </div>
+                    `,
+                };
+            }
+        },
+
+        // Manejar clics en la fecha
         dateClick: function(info) {
             var selectedDate = info.dateStr;
 
-            // Petición AJAX para obtener las reservas del día seleccionado
             fetch(`/reservas/por-dia/${selectedDate}`)
                 .then(response => response.json())
                 .then(data => {
-                    
-                    console.log("Reservas recibidas:", data);
-                    // Limpiar el contenido anterior
                     eventDetailsEl.innerHTML = '';
 
                     if (data.length > 0) {
-                        // Mostrar la cantidad de reservas
-                        var cantidadReservas = data.length;
-                        var divCantidad = document.createElement('div');
-                        divCantidad.innerHTML = `<strong>Cantidad de Reservas:</strong> ${cantidadReservas}`;
-                        eventDetailsEl.appendChild(divCantidad);
-
-                        // Mostrar las reservas por hora
+                        // Mostrar las reservas agrupadas por hora
                         var reservasPorHora = {};
                         data.forEach(function(reserva) {
-                            // Crear un objeto con la hora como clave
                             var hora = reserva.time;
                             if (!reservasPorHora[hora]) {
                                 reservasPorHora[hora] = [];
@@ -124,18 +132,17 @@
                             reservasPorHora[hora].push(reserva);
                         });
 
-                        // Mostrar las reservas por hora
                         for (const hora in reservasPorHora) {
                             var divHora = document.createElement('div');
+                            divHora.innerHTML = `<h5>Hora: ${hora}</h5>`;
                             eventDetailsEl.appendChild(divHora);
 
                             reservasPorHora[hora].forEach(function(reserva) {
                                 var divReserva = document.createElement('div');
                                 divReserva.innerHTML = `
                                     <p><strong>Cliente:</strong> ${reserva.title}</p>
-                                    <p><strong>Hora:</strong> ${reserva.time}</p>
                                     <p><strong>Teléfono:</strong> ${reserva.description}</p>
-                                     <p><strong>Servicios:</strong> ${reserva.servicios}</p>
+                                    <p><strong>Servicios:</strong> ${reserva.servicios}</p>
                                     <hr>`;
                                 eventDetailsEl.appendChild(divReserva);
                             });
@@ -150,15 +157,13 @@
                 });
         },
 
-        // Cuando se hace clic en un evento (reserva)
+        // Manejar clics en eventos (reservas)
         eventClick: function(info) {
             var reservaId = info.event.id;
 
             fetch(`/reservas/detalles/${reservaId}`)
                 .then(response => response.json())
                 .then(data => {
-                    eventDetailsEl.innerHTML = '';
-
                     if (data) {
                         eventDetailsEl.innerHTML = `
                             <p><strong>Cliente:</strong> ${data.title}</p>
@@ -174,11 +179,13 @@
                     console.error('Error al cargar los detalles de la reserva:', error);
                     eventDetailsEl.innerHTML = '<p>Error al cargar los detalles de la reserva.</p>';
                 });
-        }
+        },
     });
 
     calendar.render();
 });
+
+
     
 
     </script>
