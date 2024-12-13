@@ -7,6 +7,7 @@
 
 @section('content')
 <div class="container">
+    <div id="alertaContainer"></div>
     <h1>Crear Reserva</h1>
 
     <form action="{{ route('reservas.store') }}" method="POST" id="reservaForm">
@@ -32,7 +33,7 @@
         </div>
 
         <br>
-        <div class="form-group mb-3"> 
+        <div class="form-group mb-3">
         <label><i class="fas fa-th-list"></i> Categorías:</label>
         <div id="categorias_container">
             @foreach($categorias as $categoria)
@@ -62,7 +63,7 @@
                 <span class="text-danger">{{ $message }}</span>
             @enderror
         </div>
-    
+
 
 
         <br>
@@ -109,67 +110,6 @@
 
     </form>
 
-    <br>
-    <br>
-    <br>
-    
-    <div class="map">
-        <h2>Encuentra Nuestra Ubicación</h2>
-        <iframe 
-            src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3873.4854422613735!2d-86.566536!3d13.869897!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMTPCsDUyJzExLjYiTiA4NsKwMzMnNTkuNSJX!5e0!3m2!1ses-419!2shn!4v1723487048417!5m2!1ses-419!2shn" 
-            width="100%" 
-            height="350" 
-            style="border:0; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); margin-top: 1em;" 
-            allowfullscreen="" 
-            loading="lazy" 
-            referrerpolicy="no-referrer-when-downgrade">
-        </iframe>
-    </div>
-
-    <br>
-    <br>
-    
-    @section('styles')
-    <style>
-        .contact-info, .map, .testimonials, .social-media, .faq {
-            margin: 2em 0;
-            padding: 1em;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background-color: #f9f9f9;
-        }
-
-        .contact-info h2, .map h2, .testimonials h2, .social-media h2, .faq h2 {
-            margin-bottom: 1em;
-        }
-
-        .social-media a {
-            margin-right: 10px;
-            text-decoration: none;
-            color: #007bff;
-        }
-
-        .social-media a:hover {
-            text-decoration: underline;
-        }
-
-        #confirmationMessage {
-            position: relative;
-            padding-right: 30px;
-        }
-
-        #confirmationMessage .btn-close {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-    </style>
-    @endsection
-
   <!-- Modal -->
 <div class="modal fade" id="reservaModal" tabindex="-1" aria-labelledby="reservaModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -181,13 +121,16 @@
             <div class="modal-body">
                 <p><strong>Nombre del Cliente:</strong> <span id="modalNombreCliente"></span></p>
                 <p><strong>Teléfono:</strong> <span id="modalTelefonoCliente"></span></p>
-                <p><strong>Servicios:</strong> <span id="modalServicios"></span></p>
                 <p><strong>Fecha de la Reserva:</strong> <span id="modalFecha"></span></p>
                 <p><strong>Hora de Inicio:</strong> <span id="modalHoraInicio"></span></p>
-                <p><strong>Duración Total:</strong> <span id="modalDuracion"></span></p>
-                <p><strong>Hora de Fin:</strong> <span id="modalHoraFin"></span></p>
-                <p><strong>Estado:</strong> <span id="modalEstado"></span></p>
+                <p><strong>Duración Total (minutos):</strong> <span id="modalDuracionTotal"></span></p>
+                <p><strong>Hora Final de la Reserva:</strong> <span id="modalHoraFinal"></span></p>
+                <p><strong>Estado de la Reserva:</strong> <span id="modalEstadoReserva"></span></p>
+                <hr>
+                <h3 style="text-align: center; margin-bottom: 1em;">Categorías y Servicios</h3>
+                <div id="modalCategoriasServicios"></div>
             </div>
+
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" id="editarReservaButton">Editar</button>
                 <button type="button" class="btn btn-primary" id="aceptarReservaButton" data-bs-dismiss="modal">Aceptar</button>
@@ -207,35 +150,95 @@
                 <p>¿Desea imprimir los detalles de la reserva?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" onclick="window.print()">Imprimir</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id= "imprimirReservaButton">Imprimir</button>
             </div>
         </div>
     </div>
 </div>
 
 
-<script>
-    // Función que se activa cuando se hace clic en el botón "Guardar Reserva"
+    <script>
     document.getElementById('guardarReservaButton').addEventListener('click', function (event) {
         event.preventDefault(); // Evitar el envío del formulario por defecto
-
         // Capturar datos del formulario
         const nombre = document.getElementById('nombre_cliente').value;
         const telefono = document.getElementById('telefono_cliente').value;
         const fecha = document.getElementById('fecha_reservacion').value;
         const hora = document.getElementById('hora_reservacion').value;
+        const categoriasSeleccionadas = [];
+        let totalServicios = 0;  // Variable para contar la cantidad total de servicios seleccionados
+        document.querySelectorAll('.categoria-checkbox:checked').forEach(categoria => {
+            const categoriaId = categoria.value;
+            const servicios = [];
+            document.querySelectorAll(`#servicios_categoria_${categoriaId} .servicio-checkbox:checked`).forEach(servicio => {
+                servicios.push(servicio.parentNode.textContent.trim());
+                totalServicios++; // Contar los servicios seleccionados
+            });
+            categoriasSeleccionadas.push({
+                nombre: categoria.nextElementSibling.textContent.trim(),
+                servicios: servicios
+            });
+        });
 
-        // Validar datos básicos
-        if (!nombre || !telefono || !fecha || !hora) {
-            alert('Por favor, completa todos los campos.');
+        const alertaContainer = document.getElementById('alertaContainer');
+        alertaContainer.innerHTML = ''; // Limpiar alertas anteriores
+
+        if (!nombre || !/^[A-Za-z\s]+$/.test(nombre)) {
+            alertaContainer.innerHTML = `<div class="alert alert-danger" role="alert">
+            El nombre no es válido. Asegúrate de que solo contenga letras y espacios.
+        </div>`;
             return;
         }
+        if (!telefono || !/^\d{4}-\d{4}$/.test(telefono)) {
+            alertaContainer.innerHTML = `<div class="alert alert-danger" role="alert">
+            El teléfono debe tener el formato correcto (ej. 1234-5678).
+        </div>`;
+            return;
+        }
+        if (categoriasSeleccionadas.length === 0 || totalServicios === 0) {
+            alertaContainer.innerHTML = `<div class="alert alert-danger" role="alert">
+            Por favor, selecciona al menos una categoría con sus servicios.
+        </div>`;
+            return;
+        }
+        if (!fecha || new Date(fecha) <= new Date()) {
+            alertaContainer.innerHTML = `<div class="alert alert-danger" role="alert">
+        La fecha debe ser válida y no puede ser en el pasado.
+    </div>`;
+            return;
+        }
+        if (!hora || hora < "09:00" || hora > "21:00") {
+            alertaContainer.innerHTML = `<div class="alert alert-danger" role="alert">
+        La hora debe estar entre las 09:00 AM y las 09:00 PM.
+    </div>`;
+            return;
+        }
+
+        // Calcular duración total en minutos (60 minutos por servicio)
+        const duracionTotal = totalServicios * 60;
+
+        // Calcular la hora final de la reserva
+        const horaInicio = new Date(`${fecha}T${hora}:00`); // Usamos el formato YYYY-MM-DDTHH:mm
+        horaInicio.setMinutes(horaInicio.getMinutes() + duracionTotal); // Sumar la duración en minutos
+
+        // Función para formatear la hora en formato de 24 horas (HH:mm)
+        const formatoHora = (fecha) => {
+            let horas = fecha.getHours().toString().padStart(2, '0');
+            let minutos = fecha.getMinutes().toString().padStart(2, '0');
+            return `${horas}:${minutos}`;
+        };
 
         // Mostrar datos en el modal
         document.getElementById('modalNombreCliente').innerText = nombre;
         document.getElementById('modalTelefonoCliente').innerText = telefono;
         document.getElementById('modalFecha').innerText = fecha;
         document.getElementById('modalHoraInicio').innerText = hora;
+        document.getElementById('modalDuracionTotal').innerText = duracionTotal;
+        document.getElementById('modalHoraFinal').innerText = formatoHora(horaInicio);
+
+        // Estado de la reserva
+        document.getElementById('modalEstadoReserva').innerText = "Reservada";
 
         // Mostrar el modal de reserva
         const reservaModal = new bootstrap.Modal(document.getElementById('reservaModal'));
@@ -243,9 +246,14 @@
 
         // Función para confirmar la reserva
         document.getElementById('aceptarReservaButton').addEventListener('click', function () {
-            // Enviar la solicitud de reserva utilizando fetch
-            const formData = new FormData(document.getElementById('reservaForm'));
+            const formData = new FormData();
+            formData.append('nombre_cliente', nombre);
+            formData.append('telefono_cliente', telefono);
+            formData.append('fecha_reservacion', fecha);
+            formData.append('hora_reservacion', hora);
+            formData.append('duracion', duracionTotal);
 
+            // Enviar la solicitud de reserva utilizando fetch
             fetch('{{ route("reservas.store") }}', {
                 method: 'POST',
                 headers: {
@@ -257,25 +265,9 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Llenar el modal con los datos de la reserva
-                    document.getElementById('modalNombreCliente').textContent = data.reserva.nombre_cliente;
-                    document.getElementById('modalTelefonoCliente').textContent = data.reserva.telefono_cliente;
-                    document.getElementById('modalServicios').textContent = data.reserva.servicios.join(', ');
-                    document.getElementById('modalFecha').textContent = data.reserva.fecha_reservacion;
-                    document.getElementById('modalHoraInicio').textContent = data.reserva.hora_reservacion;
-                    document.getElementById('modalDuracion').textContent = data.reserva.duracion + ' minutos';
-                    document.getElementById('modalHoraFin').textContent = data.reserva.hora_fin;
-                    document.getElementById('modalEstado').textContent = data.reserva.estado;
-
-                    // Mostrar el modal con los detalles de la reserva
-                    const modal = new bootstrap.Modal(document.getElementById('reservaModal'));
-                    modal.show();
-                    
-                    // Cerrar el modal original y redirigir o actualizar según corresponda
-                    reservaModal.hide();
-                    window.location.reload(); // Actualiza la página para mostrar la nueva reserva (opcional)
+                    alert('Reserva realizada con éxito');
                 } else {
-                    alert('Error al procesar la reserva. Inténtelo de nuevo.');
+                    alert('Error al procesar la reserva.');
                 }
             })
             .catch(error => {
@@ -283,6 +275,24 @@
                 alert('Ha ocurrido un error al procesar la solicitud.');
             });
         });
+        // Configuración del botón "Editar"
+document.getElementById('editarReservaButton').addEventListener('click', function () {
+    // Obtener instancia del modal actual
+    const modal = bootstrap.Modal.getInstance(document.getElementById('reservaModal'));
+    // Cerrar el modal actual
+    modal.hide();
+
+    // Mostrar el formulario de edición
+    document.getElementById('reservaForm').scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('reservaForm').style.display = 'block'; // Asegúrate de que el formulario sea visible
+
+    // Opcional: Poblar el formulario con datos del modal
+    document.getElementById('formNombreCliente').value = document.getElementById('modalNombreCliente').innerText;
+    document.getElementById('formTelefonoCliente').value = document.getElementById('modalTelefonoCliente').innerText;
+    document.getElementById('formFechaReserva').value = document.getElementById('modalFecha').innerText;
+    // Agrega aquí los demás campos según tu formulario
+});
+
     });
 
     // Acción para imprimir y enviar el formulario (sin cambios)
@@ -361,9 +371,6 @@
         });
     });
 </script>
-
-
-
 <script>
     // Capturar el botón "Aceptar" del modal de reserva
     document.getElementById('aceptarReservaButton').addEventListener('click', function () {
@@ -412,11 +419,69 @@
     // Activar la impresión
     printWindow.print();
     printWindow.close();
-   
-
 });
-
 </script>
+<br>
+    <br>
+    <br>
+
+    <div class="map">
+        <h2>Encuentra Nuestra Ubicación</h2>
+        <iframe
+            src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3873.4854422613735!2d-86.566536!3d13.869897!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMTPCsDUyJzExLjYiTiA4NsKwMzMnNTkuNSJX!5e0!3m2!1ses-419!2shn!4v1723487048417!5m2!1ses-419!2shn"
+            width="100%"
+            height="350"
+            style="border:0; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); margin-top: 1em;"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+    </div>
+
+    <br>
+    <br>
+
+    @section('styles')
+    <style>
+        .contact-info, .map, .testimonials, .social-media, .faq {
+            margin: 2em 0;
+            padding: 1em;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        .contact-info h2, .map h2, .testimonials h2, .social-media h2, .faq h2 {
+            margin-bottom: 1em;
+        }
+
+        .social-media a {
+            margin-right: 10px;
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .social-media a:hover {
+            text-decoration: underline;
+        }
+
+        #confirmationMessage {
+            position: relative;
+            padding-right: 30px;
+        }
+
+        #confirmationMessage .btn-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+    </style>
+    @endsection
 
 </div>
+
 @endsection
