@@ -4,6 +4,7 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ route('reservas.index') }}">Reservas</a></li>
+
             <li class="breadcrumb-item active" aria-current="page">Editar Reserva</li>
         </ol>
     </nav>
@@ -77,11 +78,11 @@
         </div>
 
         
-        <!-- Estado -->
+
         <div class="form-group">
             <label for="estado">Estado</label>
             <select name="estado" id="estado" class="form-control">
-                
+
                 @if ($reserva->estado == 'Aprobado')
                     <option value="Aprobado" {{ $reserva->estado == 'Aprobado' ? 'selected' : '' }}>Aprobado</option>
                     <option value="Realizado" {{ $reserva->estado == 'Realizado' ? 'selected' : '' }}>Realizado</option>
@@ -222,30 +223,29 @@
     </script>
 
     <script>
-    // Función para actualizar los servicios según la categoría seleccionada
-    function updateServicios(categoriaId) {
+
+function updateServicios(categoriaId) {
         const categoriaCheckbox = document.getElementById('categoria_' + categoriaId);
         const serviciosDiv = document.getElementById('servicios_categoria_' + categoriaId);
 
         if (categoriaCheckbox.checked) {
-            // Mostrar servicios si la categoría está seleccionada
+
             serviciosDiv.style.display = 'block';
         } else {
-            // Ocultar servicios si la categoría no está seleccionada
+
             serviciosDiv.style.display = 'none';
         }
     }
 
-    // Al cargar la página, verificar qué categorías están seleccionadas y mostrar los servicios correspondientes
     document.addEventListener('DOMContentLoaded', function() {
-        // Obtener todos los checkboxes de categorías
+
         const categoriasCheckboxes = document.querySelectorAll('.categoria-checkbox');
 
-        // Iterar sobre cada categoría para ver si está seleccionada y mostrar los servicios
         categoriasCheckboxes.forEach(function(categoriaCheckbox) {
             const categoriaId = categoriaCheckbox.value;
+
             if (categoriaCheckbox.checked) {
-                // Mostrar los servicios de la categoría seleccionada
+
                 updateServicios(categoriaId);
             }
         });
