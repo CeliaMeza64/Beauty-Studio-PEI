@@ -11,7 +11,6 @@ use Illuminate\Validation\Rule;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 
-
 class ReservaController extends Controller
 {
     public function index()
@@ -55,7 +54,7 @@ class ReservaController extends Controller
             'telefono_cliente' => 'required|string|size:9|regex:/^\d{4}-\d{4}$/',
             'categoria_id' => 'required|array|min:1',
             'categoria_id.*' => 'exists:categorias,id',
-            'servicios' => 'required|array|min:1',
+            'servicios' => 'required|array|min:1', 
             'servicios.*' => 'exists:servicios,id',
             'fecha_reservacion' => 'required|date|after:today',
             'hora_reservacion' => ['required', 'date_format:H:i', Rule:: in($horasDisponibles) ],
@@ -271,26 +270,36 @@ class ReservaController extends Controller
 
 
     public function getReservas()
-{
-    // Establecer la zona horaria
-    date_default_timezone_set('America/Tegucigalpa');
 
-    // Agrupar reservas por fecha y contar
-    $reservasPorDia = Reserva::selectRaw('fecha_reservacion, COUNT(*) as cantidad')
-        ->groupBy('fecha_reservacion')
-        ->get();
-
-    $events = [];
-
-    foreach ($reservasPorDia as $dia) {
-        $events[] = [
-            'title' => $dia->cantidad . ' reservas', // Cantidad de reservas como título
-            'start' => $dia->fecha_reservacion, // Fecha del evento
-        ];
+    {
+        date_default_timezone_set('America/Tegucigalpa');
+    
+        // Obtener reservas
+        $reservas = Reserva::with('servicios')->get();
+    
+        $events = [];
+    
+        foreach ($reservas as $reserva) {
+            $events[] = [
+                'id' => $reserva->id,
+                'title' => $reserva->nombre_cliente,
+                'start' => $reserva->fecha_reservacion . ' ' . $reserva->hora_reservacion, // Fecha y hora de inicio
+                'end' => $reserva->fecha_reservacion . ' ' . $this->calcularHoraFin($reserva->hora_reservacion, $reserva->duracion), // Hora de fin calculada
+                'description' => $reserva->telefono_cliente,
+                'cantidad' => 1, // Cada reserva cuenta como una
+            ];
+        }
+    
+        return response()->json($events);
+    } 
+    // Función para calcular la hora de fin
+    private function calcularHoraFin($horaInicio, $duracion)
+    {
+        $hora = new \DateTime($horaInicio);
+        $hora->modify("+{$duracion} minutes");
+        return $hora->format('H:i:s');
     }
-
-    return response()->json($events);
-}
+    
 
 
 public function reservasPorDia($fecha)
@@ -339,6 +348,4 @@ public function detallesReserva($id)
 
     return response()->json($detalle);
 }
-
-
 }
