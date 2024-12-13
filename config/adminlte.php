@@ -324,12 +324,6 @@ return [
            
         ],
 
-        [
-            'text' => 'Galeria',
-            'icon'    => 'fa fa-id-card', 
-            'route'=>'galeria.index',
-           
-        ],
 
         [
             'text' => 'Categorias',
@@ -338,13 +332,6 @@ return [
            
         ],
 
-       
-        [
-            'text' => 'Calendario',
-            'icon'    => 'fa fa-id-card', 
-            'route'=>'calendar.index',
-           
-        ],
 
         [
             'text' => 'Sitio Web',

@@ -313,10 +313,7 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('trends.show') }}">Tendencias</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('galeria.show') }}">Galería</a>
-                        </li>    
+                        </li>   
                     </ul>
 
                     <ul class="navbar-nav ms-auto">
