@@ -15,7 +15,7 @@
 @endsection
 
 @section('js')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ asset('assets/js/chart.js') }}"></script>
     <script>
         // Generar colores dinámicamente
         function generarColores(count) {
