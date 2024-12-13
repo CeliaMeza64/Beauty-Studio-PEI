@@ -10,7 +10,7 @@
     <div id="alertaContainer"></div>
     <h1>Crear Reserva</h1>
 
-    <form action="{{ route('reservas.store') }}" method="POST" id="reservaForm">
+    <form action="{{ route('reservas.store') }}" method="POST" id="reservaForm" class="bg-light p-4 rounded shadow">
         @csrf
         <div class="form-group">
             <label for="nombre_cliente"> <i class="fas fa-user"></i> Nombre del Cliente</label>
