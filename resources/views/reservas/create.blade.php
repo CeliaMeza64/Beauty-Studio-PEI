@@ -115,7 +115,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="reservaModalLabel">Detalles de la Reserva</h5>
+                <h5 class="modal-title" id="reservaModalLabel">Comprobante de la Reserva</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -127,7 +127,7 @@
                 <p><strong>Hora Final de la Reserva:</strong> <span id="modalHoraFinal"></span></p>
                 <p><strong>Estado de la Reserva:</strong> <span id="modalEstadoReserva"></span></p>
                 <hr>
-                <h3 style="text-align: center; margin-bottom: 1em;">Categorías y Servicios</h3>
+                <h3 style="text-align: center; margin-bottom: 1em;">Gracias por preferirnos</h3>
                 <div id="modalCategoriasServicios"></div>
             </div>
 
@@ -238,7 +238,7 @@
         document.getElementById('modalHoraFinal').innerText = formatoHora(horaInicio);
 
         // Estado de la reserva
-        document.getElementById('modalEstadoReserva').innerText = "Reservada";
+        document.getElementById('modalEstadoReserva').innerText = "Pendiente";
 
         // Mostrar el modal de reserva
         const reservaModal = new bootstrap.Modal(document.getElementById('reservaModal'));
@@ -266,8 +266,6 @@
             .then(data => {
                 if (data.success) {
                     alert('Reserva realizada con éxito');
-                } else {
-                    alert('Error al procesar la reserva.');
                 }
             })
             .catch(error => {
