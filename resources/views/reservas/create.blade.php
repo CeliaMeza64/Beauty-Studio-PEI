@@ -84,16 +84,16 @@
             <select class="form-control" id="hora_reservacion" name="hora_reservacion" required>
                 <option value="">Seleccione una hora</option>
                 @php
-                    $duracionServicio = 60; 
-                    $startHour = 9; 
-                    $endHour = 21; 
+                    $duracionServicio = 60;
+                    $startHour = 9;
+                    $endHour = 21;
                     $endTime = strtotime("{$endHour}:00");
                     for ($i = $startHour; $i < $endHour; $i++) {
                         for ($j = 0; $j < 60; $j += 30) {
-                            $value = sprintf('%02d:%02d', $i, $j); 
+                            $value = sprintf('%02d:%02d', $i, $j);
                             $finReserva = strtotime($value) + ($duracionServicio * 60);
                             if ($finReserva <= $endTime) {
-                                $label = date('h:i A', strtotime($value)); 
+                                $label = date('h:i A', strtotime($value));
                                 echo "<option value=\"{$value}\" " . (old('hora_reservacion') == $value ? 'selected' : '') . ">{$label}</option>";
                             }}      }
                 @endphp
@@ -138,7 +138,7 @@
         </div>
     </div>
 </div>
- 
+
 
  <div class="modal fade" id="imprimirModal" tabindex="-1" aria-labelledby="imprimirModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -160,8 +160,25 @@
 
 
     <script>
-    document.getElementById('guardarReservaButton').addEventListener('click', function (event) {
-        event.preventDefault(); 
+        function formatoHoraAMPM(hora24) {
+            const [horas, minutos] = hora24.split(':');
+            const date = new Date();
+            date.setHours(parseInt(horas), parseInt(minutos));
+            return date.toLocaleTimeString('es-ES', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+        }
+
+        function formatoFechaLarga(fechaISO) {
+            const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
+            const fecha = new Date(fechaISO);
+            return fecha.toLocaleDateString('es-ES', opciones);
+        }
+
+        document.getElementById('guardarReservaButton').addEventListener('click', function (event) {
+        event.preventDefault();
 
 
         const nombre = document.getElementById('nombre_cliente').value;
@@ -169,14 +186,14 @@
         const fecha = document.getElementById('fecha_reservacion').value;
         const hora = document.getElementById('hora_reservacion').value;
         const categoriasSeleccionadas = [];
-        let totalServicios = 0;  
+        let totalServicios = 0;
 
         document.querySelectorAll('.categoria-checkbox:checked').forEach(categoria => {
             const categoriaId = categoria.value;
             const servicios = [];
             document.querySelectorAll(`#servicios_categoria_${categoriaId} .servicio-checkbox:checked`).forEach(servicio => {
                 servicios.push(servicio.parentNode.textContent.trim());
-                totalServicios++; 
+                totalServicios++;
 
             });
             categoriasSeleccionadas.push({
@@ -186,9 +203,9 @@
         });
 
         const alertaContainer = document.getElementById('alertaContainer');
-        alertaContainer.innerHTML = ''; 
+        alertaContainer.innerHTML = '';
 
-        if (!nombre || !/^[A-Za-z\s]+$/.test(nombre)) {
+        if (!nombre || !/^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/.test(nombre)) {
             alertaContainer.innerHTML = `<div class="alert alert-danger" role="alert">
             El nombre no es válido. Asegúrate de que solo contenga letras y espacios.
         </div>`;
@@ -219,13 +236,13 @@
             return;
         }
 
-       
+
 
         const duracionTotal = totalServicios * 60;
 
 
-        const horaInicio = new Date(`${fecha}T${hora}:00`); 
-        horaInicio.setMinutes(horaInicio.getMinutes() + duracionTotal); 
+        const horaInicio = new Date(`${fecha}T${hora}:00`);
+        horaInicio.setMinutes(horaInicio.getMinutes() + duracionTotal);
 
 
         const formatoHora = (fecha) => {
@@ -237,10 +254,10 @@
 
         document.getElementById('modalNombreCliente').innerText = nombre;
         document.getElementById('modalTelefonoCliente').innerText = telefono;
-        document.getElementById('modalFecha').innerText = fecha;
-        document.getElementById('modalHoraInicio').innerText = hora;
+            document.getElementById('modalFecha').innerText = formatoFechaLarga(fecha);
+            document.getElementById('modalHoraInicio').innerText = formatoHoraAMPM(hora);
         document.getElementById('modalDuracionTotal').innerText = duracionTotal;
-        document.getElementById('modalHoraFinal').innerText = formatoHora(horaInicio);
+            document.getElementById('modalHoraFinal').innerText = formatoHoraAMPM(formatoHora(horaInicio));
 
 
         document.getElementById('modalEstadoReserva').innerText = "Pendiente. Para confirmar su reserva nos comunicaremos, puede contactarnos por WhatsApp";
@@ -286,14 +303,14 @@
 
 
     document.getElementById('reservaForm').scrollIntoView({ behavior: 'smooth' });
-    document.getElementById('reservaForm').style.display = 'block'; 
+    document.getElementById('reservaForm').style.display = 'block';
 
 
-    
+
     document.getElementById('formNombreCliente').value = document.getElementById('modalNombreCliente').innerText;
     document.getElementById('formTelefonoCliente').value = document.getElementById('modalTelefonoCliente').innerText;
     document.getElementById('formFechaReserva').value = document.getElementById('modalFecha').innerText;
-   
+
 });
 
     });
@@ -303,30 +320,31 @@
         document.getElementById('reservaForm').submit();
     });
 
-    
+
     document.getElementById('telefono_cliente').addEventListener('input', function(event) {
-        var value = event.target.value.replace(/[^0-9]/g, ''); 
+        var value = event.target.value.replace(/[^0-9]/g, '');
         if (value.length > 9) {
-            value = value.slice(0, 9); 
+            value = value.slice(0, 9);
         }
         if (value.length > 4) {
-            value = value.slice(0, 4) + '-' + value.slice(4); 
+            value = value.slice(0, 4) + '-' + value.slice(4);
         }
         event.target.value = value;
     });
 
-    
+
     document.getElementById('nombre_cliente').addEventListener('input', function(event) {
-        var value = event.target.value.replace(/[^A-Za-z\s]/g, ''); 
+        var value = event.target.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]/g, '');
         event.target.value = value;
     });
 
-    
+
+
 
     document.getElementById('categoria_id').addEventListener('change', function(event) {
         var categoriaId = event.target.value;
 
-       
+
 
         var servicioSelect = document.getElementById('servicio_id');
         servicioSelect.innerHTML = '<option value="">Seleccione un servicio</option>';
@@ -353,12 +371,12 @@
         }
     });
 
-    
+
     function updateServicios(categoriaId) {
         var serviciosContainer = document.getElementById('servicios_categoria_' + categoriaId);
         var categoriaCheckbox = document.getElementById('categoria_' + categoriaId);
 
-       
+
         if (categoriaCheckbox.checked) {
             serviciosContainer.style.display = 'block';
         } else {
@@ -366,9 +384,9 @@
         }
     }
 
-    
+
     document.addEventListener('DOMContentLoaded', function () {
-       
+
 
         var categoriasCheckboxes = document.querySelectorAll('.categoria-checkbox');
         categoriasCheckboxes.forEach(function (checkbox) {
@@ -377,22 +395,22 @@
     });
 </script>
 <script>
-    
+
 
     document.getElementById('aceptarReservaButton').addEventListener('click', function () {
-        
+
         let reservaModal = bootstrap.Modal.getInstance(document.getElementById('reservaModal'));
         reservaModal.hide();
 
-        
+
         let imprimirModal = new bootstrap.Modal(document.getElementById('imprimirModal'));
         imprimirModal.show();
     });
     document.getElementById('imprimirReservaButton').addEventListener('click', function () {
-    
+
     const modalContent = document.querySelector('#reservaModal .modal-content').innerHTML;
 
-    
+
     const printWindow = window.open('', '_blank', 'width=800,height=600');
     printWindow.document.open();
     printWindow.document.write(`
@@ -422,7 +440,7 @@
     `);
     printWindow.document.close();
 
-    
+
     printWindow.print();
     printWindow.close();
 });
