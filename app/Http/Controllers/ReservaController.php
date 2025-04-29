@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
 use App\Models\Reserva;
 use App\Models\Servicio;
@@ -9,6 +8,7 @@ use App\Models\Categoria;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
 
 class ReservaController extends Controller
 {
@@ -32,7 +32,28 @@ class ReservaController extends Controller
         $categorias = Categoria::with('servicios')->get();
         return view('reservas.create', compact('categorias'));
     }
-    
+    public function buscar(Request $request)
+    {
+        $search = $request->input('search');
+        $reservas = Reserva::with('servicios')
+            ->when($search, function ($query, $search) {
+                $query->where('nombre_cliente', 'like', '%' . $search . '%')
+                    ->orWhere('fecha_reservacion', 'like', '%' . $search . '%')
+                    ->orWhere('hora_reservacion', 'like', '%' . $search . '%');
+            })
+            ->orderBy('fecha_reservacion')
+            ->orderBy('hora_reservacion')
+            ->paginate(7);
+
+
+        $html = view('reservas.parcial', compact('reservas'))->render();
+        $pagination = $reservas->links()->render();
+
+        return response()->json(['html' => $html, 'pagination' => $pagination]);
+    }
+
+
+
     public function store(Request $request) {
         $duracionServicio = 60; // Duración del servicio en minutos
         $startHour = 9; // 09:00 AM
@@ -49,11 +70,16 @@ class ReservaController extends Controller
             }
         }
         $validated = $request->validate([
-            'nombre_cliente' => 'required|string|max:30',
+            'nombre_cliente' => [
+                'required',
+                'string',
+                'max:30',
+                'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/u'
+            ],
             'telefono_cliente' => 'required|string|size:9|regex:/^\d{4}-\d{4}$/',
             'categoria_id' => 'required|array|min:1',
             'categoria_id.*' => 'exists:categorias,id',
-            'servicios' => 'required|array|min:1', 
+            'servicios' => 'required|array|min:1',
             'servicios.*' => 'exists:servicios,id',
             'fecha_reservacion' => 'required|date|after:today',
             'hora_reservacion' => ['required', 'date_format:H:i', Rule:: in($horasDisponibles) ],
@@ -78,14 +104,22 @@ class ReservaController extends Controller
                 'hora_reservacion' => 'La duración total excede el horario de cierre del local.',
             ])->withInput();
         }
-        // Verificar si ya existe una reserva en esa fecha y hora
-        if (Reserva::where('fecha_reservacion', $request->fecha_reservacion)
-        ->where('hora_reservacion', $request->hora_reservacion)
-        ->exists()) {
+        $traslape = Reserva::where('fecha_reservacion', $request->fecha_reservacion)
+        ->where(function ($query) use ($horaInicio, $horaFin) {
+            $query->whereBetween('hora_reservacion', [$horaInicio, $horaFin])
+                  ->orWhereBetween(DB::raw('ADDTIME(hora_reservacion, SEC_TO_TIME(duracion * 60))'), [$horaInicio, $horaFin])
+                  ->orWhere(function ($query) use ($horaInicio, $horaFin) {
+                      $query->where('hora_reservacion', '<', $horaInicio)
+                            ->where(DB::raw('ADDTIME(hora_reservacion, SEC_TO_TIME(duracion * 60))'), '>', $horaFin);
+                  });
+        })->exists();
+
+    if ($traslape) {
         return back()->withErrors([
-            'hora_reservacion' => 'Ya existe una reserva para esta fecha y hora.',
+            'hora_reservacion' => 'Ya existe una reserva en este rango de tiempo. Intente con otra hora.',
         ])->withInput();
     }
+
     $reserva = Reserva::create([
         'nombre_cliente' => $validated['nombre_cliente'],
         'telefono_cliente' => $validated['telefono_cliente'],
@@ -111,11 +145,11 @@ class ReservaController extends Controller
                 'reserva' => $datosReserva,
             ]);
         }
-    
+
         // Redirigir a la página de índice con un mensaje de éxito
         return redirect()->route('reservas.create')->with('success', 'Reserva creada con éxito.');
     }
-    
+
     public function storeNew(Request $request){
         $validated = $request->validate([
             'nombre_cliente' => 'required|string|max:30',
@@ -141,26 +175,24 @@ class ReservaController extends Controller
         return view('reservas.edit', compact('reserva', 'servicios', 'categorias'));
     }
 
-
     public function descargarPDF($id)
     {
         $reserva = Reserva::findOrFail($id); // Busca la reserva
-    
+
         // Renderiza la vista como PDF
         $pdf = Pdf::loadView('reservas.recibo', compact('reserva'));
         return $pdf->download('recibo_reserva_'.$reserva->id.'.pdf');
     }
-    
 
     public function update(Request $request, Reserva $reserva)
     {
         $validated = $request->validate([
-            
+
             'estado' => 'required|in:Pendiente,Aprobado,Rechazado,Cancelado,Realizado',        ],
             [
-        
+
         ], [
-            
+
             'estado.required' => 'El estado es obligatorio.',
             'estado.in' => 'El estado debe ser uno de los valores permitidos.',
         ]);
@@ -195,7 +227,6 @@ class ReservaController extends Controller
         return redirect()->route('reservas.index')->with('success', 'Reserva actualizada correctamente.');
     }
 
-
     public function destroy(Reserva $reserva)
     {
         $reserva->delete();
@@ -215,7 +246,7 @@ class ReservaController extends Controller
             'hora_reservacion' => $reserva->hora_reservacion,
             'estado' => $reserva->estado,
         ];
-    
+
         return redirect()->route('reservas.index')->with([
             'success' => 'Reserva confirmada exitosamente.',
             'mostrarModal' => true,
@@ -255,32 +286,40 @@ class ReservaController extends Controller
     {
         $categoria_id = $request->input('categoria_id');
         $servicios = Servicio::where('categoria_id', $categoria_id)->get();
-    
+
         return response()->json($servicios);
     }
 
-
     public function getReservas()
-{
-    // Establecer la zona horaria
-    date_default_timezone_set('America/Tegucigalpa');
 
-    // Agrupar reservas por fecha y contar
-    $reservasPorDia = Reserva::selectRaw('fecha_reservacion, COUNT(*) as cantidad')
-        ->groupBy('fecha_reservacion')
-        ->get();
+    {
+        date_default_timezone_set('America/Tegucigalpa');
 
-    $events = [];
+        // Obtener reservas
+        $reservas = Reserva::with('servicios')->get();
 
-    foreach ($reservasPorDia as $dia) {
-        $events[] = [
-            'title' => $dia->cantidad . ' reservas', // Cantidad de reservas como título
-            'start' => $dia->fecha_reservacion, // Fecha del evento
-        ];
+        $events = [];
+
+        foreach ($reservas as $reserva) {
+            $events[] = [
+                'id' => $reserva->id,
+                'title' => $reserva->nombre_cliente,
+                'start' => $reserva->fecha_reservacion . ' ' . $reserva->hora_reservacion, // Fecha y hora de inicio
+                'end' => $reserva->fecha_reservacion . ' ' . $this->calcularHoraFin($reserva->hora_reservacion, $reserva->duracion), // Hora de fin calculada
+                'description' => $reserva->telefono_cliente,
+                'cantidad' => 1, // Cada reserva cuenta como una
+            ];
+        }
+
+        return response()->json($events);
     }
-
-    return response()->json($events);
-}
+    // Función para calcular la hora de fin
+    private function calcularHoraFin($horaInicio, $duracion)
+    {
+        $hora = new \DateTime($horaInicio);
+        $hora->modify("+{$duracion} minutes");
+        return $hora->format('H:i:s');
+    }
 
 
 public function reservasPorDia($fecha)
@@ -305,7 +344,6 @@ public function reservasPorDia($fecha)
         ];
     }
 
-    
 
     return response()->json($events);
 }
@@ -329,6 +367,4 @@ public function detallesReserva($id)
 
     return response()->json($detalle);
 }
-
-
 }
