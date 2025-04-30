@@ -13,6 +13,12 @@
     <div class="card">
         <div class="card-body">
             <div class="container">
+                @php
+                    $imagenPath = $categoria->imagen && file_exists(public_path('storage/' . $categoria->imagen)) 
+                        ? asset('storage/' . $categoria->imagen) 
+                        : '';
+                @endphp
+
                 <form id="categoriaForm" action="{{ route('categorias.update', $categoria) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
@@ -20,12 +26,11 @@
                     <input type="hidden" id="editMode" value="{{ $categoria->imagen ? 'true' : 'false' }}">
 
                     <div class="row">
-                    
                         <div class="col-md-6 order-md-2 position-relative">
                             <div class="form-group">
                                 <label class="font-weight-bold-custom mb-1">Cambiar Imagen</label>
-                                <div class="image-placeholder" id="imagePlaceholder" style="cursor: pointer; background-image: url({{ asset('storage/' . $categoria->imagen) }});">
-                                    @if (!$categoria->imagen)
+                                <div class="image-placeholder" id="imagePlaceholder" style="cursor: pointer; background-image: url('{{ $imagenPath }}');">
+                                    @if (!$imagenPath)
                                         <p class="text-sm text-gray-400 pt-1 tracking-wider">Seleccione la imagen</p>
                                     @endif
                                 </div>
@@ -46,7 +51,7 @@
 
                             <div class="form-group">
                                 <label for="descripcion" class="font-weight-bold-custom">Descripción</label>
-                                <textarea name="descripcion" placeholder="Detalles de la categoría" class="form-control @error('descripcion') is-invalid @enderror" rows="3" maxlength="255"  required>{{ old('descripcion', $categoria->descripcion) }}</textarea>
+                                <textarea name="descripcion" placeholder="Detalles de la categoría" class="form-control @error('descripcion') is-invalid @enderror" rows="3" maxlength="255" required>{{ old('descripcion', $categoria->descripcion) }}</textarea>
                                 @error('descripcion')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -88,8 +93,10 @@
 
                 document.getElementById('imagenInput').addEventListener('change', function(event) {
                     const file = event.target.files[0];
+                    if (!file) return;
+
                     const reader = new FileReader();
-                    
+
                     reader.onload = function(e) {
                         const placeholder = document.getElementById('imagePlaceholder');
                         placeholder.style.backgroundImage = 'url(' + e.target.result + ')';
@@ -97,7 +104,7 @@
                         placeholder.style.backgroundPosition = 'center';
                         placeholder.innerHTML = '';
                     };
-                    
+
                     reader.readAsDataURL(file);
                 });
 
@@ -121,11 +128,12 @@
                     } else {
                         descripcion.classList.remove('is-invalid');
                     }
+
                     const imagenInput = document.getElementById('imagenInput');
                     const placeholder = document.getElementById('imagePlaceholder');
                     const editMode = document.getElementById('editMode').value === 'true';
-                    
-                    if (editMode && !imagenInput.files.length && !{{ $categoria->imagen ? 'true' : 'false' }}) {
+
+                    if (editMode && !imagenInput.files.length && !'{{ $imagenPath }}') {
                         placeholder.classList.add('is-invalid');
                         isValid = false;
                     } else {
@@ -133,7 +141,7 @@
                     }
 
                     if (!isValid) {
-                        event.preventDefault(); 
+                        event.preventDefault();
                         alert('Por favor, complete todos los campos obligatorios.');
                     }
                 });
@@ -146,7 +154,7 @@
     <style>
         .breadcrumb-item a, 
         .breadcrumb-item.active {
-            font-size: 1.2em; 
+            font-size: 1.2em;
         }
 
         .font-weight-bold-custom {
@@ -179,7 +187,7 @@
 
         .input-group .is-invalid {
             border-color: #dc3545;
-            box-shadow: 0 0 0 .2rem rgba(220, 53, 69, .25); 
+            box-shadow: 0 0 0 .2rem rgba(220, 53, 69, .25);
         }
 
         .invalid-feedback {
