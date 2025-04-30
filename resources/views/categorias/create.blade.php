@@ -34,6 +34,7 @@
                                     <p class="text-sm text-gray-400 pt-1 tracking-wider">Seleccione la imagen</p>
                                 </div>
                                 <input type="file" name="imagen" class="form-control-file d-none" id="imagenInput">
+                                <div id="imagenError" class="invalid-feedback d-none">La imagen excede el tamaño máximo permitido de 2 MB.</div>
                                 @error('imagen')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -85,7 +86,7 @@
                 </form>
             </div>
 
-<script>
+            <script>
     document.getElementById('imagePlaceholder').addEventListener('click', function () {
         document.getElementById('imagenInput').click();
     });
@@ -93,14 +94,15 @@
     document.getElementById('imagenInput').addEventListener('change', function (event) {
         const file = event.target.files[0];
         const placeholder = document.getElementById('imagePlaceholder');
+        const imagenError = document.getElementById('imagenError');
 
         if (file) {
             if (file.size > 2 * 1024 * 1024) { // 2MB
-                alert('La imagen excede el tamaño máximo permitido de 2 MB.');
                 event.target.value = ""; // Reset input
                 placeholder.style.backgroundImage = '';
                 placeholder.innerHTML = '<p class="text-sm text-gray-400 pt-1 tracking-wider">Seleccione la imagen</p>';
                 placeholder.classList.add('is-invalid');
+                imagenError.classList.remove('d-none');
                 return;
             }
 
@@ -111,6 +113,7 @@
                 placeholder.style.backgroundPosition = 'center';
                 placeholder.innerHTML = '';
                 placeholder.classList.remove('is-invalid');
+                imagenError.classList.add('d-none');
             };
             reader.readAsDataURL(file);
         }
@@ -137,27 +140,30 @@
 
         const imagenInput = document.getElementById('imagenInput');
         const placeholder = document.getElementById('imagePlaceholder');
+        const imagenError = document.getElementById('imagenError');
 
         if (!imagenInput.files.length) {
             placeholder.classList.add('is-invalid');
+            imagenError.classList.add('d-none');
             isValid = false;
         } else if (imagenInput.files[0].size > 2 * 1024 * 1024) {
-            alert('La imagen seleccionada supera los 2 MB. Por favor, seleccione una imagen más liviana.');
             imagenInput.value = "";
             placeholder.style.backgroundImage = '';
             placeholder.innerHTML = '<p class="text-sm text-gray-400 pt-1 tracking-wider">Seleccione la imagen</p>';
             placeholder.classList.add('is-invalid');
+            imagenError.classList.remove('d-none');
             isValid = false;
         } else {
             placeholder.classList.remove('is-invalid');
+            imagenError.classList.add('d-none');
         }
 
         if (!isValid) {
             event.preventDefault();
-            alert('Por favor, complete todos los campos obligatorios.');
         }
     });
 </script>
+
 
         </div>
     </div>
