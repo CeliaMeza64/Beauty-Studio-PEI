@@ -15,38 +15,39 @@ class CategoriaController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'nombre' => 'required|string|max:50',
-            'descripcion' => 'required|string|max:255',
-            'estado' => 'required|boolean',
-            'imagen' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ], [
-            'nombre.required' => 'El nombre es obligatorio y debe ser una cadena de texto.',
-            'nombre.max' => 'El nombre no puede exceder los 50 caracteres.',
-            'descripcion.required' => 'La descripción es obligatoria y debe ser una cadena de texto.',
-            'descripcion.max' => 'La descripción no puede exceder los 255 caracteres.',
-            'estado.required' => 'El estado es obligatorio y debe ser un valor booleano.',
-            'estado.boolean' => 'El estado debe ser verdadero o falso.',
-            'imagen.required' => 'La imagen es obligatoria',
-            'imagen.image' => 'El archivo subido debe ser una imagen.',
-            'imagen.mimes' => 'La imagen debe ser de tipo jpeg, png, jpg o gif.',
-            'imagen.max' => 'La imagen no puede exceder los 2 MB.',
-        ]);
+{
+    $request->validate([
+        'nombre' => [
+            'required',
+            'string',
+            'max:50',
+            'regex:/^(?!\d+$)(?![\W_]+$)[\pL\pN\s]+$/u',
+            'unique:categorias,nombre',
+        ],
+        'descripcion' => 'required|string|max:255',
+        'estado' => 'required|boolean',
+        'imagen' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ], [
+        'nombre.required' => 'El nombre es obligatorio.',
+        'nombre.max' => 'El nombre no puede exceder los 50 caracteres.',
+        'nombre.regex' => 'El nombre no puede ser solo números ni solo caracteres especiales.',
+        'nombre.unique' => 'Ya existe una categoría con este nombre.',
+        'descripcion.required' => 'La descripción es obligatoria.',
+        'estado.required' => 'El estado es obligatorio.',
+        'imagen.required' => 'La imagen es obligatoria.',
+        'imagen.image' => 'Debe subir una imagen válida.',
+        'imagen.mimes' => 'Formatos válidos: jpeg, png, jpg o gif.',
+        'imagen.max' => 'La imagen no puede superar los 2 MB.',
+    ]);
 
-        $data = $request->all();
+    $data = $request->all();
+    $data['imagen'] = $request->file('imagen')->store('images/categorias', 'public');
 
-        if ($request->hasFile('imagen')) {
-            $data['imagen'] = $request->file('imagen')->store('images/categorias', 'public');
-        } else {
-            
-            return redirect()->back()->withErrors(['imagen' => 'La imagen es obligatoria.']);
-        }
+    Categoria::create($data);
 
-        Categoria::create($data);
+    return redirect()->route('categorias.index')->with('success', 'Categoría creada con éxito.');
+}
 
-        return redirect()->route('categorias.index')->with('success', 'Categoría creada con éxito.');
-    }
 
     public function show()
     {
@@ -61,38 +62,44 @@ class CategoriaController extends Controller
     }
 
     public function update(Request $request, Categoria $categoria)
-    {
-        $request->validate([
-            'nombre' => 'required|string|max:50',
-            'descripcion' => 'required|string|max:255',
-            'estado' => 'required|boolean',
-            'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ], [
-            'nombre.required' => 'El nombre es obligatorio y debe ser una cadena de texto.',
-            'nombre.max' => 'El nombre no puede exceder los 50 caracteres.',
-            'descripcion.required' => 'La descripción es obligatoria y debe ser una cadena de texto.',
-            'descripcion.max' => 'La descripción no puede exceder los 255 caracteres.',
-            'estado.required' => 'El estado es obligatorio y debe ser un valor booleano.',
-            'estado.boolean' => 'El estado debe ser verdadero o falso.',
-            'imagen.image' => 'El archivo subido debe ser una imagen.',
-            'imagen.mimes' => 'La imagen debe ser de tipo jpeg, png, jpg o gif.',
-            'imagen.max' => 'La imagen no puede exceder los 2 MB.',
-        ]);
+{
+    $request->validate([
+        'nombre' => [
+            'required',
+            'string',
+            'max:50',
+            'regex:/^(?!\d+$)(?![\W_]+$)[\pL\pN\s]+$/u',
+            'unique:categorias,nombre,' . $categoria->id,
+        ],
+        'descripcion' => 'required|string|max:255',
+        'estado' => 'required|boolean',
+        'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ], [
+        'nombre.required' => 'El nombre es obligatorio.',
+        'nombre.max' => 'El nombre no puede exceder los 50 caracteres.',
+        'nombre.regex' => 'El nombre no puede ser solo números ni solo caracteres especiales.',
+        'nombre.unique' => 'Ya existe otra categoría con este nombre.',
+        'descripcion.required' => 'La descripción es obligatoria.',
+        'estado.required' => 'El estado es obligatorio.',
+        'imagen.image' => 'Debe subir una imagen válida.',
+        'imagen.mimes' => 'Formatos válidos: jpeg, png, jpg o gif.',
+        'imagen.max' => 'La imagen no puede superar los 2 MB.',
+    ]);
 
-        $data = $request->all();
+    $data = $request->all();
 
-        if ($request->hasFile('imagen')) {
-          
-            if ($categoria->imagen) {
-                \Storage::disk('public')->delete($categoria->imagen);
-            }
-            $data['imagen'] = $request->file('imagen')->store('images/categorias', 'public');
+    if ($request->hasFile('imagen')) {
+        if ($categoria->imagen) {
+            \Storage::disk('public')->delete($categoria->imagen);
         }
-
-        $categoria->update($data);
-
-        return redirect()->route('categorias.index')->with('success', 'Categoría actualizada con éxito.');
+        $data['imagen'] = $request->file('imagen')->store('images/categorias', 'public');
     }
+
+    $categoria->update($data);
+
+    return redirect()->route('categorias.index')->with('success', 'Categoría actualizada con éxito.');
+}
+
 
     public function destroy(Categoria $categoria)
     {

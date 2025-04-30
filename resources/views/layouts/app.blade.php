@@ -302,21 +302,38 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav">
-                        @foreach($categorias as $categoria)
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('servicios.showServicios', $categoria->nombre) }}">{{ $categoria->nombre }}</a>
-                        </li>
+                        @php
+                            $maxCategorias = 4;
+                        @endphp
+
+                        @foreach($categorias->take($maxCategorias) as $categoria)
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('servicios.showServicios', $categoria->nombre) }}">{{ $categoria->nombre }}</a>
+                            </li>
                         @endforeach
+
+                        @if($categorias->count() > $maxCategorias)
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="otrasCategorias" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Más
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="otrasCategorias">
+                                    @foreach($categorias->slice($maxCategorias) as $categoria)
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('servicios.showServicios', $categoria->nombre) }}">{{ $categoria->nombre }}</a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </li>
+                        @endif
+
                         
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('reservas.create') }}">Reserva</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('trends.show') }}">Tendencias</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('galeria.show') }}">Galería</a>
-                        </li>    
+                        </li>   
                     </ul>
 
                     <ul class="navbar-nav ms-auto">

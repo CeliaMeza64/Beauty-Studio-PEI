@@ -85,61 +85,80 @@
                 </form>
             </div>
 
-            <script>
-                document.getElementById('imagePlaceholder').addEventListener('click', function() {
-                    document.getElementById('imagenInput').click();
-                });
+<script>
+    document.getElementById('imagePlaceholder').addEventListener('click', function () {
+        document.getElementById('imagenInput').click();
+    });
 
-                document.getElementById('imagenInput').addEventListener('change', function(event) {
-                    const file = event.target.files[0];
-                    const reader = new FileReader();
-                    
-                    reader.onload = function(e) {
-                        const placeholder = document.getElementById('imagePlaceholder');
-                        placeholder.style.backgroundImage = 'url(' + e.target.result + ')';
-                        placeholder.style.backgroundSize = 'contain';
-                        placeholder.style.backgroundPosition = 'center';
-                        placeholder.innerHTML = '';
-                    };
-                    
-                    reader.readAsDataURL(file);
-                });
+    document.getElementById('imagenInput').addEventListener('change', function (event) {
+        const file = event.target.files[0];
+        const placeholder = document.getElementById('imagePlaceholder');
 
-                document.getElementById('categoriaForm').addEventListener('submit', function(event) {
-                    let isValid = true;
+        if (file) {
+            if (file.size > 2 * 1024 * 1024) { // 2MB
+                alert('La imagen excede el tamaño máximo permitido de 2 MB.');
+                event.target.value = ""; // Reset input
+                placeholder.style.backgroundImage = '';
+                placeholder.innerHTML = '<p class="text-sm text-gray-400 pt-1 tracking-wider">Seleccione la imagen</p>';
+                placeholder.classList.add('is-invalid');
+                return;
+            }
 
-                    // Validar nombre
-                    const nombre = document.getElementById('nombre');
-                    if (!nombre.value.trim()) {
-                        nombre.classList.add('is-invalid');
-                        isValid = false;
-                    } else {
-                        nombre.classList.remove('is-invalid');
-                    }
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                placeholder.style.backgroundImage = 'url(' + e.target.result + ')';
+                placeholder.style.backgroundSize = 'contain';
+                placeholder.style.backgroundPosition = 'center';
+                placeholder.innerHTML = '';
+                placeholder.classList.remove('is-invalid');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
 
-                    const descripcion = document.getElementById('descripcion');
-                    if (!descripcion.value.trim()) {
-                        descripcion.classList.add('is-invalid');
-                        isValid = false;
-                    } else {
-                        descripcion.classList.remove('is-invalid');
-                    }
+    document.getElementById('categoriaForm').addEventListener('submit', function (event) {
+        let isValid = true;
 
-                    const imagenInput = document.getElementById('imagenInput');
-                    const placeholder = document.getElementById('imagePlaceholder');
-                    if (!imagenInput.files.length) {
-                        placeholder.classList.add('is-invalid');
-                        isValid = false;
-                    } else {
-                        placeholder.classList.remove('is-invalid');
-                    }
+        const nombre = document.getElementById('nombre');
+        if (!nombre.value.trim()) {
+            nombre.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            nombre.classList.remove('is-invalid');
+        }
 
-                    if (!isValid) {
-                        event.preventDefault(); 
-                        alert('Por favor, complete todos los campos obligatorios.');
-                    }
-                });
-            </script>
+        const descripcion = document.getElementById('descripcion');
+        if (!descripcion.value.trim()) {
+            descripcion.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            descripcion.classList.remove('is-invalid');
+        }
+
+        const imagenInput = document.getElementById('imagenInput');
+        const placeholder = document.getElementById('imagePlaceholder');
+
+        if (!imagenInput.files.length) {
+            placeholder.classList.add('is-invalid');
+            isValid = false;
+        } else if (imagenInput.files[0].size > 2 * 1024 * 1024) {
+            alert('La imagen seleccionada supera los 2 MB. Por favor, seleccione una imagen más liviana.');
+            imagenInput.value = "";
+            placeholder.style.backgroundImage = '';
+            placeholder.innerHTML = '<p class="text-sm text-gray-400 pt-1 tracking-wider">Seleccione la imagen</p>';
+            placeholder.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            placeholder.classList.remove('is-invalid');
+        }
+
+        if (!isValid) {
+            event.preventDefault();
+            alert('Por favor, complete todos los campos obligatorios.');
+        }
+    });
+</script>
+
         </div>
     </div>
 @stop
