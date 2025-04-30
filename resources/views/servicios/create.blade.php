@@ -116,7 +116,7 @@
                 document.getElementById('imagenInput').addEventListener('change', function(event) {
                     const file = event.target.files[0];
                     const reader = new FileReader();
-                    
+
                     reader.onload = function(e) {
                         const placeholder = document.getElementById('imagePlaceholder');
                         placeholder.style.backgroundImage = 'url(' + e.target.result + ')';
@@ -124,7 +124,7 @@
                         placeholder.style.backgroundPosition = 'center';
                         placeholder.innerHTML = '';
                     };
-                    
+
                     reader.readAsDataURL(file);
                 });
 
@@ -174,7 +174,7 @@
                     }
 
                     if (!isValid) {
-                        event.preventDefault(); 
+                        event.preventDefault();
                         alert('Por favor, complete todos los campos obligatorios.');
                     }
                 });
@@ -185,9 +185,9 @@
 
 @section('css')
     <style>
-        .breadcrumb-item a, 
+        .breadcrumb-item a,
         .breadcrumb-item.active {
-            font-size: 1.2em; 
+            font-size: 1.2em;
         }
 
         .font-weight-bold-custom {

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Servicio;
 use App\Models\Categoria;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 class ServicioController extends Controller
 {
 
@@ -26,7 +27,7 @@ class ServicioController extends Controller
                     })
                     ->orWhere('duracion', 'like', '%' . $search . '%')
                     ->orWhere(function ($q) use ($search) {
-                      
+
                         if (stripos('disponible', $search) !== false) {
                             $q->where('disponibilidad', 1);
                         }
@@ -40,11 +41,11 @@ class ServicioController extends Controller
                         } elseif (strtolower($search) === 'no disponible') {
                             $q->where('disponibilidad', 0);
                         }
-                    });    
+                    });
         })->paginate(5);
-        $html = view('servicios.parcial', compact('servicios'))->render(); 
-        $pagination = $servicios->links()->render(); 
-    
+        $html = view('servicios.parcial', compact('servicios'))->render();
+        $pagination = $servicios->links()->render();
+
         return response()->json(['html' => $html, 'pagination' => $pagination]);
     }
 
@@ -59,45 +60,63 @@ class ServicioController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-    
-            'nombre' => 'required|string|max:50|unique:servicios,nombre',
-            'descripcion' => 'nullable|string',
+            'nombre' => [
+                'required',
+                'string',
+                'max:50',
+                'unique:servicios,nombre',
+                'not_regex:/@/',
+                function ($attribute, $value, $fail) {
+                    if (is_array($value)) {
+                        $fail('El nombre del servicio no puede ser un arreglo.');
+                    }
+                    if (preg_match('/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/', $value) ||
+                        preg_match('/^([0-9A-Fa-f]{4}\.){2}[0-9A-Fa-f]{4}$/', $value)) {
+                        $fail('El nombre no puede tener el formato de una dirección MAC.');
+                    }
+                },
+            ],
+            'descripcion' => 'nullable|string|max:255',
             'categoria_id' => 'required|exists:categorias,id',
             'disponibilidad' => 'required|boolean',
             'imagen' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'duracion' => 'required|integer|min:30',
+            'duracion' => 'required|integer|min:30|max:420',
         ], [
-            'nombre.required' => 'El nombre es obligatorio.',
-            'nombre.max' => 'El nombre no puede tener más de 50 caracteres.',
-            'nombre.unique' => 'El nombre ya está en uso. Debe ser único.',
+            'nombre.required' => 'El nombre del servicio es obligatorio.',
+            'nombre.string' => 'El nombre debe ser una cadena de texto.',
+            'nombre.max' => 'El nombre no puede exceder los 50 caracteres.',
+            'nombre.unique' => 'Ya existe un servicio con ese nombre.',
+            'nombre.not_regex' => 'El nombre no puede contener el símbolo @.',
+
             'descripcion.string' => 'La descripción debe ser una cadena de texto.',
-            'categoria_id.required' => 'La categoría es obligatoria.',
+            'descripcion.max' => 'La descripción no puede superar los 255 caracteres.',
+
+            'categoria_id.required' => 'Debe seleccionar una categoría.',
             'categoria_id.exists' => 'La categoría seleccionada no existe.',
-            'disponibilidad.required' => 'La disponibilidad es obligatoria.',
-            'imagen.required' => 'La imagen es obligatoria',
-            'imagen.image' => 'El archivo subido debe ser una imagen.',
+
+            'disponibilidad.required' => 'Debe indicar la disponibilidad del servicio.',
+            'disponibilidad.boolean' => 'La disponibilidad debe ser un valor booleano.',
+
+            'imagen.required' => 'Debe subir una imagen para el servicio.',
+            'imagen.image' => 'El archivo debe ser una imagen.',
             'imagen.mimes' => 'La imagen debe ser de tipo jpeg, png, jpg, gif o svg.',
-            'duración.required' => 'La duración es obligatoria',
-            'duración.min' => 'Los servicios durán más de 30 minutos',
-    
+            'imagen.max' => 'La imagen no puede superar los 2 MB.',
+
+            'duracion.required' => 'La duración del servicio es obligatoria.',
+            'duracion.integer' => 'La duración debe ser un número entero en minutos.',
+            'duracion.min' => 'La duración mínima es de 30 minutos.',
+            'duracion.max' => 'La duración máxima permitida es de 420 minutos.',
         ]);
 
-        if ($request->hasFile('imagen')) {
-            $path = $request->file('imagen')->store('images', 'public');
-        } else {
-           
-            return redirect()->back()->withErrors(['imagen' => 'La imagen es obligatoria.']);
-        }
+        $path = $request->file('imagen')->store('images', 'public');
 
         Servicio::create([
-      
             'nombre' => $request->nombre,
             'descripcion' => $request->descripcion,
             'categoria_id' => $request->categoria_id,
             'disponibilidad' => $request->disponibilidad,
             'imagen' => $path,
             'duracion' => $request->duracion,
-         
         ]);
 
         return redirect()->route('servicios.index')->with('success', 'Servicio creado correctamente.');
@@ -107,7 +126,7 @@ class ServicioController extends Controller
     {
         $servicio = Servicio::findOrFail($id);
         $categoriaN = $servicio->categoria->nombre;
-        $images = $servicio->images; 
+        $images = $servicio->images;
         return view('servicios.show', compact('servicio','categoriaN', 'images'));
     }
 
@@ -136,26 +155,51 @@ class ServicioController extends Controller
         $servicio = Servicio::findOrFail($id);
 
         $request->validate([
-            'nombre' => 'required|string|max:50 |unique:servicios,nombre,' . $id,
-            'descripcion' => 'nullable|string',
+            'nombre' => [
+                'required',
+                'string',
+                'max:50',
+                Rule::unique('servicios', 'nombre')->ignore($servicio->id),
+                'not_regex:/@/',
+                function ($attribute, $value, $fail) {
+                    if (is_array($value)) {
+                        $fail('El nombre del servicio no puede ser un arreglo.');
+                    }
+                    if (preg_match('/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/', $value) ||
+                        preg_match('/^([0-9A-Fa-f]{4}\.){2}[0-9A-Fa-f]{4}$/', $value)) {
+                        $fail('El nombre no puede tener el formato de una dirección MAC.');
+                    }
+                },
+            ],
+            'descripcion' => 'nullable|string|max:255',
             'categoria_id' => 'required|exists:categorias,id',
             'disponibilidad' => 'required|boolean',
-            'duracion' => 'required|integer|min:1',
+            'duracion' => 'required|integer|min:30|max:420',
             'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ], [
-            'nombre.required' => 'El nombre es obligatorio.',
-            'nombre.max' => 'El nombre no puede tener más de 50 caracteres.',
-            'duracion.required' => 'La duración es obligatoria.',
-            'duracion.integer' => 'La duración debe ser un número entero.',
-            'duracion.min' => 'La duración debe ser mayor a 30 minuto.',
+            'nombre.required' => 'El nombre del servicio es obligatorio.',
+            'nombre.string' => 'El nombre debe ser una cadena de texto.',
+            'nombre.max' => 'El nombre no puede exceder los 50 caracteres.',
+            'nombre.unique' => 'Ya existe un servicio con ese nombre.',
+            'nombre.not_regex' => 'El nombre no puede contener el símbolo @.',
+
             'descripcion.string' => 'La descripción debe ser una cadena de texto.',
-            'categoria_id.required' => 'La categoría es obligatoria.',
+            'descripcion.max' => 'La descripción no puede superar los 255 caracteres.',
+
+            'categoria_id.required' => 'Debe seleccionar una categoría.',
             'categoria_id.exists' => 'La categoría seleccionada no existe.',
-            'disponibilidad.required' => 'La disponibilidad es obligatoria.',
-            'imagen.image' => 'El archivo subido debe ser una imagen.',
+
+            'disponibilidad.required' => 'Debe indicar la disponibilidad del servicio.',
+            'disponibilidad.boolean' => 'La disponibilidad debe ser un valor booleano.',
+
+            'duracion.required' => 'La duración del servicio es obligatoria.',
+            'duracion.integer' => 'La duración debe ser un número entero en minutos.',
+            'duracion.min' => 'La duración mínima es de 30 minutos.',
+            'duracion.max' => 'La duración máxima permitida es de 420 minutos.',
+
+            'imagen.image' => 'El archivo debe ser una imagen.',
             'imagen.mimes' => 'La imagen debe ser de tipo jpeg, png, jpg, gif o svg.',
-            'imagen.max' => 'La imagen no puede exceder los 2 MB.',
-     
+            'imagen.max' => 'La imagen no puede superar los 2 MB.',
         ]);
 
         $servicio->nombre = $request->nombre;
@@ -175,16 +219,6 @@ class ServicioController extends Controller
         $servicio->save();
 
         return redirect()->route('servicios.index')->with('success', 'Servicio actualizado correctamente.');
-    }
-
-    public function destroy($id)
-    {
-        $servicio = Servicio::findOrFail($id);
-        if ($servicio->imagen) {
-            Storage::delete('public/' . $servicio->imagen);
-        }
-        $servicio->delete();
-        return redirect()->route('servicios.index')->with('success', 'Servicio eliminado correctamente.');
     }
 
 
